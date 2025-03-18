@@ -25,27 +25,3 @@ login:
 end legend
 
 @enduml
-
-@startuml
-actor User
-actor Admin
-
-usecase "Login" as UC1
-usecase "Manage Users" as UC2
-
-User -> UC1
-Admin -> UC2
-
-legend left
-UC1:
-  1. User login to the system....
-  2. The system .... 
-  3. User press the button ...
-end legend
-
-note UC2: the use case is ...
-@enduml
-
-
-
-

@@ -729,7 +729,7 @@ Person "1" -- "*" Course: enrolls
 
 ---
 
-### 安裝
+### PlantUML 繪製環境
 PlantUML 可在多個環境下執行
 * Hackmd
 * Intellij
@@ -743,14 +743,11 @@ PlantUML 可在多個環境下執行
 
 ## 4.EX 綜合練習
 
-### EX4.01
+### EX4.01 圖書管理
 
-#### 題目描述
 你受聘於一家圖書管理系統開發公司，負責設計該系統的類別結構。請根據以下需求，繪製 UML 類別圖（Class Diagram），包含適當的**類別（Class）、屬性（Attributes）、方法（Methods）**，以及類別之間的**關係（Relationships）**，例如**關聯（Association）、聚合（Aggregation）、組合（Composition）**，並標明適當的**多重性（Multiplicity）**。
 
----
-
-#### 需求描述
+**需求描述**
 1. **圖書館（Library）**：
    - 圖書館管理多本書籍，每本書都有唯一的 ISBN 編號、書名、作者、出版年等資訊。
    - 圖書館內的書籍可以被借閱，每本書都有**可借閱的副本數量**。
@@ -774,9 +771,7 @@ PlantUML 可在多個環境下執行
    - 每位作者擁有唯一的 ID、姓名、國籍等資訊。
    - 一本書可以由多位作者共同撰寫。
 
----
-
-#### 要求
+**要求**
 1. **根據以上需求，請繪製 UML Class Diagram，包含以下內容：**
    - **至少 5 個類別（Library、Member、Book、Loan、Author）。**
    - **標明各類別的屬性（Attributes）與方法（Methods）。**
@@ -792,7 +787,7 @@ PlantUML 可在多個環境下執行
 
 請根據上述描述，使用 UML Class Diagram 表示類別之間的關係。
 
-### EX4.02
+### EX4.02 校園成績
 :::success
 :basketball: University Gradebook
 
@@ -843,28 +838,14 @@ fcu.showNoPass();
     * A generalization relationship between Member and Teacher, Student
 :::
 
-### EX4.03
+### EX4.03 故事導向物件設計
 Story and Object Model
 
 透過 ChatGPT 產生一個簡短的故事，將該故事透過 UML 的方式描繪故事中的人物、特性、動作。
 
 * [參考：從超重到卓越](https://hackmd.io/@nlhsueh/SyPpLWXJ3)
 
-
-### EX4.04
-選擇以下系統，繪製其類別圖
-* Ace 網球會員管理系統
-* HappyBear 訂餐系統
-* ezGo 旅遊規劃系統
-* 喀嚓 相機租借系統
-* ShowShow 電影訂位系統
-* 逢大 選課系統
-
-
-### EX4.05
-- 參考 xx 內的「英雄聯盟」專案，繪製 class diagram。必須包含類別，屬性，方法，關係，繼承等 UML 的設計元素。
-
-### EX4.06
+### EX4.04 武俠世界
 - 在武俠的世界中，有一些重要的「要素」，例如「人物」、「武功」、「武器」等。請以線上遊戲的角度來思考此問題（例如人物會有「生命力」的屬性）。	
 	- 我們把這些要素封裝成類別，除了上述的類別以外，還有哪些類別？請至少找出五個。
 	- 哪些類別是抽象類別？會有哪些抽象方法？哪些可以設計成介面？為什麼？
@@ -872,8 +853,18 @@ Story and Object Model
 	- 類別之間會有關係，例如「喬峰具備降龍十八掌」的「具備」關係、「黃蓉擁有打狗棒等」的「擁有」關係。請定義類別之間的關係，以及關係的多樣性 (multiplicity)。
 	- 請繪製其 UML class diagram。	
 
-### EX4.07
-- 考慮一個線上考試系統，繪製其類別圖。請考慮
-	- 有哪些類別？這些類別有哪些屬性？會有哪些方法？選一個線上考試的情境來檢驗看看這樣的設計是否合適。
-	- 哪些類別是抽象類別？會有哪些抽象方法？哪些可以設計成介面？為什麼
-	- 類別之間的關係是什麼？有哪些是包含關係？
+### EX4.05 `GUIChessGame`
+
+應用 Java Swing 視窗化框架改良 Ch02 象棋作業 (`ConsoleChessGame`)
+* 具備 Java Swing 視窗化操作
+* 儘量做到原本的領域物件（例如 Chess) 不變動，只是換掉操作介面。如果無法，則回頭修改前次做法，思考哪些物件可以同時給兩個系統使用？
+* 繪製 UML 的圖 (`GUIChessGame` and `ConsoleChessGame`)
+
+### EX4.06 其他
+選擇以下系統，繪製其類別圖
+* Ace 網球會員管理系統
+* HappyBear 訂餐系統
+* ezGo 旅遊規劃系統
+* 喀嚓 相機租借系統
+* ShowShow 電影訂位系統
+* 逢大 選課系統

@@ -1,0 +1,18 @@
+
+@startuml DiagramName
+[*] -> 預約確認中
+預約確認中 --> 預約完成 : [有空房]/dec count
+
+預約確認中 --> 等候補位 : [無空房]/put into list
+
+等候補位 -> 預約完成 : [有空房]/dec count
+
+等候補位 ---> 取消 : 顧客取消/remove from list
+
+預約完成 --> 使用中 : 入住
+
+使用中 -> 歸檔 : 離開付款/inc count
+
+取消 -> [*] : 取消
+歸檔 -> [*] : 退房
+@enduml

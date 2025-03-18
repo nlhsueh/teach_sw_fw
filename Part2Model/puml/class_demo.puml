@@ -1,0 +1,37 @@
+```plantuml
+@startuml
+
+class Chess {
+    - name
+    - status
+    + eat(Chess)
+    + move(Loc)
+    + jump(Loc)    
+}
+
+class Loc {}
+
+class ChessBoard {
+    - size
+    - bgColor   
+}
+
+class Player {
+    - name
+    - side   
+    - status
+}
+
+class ChessGame {
+    - status
+    + start()
+    + close()
+}
+
+ChessBoard o-- Chess
+ChessGame o-- "2" Player
+Player -- ChessGame : win/lose
+Player --> Chess : select/move/eat
+
+@enduml
+```

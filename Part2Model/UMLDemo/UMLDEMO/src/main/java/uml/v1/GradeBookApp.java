@@ -1,4 +1,4 @@
-/*
+package uml.v1;/*
 many-to-one ASSOCIATION
 "Offer" relationship between Teacher and Course
 * the 1-* is implemented by a simple array. I know it is
@@ -8,7 +8,7 @@ many-to-one ASSOCIATION
   naviate the Teacher (one way navigation)  
 */
 
-public class GradeBookApp1 {
+public class GradeBookApp {
 	public static void main(String args[]) {
 		Student Jie = new Student ("Jie");
 		Student Albert = new Student ("Albert");

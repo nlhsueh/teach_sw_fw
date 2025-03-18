@@ -1,4 +1,4 @@
-/*
+package uml.v0;/*
 CLASSES and attributes, operations
 A gradebook application, the basic classes are:
 * Students
@@ -9,7 +9,7 @@ A gradebook application, the basic classes are:
   we should set the email attribute to "private" 
 */
 
-public class GradeBookApp0 {
+public class GradeBookApp {
 	public static void main(String args[]) {
 		Student Jie = new Student ("Jie");
 		Student Albert = new Student ("Albert");

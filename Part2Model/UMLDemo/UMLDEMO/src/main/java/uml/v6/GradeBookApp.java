@@ -1,4 +1,4 @@
-/*
+package uml.v6;/*
 Refactoring
 * Refactoring the code to avoid "too long method"
 	* main() is too long, split to init(), takeCourse(), show() methods
@@ -8,7 +8,7 @@ Refactoring
 	* add an interface to store the MAX_COURSE and MAX_STUDENT
 */
 
-public class GradeBookApp6 { //**********
+public class GradeBookApp { //**********
 	private Student Jie, Albert, Alex; 
 	private Teacher Nick;
 	private IndustryExpert Peter;
@@ -18,7 +18,7 @@ public class GradeBookApp6 { //**********
 	private Course[] courses;
 
 	public static void main(String args[]) { //**********
-		GradeBookApp6 gb = new GradeBookApp6();
+		GradeBookApp gb = new GradeBookApp();
 		gb.init(); 
 		gb.takeCourse();
 		gb.score();

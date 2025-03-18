@@ -1,10 +1,10 @@
-/*
+package uml.v7;/*
 Strategy design pattern
 * Use strategy design pattern to sort the grade in Course
 	* we can apply different sorting strategy in the future
 */
 
-public class GradeBookApp7 { 
+public class GradeBookApp {
 	private Student Jie, Albert, Alex; 
 	private Teacher Nick;
 	private IndustryExpert Peter;
@@ -14,7 +14,7 @@ public class GradeBookApp7 {
 	private Course[] courses;
 
 	public static void main(String args[]) { 
-		GradeBookApp7 gb = new GradeBookApp7(); //********
+		GradeBookApp gb = new GradeBookApp(); //********
 		gb.init(); 
 		gb.takeCourse();
 		gb.score();

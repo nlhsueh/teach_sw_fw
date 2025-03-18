@@ -1,10 +1,18 @@
-/*
-FIX the bug in GradeBookApp2
-* In a double navigation, Teacher set reference to Course, 
-  and Course set reference to Teacher
+package uml.v2a;/*
+many-to-many NAVIGATION relationship
+"take_course" relationship between Student and Course
+* add Student.takeCourse(Course) to take course
+* add a Course.showCourseInfo() to show course information
+* Check overflow of the array in all classes
+
+* Student*---take_course---*Course, is a double navigation
+* We also add a referece from Course to Teacher, so the "offer"
+  is now a double navigation
+
+!! This code has bug, please FIX it.
 */
 
-public class GradeBookApp2a {
+public class GradeBookApp {
 	public static void main(String args[]) {
 		Student Jie = new Student ("Jie");
 		Student Albert = new Student ("Albert");
@@ -17,43 +25,40 @@ public class GradeBookApp2a {
 		Nick.offer(Java);
 		Nick.offer(Python);
 
-		Jie.takeCourse(Java);
-		Albert.takeCourse(Java);
+		Jie.takeCourse(Java); //++++++++++
+		Albert.takeCourse(Java); //++++++++++
 
 		Java.showCourseInfo();
-	}	
+	}
+	
 }
 
 class Course {
 	String cName;
 	private int degree;
-	Student[] students = new Student[10];
-	int studentCount = 0;
-	Teacher teacher = new Teacher("None");
+	Student[] students = new Student[10]; //++++++++++
+	int studentCount = 0; //++++++++++
+	String teacher = "None"; //++++++++++
 	public Course (String name, int degree) {
 		this.cName = name;
 		this.degree = degree;
 	}
 
-	public void registeredBy(Student s) {
+	public void registeredBy(Student s) { //++++++++++
 		if (studentCount <= 9)
 			students[studentCount++] = s;
 		else
 			System.out.println("Students overflow in a class");
 	}
 
-	public void showCourseInfo() {
+	public void showCourseInfo() { //++++++++++
 		System.out.println("Course: "+ cName);
-		System.out.println("-- Teacher: " + teacher.tName);
+		System.out.println("-- Teacher: " + teacher);
 		String s = "";
 		for (int i=0; i<studentCount ; i++) {
 			s += students[i].sName + ", ";
 		}
 		System.out.println("-- Students: " + s);
-	}
-
-	public void setTeacher(Teacher t) {
-		teacher = t;
 	}
 }
 
@@ -71,13 +76,12 @@ class Teacher {
 	public void offer(Course c) {
 		if (courseCount <= 9) {
 			courses[courseCount++] = c;	
-			c.setTeacher(this); // ++++++++++			
 		}
 		else
 			System.out.println("Offer too many courses");
 	}
 	
-	public void showCourse() {
+	public void showCourse() { 
 		for (Course c: courses) {
 			if (c != null)
 				System.out.println(c.cName);
@@ -98,11 +102,9 @@ class Student {
 	public void setEmail(String e) {
 		this.email = e;
 	}
-	public void takeCourse(Course c) {
-		if (courseCount <=9) {
+	public void takeCourse(Course c) { //++++++++++
+		if (courseCount <=9)
 			courses[courseCount++] = c;
-			c.registeredBy(this); //++++++++++
-		}	
 		else 
 			System.out.println("Hei, you take too many courses");
 	}

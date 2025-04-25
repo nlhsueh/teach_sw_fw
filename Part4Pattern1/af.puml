@@ -1,0 +1,25 @@
+```plantuml
+@startuml
+class Computer {
+  cpu: CPU
+  memory: Memory
+  mb: MotherBoard
+  ---
+  void make()
+}
+
+class PC
+Computer <|-- PC
+class Workstation
+Computer <|-- Workstation
+
+class WorkStationCPU extends CPU
+class WorkStationMemory extends Memory
+class WorkStationMainBoard extends MotherBoard
+
+Computer o-- PC : creates
+Computer o-- Memory : creates
+Computer o-- MotherBoard : creates
+
+@enduml
+```

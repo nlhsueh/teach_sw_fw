@@ -920,10 +920,10 @@ ButtonControlable <|.. Computer
 - **ex07** 請參考 DIP 原則（Dependency Inversion Principle）設計一個通用型的遙控器 RemoteController, 可以對電視 (TV) 或冷氣 (AirConditioner) 做開、關、上、下（on, off, up, down）等動作。TV 預設的頻道是第七台，上下會在 1-15 間變化。冷氣預設 25 度，會在 20-30 度間變化。使用 Swing 來呈現此遙控器面板。(Hint: `IRemoteControllable`, 參考 [Swing 範例](https://github.com/nlhsueh/OOSE/blob/master/src/swing/SwingApp.java)。
 
 - **ex08** 以下原則何者錯誤？
-    - [ ] 設計應該模組化，達到低內聚力，高耦合度
-    - [ ] 「相依反轉」說的是，高階的物件不該相依相依於低階，應該都相依於抽象
-    - [ ] LSP 告訴我們概念上的一般化，不一定都有繼承關係
-    - [ ] 不重複原則，說的是資料和程式碼應該要避免重複
+  - [ ] 設計應該模組化，達到低內聚力，高耦合度
+  - [ ] 「相依反轉」說的是，高階的物件不該相依相依於低階，應該都相依於抽象
+  - [ ] LSP 告訴我們概念上的一般化，不一定都有繼承關係
+  - [ ] 不重複原則，說的是資料和程式碼應該要避免重複
 
 
 ### 解答參考

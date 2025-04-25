@@ -1,0 +1,30 @@
+@startuml
+' 定義 InputStreamReader 類別
+class InputStreamReader{
+  + InputStreamReader(InputStream in)
+  + int read()
+}
+
+' 定義 InputStream 類別
+abstract class InputStream {
+  + int read()
+  + int read(byte b[])
+  + int read(byte b[], int off, int len)
+  + long skip(long n)
+  + int available()
+  + void close()
+  + void mark(int readlimit)
+  + void reset()
+  + boolean markSupported()
+}
+
+' 定義 Reader 抽象類別
+abstract class Reader {
+  + int read()
+}
+
+' 繼承關係
+Reader <|-- InputStreamReader
+InputStreamReader .> InputStream : uses
+Client .> Reader: read
+@enduml

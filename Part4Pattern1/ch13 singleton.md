@@ -2,36 +2,34 @@
 
 # Ch13 獨體：獨一無二 (Singleton)
 
-## 13.1 目的與動機
+## 13.1 基本結構之獨體
 
 > 確定一個類別只會有一個物件實體，並且提供一個可以存取該物件的統一方法。
 >> Ensure a class only has one instance, and provide a global point of access to it
 
 
-### 動機
+### 13.1.1 動機
+
 有時候我們在系統中只想要一個實體，唯一的一個。例如說我們只需要一個視窗管理員，只需要一個 RadioPlayer (要不然聲音就打架了)，或只需要一個產品的工廠物件（請參考 Abstract factory）。我們希望該唯一的物件很容易的被讀取到；並且確定不會有其他的物件被產生出來。
 
-## 13.2 結構與方法
+### 13.1.2 結構與方法
 
-### 結構
-
-
+**結構**
 Figure: Singleton Structure:
 
 <img src="https://i.imgur.com/SYp4vz2.png" width=500>
-
-
-### 優點
-
-控制外界的物件只能參考到同一唯一的一個物件。
-
-#### 沒有繼承樹的獨體
 
 這個設計的技巧在於
 
 - 宣告一個靜態的物件參考；
 - 將原有的建構子宣告為私有的；
 - 建立另外一個生成物件的方法，通常稱為 instance(), 它判斷是否物件已經生成了，若已生成則不再生成，若未生成則生成一個。
+
+**優點**
+
+控制外界的物件只能參考到同一唯一的一個物件。
+
+### 13.1.3 範例
 
 
 以下是一個範例：
@@ -90,8 +88,8 @@ s2 的值為：34
 
 ## 13.3 有繼承樹的獨體
 
+### 13.2.1 動機
 如果在一個繼承樹中只允許產生一個物件，該怎麼設計？
-
 
 - 把該物件的 reference 建立在父類別中，並且宣告為 protected; 如此一來，子類別都可共享這一份物件了。
 - 父類別把原建構子宣告為 private, 因為不允許其他物件透過父類別來生成物件：一切都要從子類別來生成。
@@ -99,7 +97,7 @@ s2 的值為：34
 - 因為父類別與子類別們都共享同一份物件參考，所以就可以控制只生一個物件了。
 
 
-### 迷宮範例
+### 13.2.2 迷宮範例
 
 不論是 `EnchantedMazeFactory` 或 `AgentMazeFactory` 只能生成一個物件。
 
@@ -138,11 +136,32 @@ public class AgentMazeFactory extends MazeFactory {
 }
 ```
 
-### 比較
+**比較**
+
 Factory method 和 abstract factory 都是討論設計的彈性，希望日後在功能擴充時減少程式碼的修改。Singleton 的目的在於解決設計上的問題，是少數設計樣式中不討論設計彈性的樣式。
 
+## 13.4 Java SDK 實例
 
-## 13.4 Check
+Singleton 模式確保一個類別只有一個實例，並提供一個全域存取點。在 Java API 中，你可以發現一些關鍵的類別和模式運用了這個設計理念。
+
+以下是一些在 Java API 中常見的使用 Singleton 設計模式的例子：
+
+1.  **`java.lang.Runtime`:** 這個類別代表 Java 虛擬機器 (JVM) 的執行時環境。你無法直接使用 `new` 關鍵字來建立 `Runtime` 的實例，而是透過其靜態方法 `Runtime.getRuntime()` 來取得唯一的 `Runtime` 物件。這確保了每個 JVM 只有一個關聯的 `Runtime` 實例，負責管理記憶體、執行緒等等系統級別的操作。
+
+2.  **`java.lang.System`:** 雖然 `System` 類別本身並沒有直接實現 Singleton 模式，但它提供了一些靜態的欄位（例如 `System.in`、`System.out` 和 `System.err`），這些欄位是共享的、唯一的 I/O 流物件。這些流物件在整個應用程式中都是單一的存取點，負責標準輸入、標準輸出和標準錯誤輸出。
+
+3.  **日誌框架（Logging Frameworks）：** 許多 Java 日誌框架（如 Log4j 和 SLF4j）通常會使用 Singleton 模式來管理其核心的日誌管理器或日誌工廠。這樣可以確保在整個應用程式中，日誌的配置和管理都是一致的，並且只有一個主要的日誌處理中心。
+
+4.  **資料庫連接池（Database Connection Pools）：** 在實作資料庫連接池時，通常會使用 Singleton 模式來管理連接池的實例。這樣可以確保在整個應用程式中只存在一個連接池，有效地管理資料庫連接資源，避免資源浪費並提高效能。
+
+5.  **配置管理器（Configuration Managers）：** 應用程式的配置資訊通常只需要載入一次，並在整個應用程式生命週期中共享。因此，配置管理器通常會設計成 Singleton，以確保配置資訊的單一性和全局可存取性。
+
+6.  **註冊表（Registry）：** 在某些架構或 API 中，可能會使用註冊表模式來管理服務或物件的實例。註冊表本身通常會實作為 Singleton，作為一個中心化的存取點來獲取已註冊的物件。
+
+Singleton 設計模式在 Java API 中被廣泛應用於需要全局唯一存取點的資源管理、系統級服務和配置管理等場景。它可以有效地控制資源的使用，提高系統的效率和一致性。
+
+
+## 13.5 Check
 
 1.  Singleton 的目的為
     A) 快速的為陣列內每一個類別產生一個物件
@@ -214,14 +233,12 @@ Factory method 和 abstract factory 都是討論設計的彈性，希望日後�
     * **為每個具體子類別實現 Singleton 模式：** 每個需要保證單一實例的具體子類別都實現自己的 Singleton 邏輯。
     * **使用註冊表 (Registry) 的方式：** 維護一個註冊表，將每個子類別的唯一實例存儲起來，並提供一個統一的介面來獲取這些實例。這通常涉及到一個基類，它負責管理子類別的實例。
 
-### 13.5 Exercie
+## 13.6 Exercie
 
-### 13.5.1 MusicPlayer
-系統要求 MusicPlayer 只能產生一個物件，我們要用 Singleton 設計樣式來實踐，請寫出程式碼。
+1. 系統要求 MusicPlayer 只能產生一個物件，我們要用 Singleton 設計樣式來實踐，請寫出程式碼。
 
 
-### 13.5.2 Vehicle
-class Vehicle 有兩個子類別 Motor 與 Bike。若我們只想生成一個 Vehicle (不論他是 Motor, Bike)，請利用 Singleton 設計之。
+2. class Vehicle 有兩個子類別 Motor 與 Bike。若我們只想生成一個 Vehicle (不論他是 Motor, Bike)，請利用 Singleton 設計之。
 
 <!-- ### 解答參考
 

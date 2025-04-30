@@ -160,64 +160,193 @@ public class Computer {
 考慮一個 VectorUtility 類別，其提供了一個copy的功能，可以將某個Vector複製到另一個Vector，但前提是Vector內的元素必須符合isCopyable的介面：
 
 ```java=
+interface Copyable {
+    Copyable copy(); // 定義複製方法
+    boolean isCopyable(); // 定義判斷是否可複製的方法
+}
+
 class VectorUtility {
-    public static Vector copy(Vector vin) {
-        Vector vout = new Vector( );
-        Enumeration e = new vin.elements( );
-        while (e.hasMoreElements( )) {
-            Copyable c = (Copyable)e.nextElement( );
-            if (c.iscopyable) {
-                vout.addElement(c);
+    public static Vector copy(Vector<? extends Copyable> vin) {
+        Vector<Copyable> vout = new Vector<>();
+        Enumeration<? extends Copyable> e = vin.elements();
+        while (e.hasMoreElements()) {
+            Copyable c = e.nextElement();
+            if (c.isCopyable()) {
+                vout.addElement(c.copy()); // 調用元素的 copy() 方法創建副本
             }
         }
+        return vout; // 記得回傳新的 Vector
     }
 }
 ```
 
 例如 Book 符合 Copyable 的介面，則 VectorUtility 就可以複製一個以 Book 建立的 Vector：
 
-```java=
-Vector v = new Vector( );
-v.add(new Book("b1"));
-v.add(new Book("b2"));
-VectorUtility vu = new VectorUtility( );
-Vector v2 = vu.copy(v);
-```
+```java
+class Book implements Copyable {
+    private String data;
+    private boolean canCopy;
 
-若我們要複製的東西是 Student，但 Student 並不支援 Copyable 介面，但提供一個相似的功能介面— isValid( )。如何能讓 VectorUtility 也可以來 copy student 的 Vector 呢？
-
-看看Adapter如何幫忙吧！
-
-```java=
-    public class StudentAdapter implements Copyable {
-       private Student s;
-       public StudentAdapter(Student s) {
-           this.s = s;
-       }
-      public boolean isCopyable( ) {
-           return s.isValid( );
-      }
+    public Book(String data, boolean canCopy) {
+        this.data = data;
+        this.canCopy = canCopy;
     }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    @Override
+    public Book copy() {
+        return new Book(this.data, this.canCopy); // 創建並回傳新的 MyObject 實例
+    }
+
+    @Override
+    public boolean isCopyable() {
+        return this.canCopy;
+    }
+}
 ```
 
-其UML的結構如圖 \ref{fig_AdaptorCopyable}。
+可以應用 VectorUtity 來複製 Book:
+
+```java
+Vector<Book> originalVector = new Vector<>();
+originalVector.addElement(new Book("Book 1", true));
+originalVector.addElement(new Book("Book 2", false));
+originalVector.addElement(new Book("Book 3", true));
+
+Vector<Book> copiedVector = VectorUtility.copy(originalVector);
+
+// 驗證複製結果
+System.out.println("Original Vector:");
+for (Book obj : originalVector) {
+    System.out.println(obj.getData() + " (Copyable: " + obj.isCopyable() + ")");
+}
+
+System.out.println("\nCopied Vector:");
+for (Book obj : copiedVector) {
+    System.out.println(obj.getData() + " (Copyable: " + obj.isCopyable() + ")");
+}
+
+// 驗證是否是不同的物件實例
+if (!originalVector.isEmpty() && !copiedVector.isEmpty() && originalVector.elementAt(0) != copiedVector.elementAt(0)) {
+    System.out.println("\nVector 中的物件已成功複製 (是不同的實例)。");
+} else {
+    System.out.println("\nVector 中的物件未成功複製 (是相同的實例)。");
+}
+```
+
+執行結果：
+```
+Original Vector:
+Book 1 (Copyable: true)
+Book 2 (Copyable: false)
+Book 3 (Copyable: true)
+
+Copied Vector:
+Book 1 (Copyable: true)
+Book 3 (Copyable: true)
+```
+
+若我們要複製的東西是 `Student`，但 `Student` 並不支援 `Copyable` 介面，但提供一個相似的功能介面— `isValid`。如何能讓 `VectorUtility` 也可以來複製學生的 Vector 呢？
+
+```java
+class Student {
+    private String name;
+    private int age;
+    private boolean valid; // 類似 Copyable 的 isCopyable 功能
+
+    public Student(String name, int age, boolean valid) {
+        this.name = name;
+        this.age = age;
+        this.valid = valid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+}
+```
+
+看看 Adapter 如何幫忙吧！
+
+```java
+class StudentAdapter implements Copyable {
+    private Student student;
+
+    public StudentAdapter(Student student) {
+        this.student = student;
+    }
+
+    @Override
+    public StudentAdapter copy() {
+        if (student.isValid()) {
+            // 只有在 Student 物件 valid 的情況下才創建副本
+            return new StudentAdapter(new Student(student.getName(), student.getAge(), student.isValid()));
+        } else {
+            // 如果 Student 物件 invalid，則不進行複製，可以返回 null 或拋出異常
+            // 這裡選擇返回 null，表示無法複製
+            return null;
+        }
+    }
+
+    @Override
+    public boolean isCopyable() {
+        return student.isValid(); // 使用 Student 的 isValid() 方法
+    }
+
+    // 可以選擇性地提供存取原始 Student 物件的方法
+    public Student getStudent() {
+        return student;
+    }
+}
+```
+
+其 UML 的結構如下：
 
 <img src="https://i.imgur.com/IYWhamv.png" width="500">
 
 FIG: 應用 Adaptor- Copyable
 
 
-而使用VectorUtility來copy的方式如下：
+而使用 `VectorUtility` 來 copy 的方式如下：
 
-```java=
-    Vector v = new Vector( );
-    v.add(new StudentAdapter(new Student("s1")));
-    v.add(new StudentAdapter(new Student("s2")));
-    VectorUtility vu = new VectorUtility( );
-    Vector v2 = vu.copy(v);
+```java
+Vector<StudentAdapter> studentVector = new Vector<>();
+studentVector.addElement(new StudentAdapter(new Student("Alice", 20, true)));
+studentVector.addElement(new StudentAdapter(new Student("Bob", 22, false)));
+studentVector.addElement(new StudentAdapter(new Student("Charlie", 19, true)));
+
+Vector<Copyable> copiedStudentVector = VectorUtility.copy(studentVector);
+
+System.out.println("Original Student Vector:");
+for (StudentAdapter adapter : studentVector) {
+    Student s = adapter.getStudent();
+    System.out.println(s.getName() + " (" + s.getAge() + ", Valid: " + s.isValid() + ")");
+}
+
+System.out.println("\nCopied Student Vector:");
+for (Copyable copyable : copiedStudentVector) {
+    if (copyable instanceof StudentAdapter) {
+        StudentAdapter adapter = (StudentAdapter) copyable;
+        Student s = adapter.getStudent();
+        System.out.println(s.getName() + " (" + s.getAge() + ", Valid: " + s.isValid() + ")");
+    }
+}
 ```
-
-請注意 Vector 內加的物件是一個 StudentAdapter，如此才可以給 VectorUtility 判斷是否可 copy。各位會不會有個疑問：Vector 內放一群 StudentAdapter作 什麼？我的目的應該是放一群 Student 呀？可別忘了 StudentAdapter 內有一個 private 物件 Student，我們只要宣告一個介面讓外界取得到就好了。
 
 ### 14.3.3 StreamReader
 
@@ -512,8 +641,6 @@ Servlet API 中的 `HttpServletRequestWrapper` 和 `HttpServletResponseWrapper`
 
 ## 14.4 Check
 
-好的，這就如同您提供的格式，將這些選擇題轉換如下：
-
 1.  Adaptor 的目的:
     A) 把兩個介面不相容的物件可以溝通合作
     B) 讓一個類別只能產生一個物件
@@ -551,21 +678,8 @@ class AdaptorA2B extends B {
 
 7.  說明 Client, Target, Adaptor, Adaptee 的關係
 
-8.  請設計一個 `A` 到 `B`, `B` 到 `A` 的雙向 Adaptor
 
-```java
-interface A {
-   public void m1();
-}
-interface B {
-   public void op1();
-}
-class AdaptorAB ?1 {
-   ?2
-}
-```
-
-好的，這就為您附上這些選擇題的解答：
+**參考解答：**
 
 1.  **Adaptor 的目的:**
     **解答：A) 把兩個介面不相容的物件可以溝通合作**
@@ -633,57 +747,6 @@ class AdaptorA2B implements B { // ?1 應該是 implements B，因為 Adaptor �
     * **Adaptee (被適配者):** 是一個已經存在的類別，它的介面與客戶端期望的 Target 介面不兼容。
     * **Adaptor (轉接器):** 是一個中間件，它實現了 Target 介面，並在內部封裝了 Adaptee 的實例。當客戶端調用 Adaptor 的 Target 介面方法時，Adaptor 會將這個調用轉換成對 Adaptee 相應方法的調用，從而使得客戶端可以使用 Adaptee 的功能，而無需關心其不兼容的介面。
 
-8.  **請設計一個 `A` 到 `B`, `B` 到 `A` 的雙向 Adaptor**
-
-```java
-interface A {
-   void m1();
-}
-interface B {
-   void op1();
-}
-class AdaptorAB implements A, B { // ?1 應該是 implements A, B
-   private A aObj;
-   private B bObj;
-
-   // 從 A 轉到 B
-   public AdaptorAB(A a) {
-      this.aObj = a;
-   }
-
-   // 從 B 轉到 A
-   public AdaptorAB(B b) {
-      this.bObj = b;
-   }
-
-   @Override
-   public void m1() {
-      if (bObj != null) {
-         bObj.op1();
-      } else {
-         // 處理 bObj 為 null 的情況，例如拋出異常或提供預設行為
-         System.out.println("Error: B object not initialized for A to B adaptation.");
-      }
-   }
-
-   @Override
-   public void op1() {
-      if (aObj != null) {
-         aObj.m1();
-      } else {
-         // 處理 aObj 為 null 的情況
-         System.out.println("Error: A object not initialized for B to A adaptation.");
-      }
-   }
-}
-```
-
-    **解答：**
-    * `?1` 為 `implements A, B` (表示 `AdaptorAB` 同時實現了 `A` 和 `B` 兩個介面)
-    * `?2` 為上述 `AdaptorAB` 類別的完整程式碼。
-
-    **解說：** 這個 `AdaptorAB` 類別通過內部持有 `A` 或 `B` 的實例，並在實現 `B` 的 `op1()` 方法時調用內部 `A` 物件的 `m1()` 方法，以及在實現 `A` 的 `m1()` 方法時調用內部 `B` 物件的 `op1()` 方法，從而實現了雙向的轉接。需要注意的是，在實際使用中，您可能需要更精細的控制和錯誤處理，以確保在需要進行雙向轉接時，內部持有的對象是正確初始化的。更完善的雙向轉接器可能需要更複雜的內部狀態管理。
-
     
 ## 14.5 Exercise
 
@@ -695,21 +758,19 @@ class AdaptorAB implements A, B { // ?1 應該是 implements A, B
 package demo;
 
 public class DemoAdaptor {
-
-	public static void main(String[] args) {
-		A1 a = new AdaptorAB(new BB());
-		a.m1();
-		
-		A1 x = new AA();
-		x.m1();
-		
-		B1 b = new AdaptorAB(new AA());
-		b.op1();
-		
-		B1 y = new BB();
-		y.op1();
-	}
-
+    public static void main(String[] args) {
+        A1 a = new AdaptorAB(new BB());
+        a.m1();
+        
+        A1 x = new AA();
+        x.m1();
+        
+        B1 b = new AdaptorAB(new AA());
+        b.op1();
+        
+        B1 y = new BB();
+        y.op1();
+    }
 }
 
 interface A1 {
@@ -737,77 +798,13 @@ class AdaptorAB implements A1, B1 {
 }
 ```
 
-### 14.5.1 Grade average
-有一類別 School, 內有方法 getAverage(Iterator)  會把 iterator 內的成績加總平均。有一個 Vector 物件 group 內含一些 Grade，但 Vector 無法回傳 iterator 物件，只能回傳 enmeration 物件。我們想用 School 來計算 group 的平均，請利用 adapter 來解決此問題。
+### 14.5.2 Grade average
+有一類別 School, 內有方法 `getAverage(Iterator<Integer>)`  會把 iterator 內的成績加總平均。有一個 Vector 物件 group 內含一些 Grade，但 Vector 無法回傳 `iterator` 物件，只能回傳 `Enumeration` 物件。我們想用 School 來計算 group 的平均，請利用 adapter 來解決此問題。
 
-```java=
-class School {
-   ?
-}
-class AdaptorIE ? {
-   ?
-}
+Hint
+* 誰是 target? `Iterator`
+* 誰是 Adaptee? `Enumeration`
+* Google java api 了解 `Vector`, `Enumeration`, `Iteration` 如何應用
 
-// 以下為 Java API ，作為參考。
-// hasMoreElement() 對應 hasNext(), nextElement() 對應 next()
-interface Enumeration<E> {
-   public boolean hasMoreElement();
-   public E nextElement();
-}
-interface Iterator<E> {
-   public boolean hasNext();
-   public E next();
-}
-```
-
-Hint: 
-```java=
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
-
-public class DemoAdapter {
-
-  public static void main(String[] args) {
-    // TODO Auto-generated method stub
-    ArrayList<Double> g = new ArrayList<Double>();
-    g.add(100.0);
-    g.add(20.0);
-    g.add(50.0);
-    
-    Iterator<Double> it = g.iterator();
-    double grade = School.getAverage(it);
-    System.out.println(grade);
-    
-    Vector<Double> v = new Vector<Double>();
-    v.add(100.0);
-    v.add(20.0);
-    v.add(50.0);
-  }
-}
-
-class School {
-  
-  public static double getAverage(Iterator<Double> it) {
-    
-    double sum=0; int c=0;
-    
-    while (it.hasNext()) {
-      double x = it.next();
-      c++;
-      sum += x;
-    }
-    return sum/c;    
-  }
-  
-}
-
-class AdapterIE implements ? {
-  ?
-}
-```
-
-
-[Hint](https://github.com/nlhsueh/oose24/blob/main/demo/src/adapter/School.java)
+<!-- [Hint](https://github.com/nlhsueh/oose24/blob/main/demo/src/adapter/School.java) -->
 

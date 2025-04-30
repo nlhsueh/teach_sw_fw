@@ -1,0 +1,48 @@
+@startuml
+skinparam componentStyle uml2
+skinparam nodeStyle uml2
+
+package "Java Application" {
+  [JDBC API]
+}
+
+node "JDBC Driver Manager" as DriverManager
+
+package "JDBC Drivers" {
+  [MySQL Driver] as MySQLDriver
+  [PostgreSQL Driver] as PostgreSQLDriver
+  [Oracle Driver] as OracleDriver
+  [SQL Server Driver] as SQLServerDriver
+  note across
+    Each driver implements the JDBC API
+    for a specific database.
+  end note
+}
+
+database "MySQL Database" as MySQLDB
+database "PostgreSQL Database" as PostgreSQLDB
+database "Oracle Database" as OracleDB
+database "SQL Server Database" as SQLServerDB
+
+[JDBC API] -- DriverManager
+DriverManager -- MySQLDriver : uses
+DriverManager -- PostgreSQLDriver : uses
+DriverManager -- OracleDriver : uses
+DriverManager -- SQLServerDriver : uses
+
+MySQLDriver -- MySQLDB : connects to
+PostgreSQLDriver -- PostgreSQLDB : connects to
+OracleDriver -- OracleDB : connects to
+SQLServerDriver -- SQLServerDB : connects to
+
+package "javax.sql" {
+  interface DataSource
+}
+
+[JDBC API] ..> DataSource : uses
+
+note "DataSource (javax.sql)" as DSNote
+DSNote .. DataSource
+DSNote : Provides connection pooling\nand other advanced features.
+
+@enduml

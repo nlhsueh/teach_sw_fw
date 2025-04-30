@@ -107,7 +107,7 @@ Creator -> Product
 
 > :question: ConcreteCreator 內的 factoryMethod() 產生的物件，可否是非 Product 的子類別？
 
-#### 參與者
+### 參與者
 
   
 - Creator (建立者): 宣告Factory Method，回應一個物件型態的Product。

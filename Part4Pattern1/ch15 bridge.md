@@ -426,9 +426,77 @@ Fig: 未使用 Bridge 的結構
 
 ## 15.5 Exercise
 
-### 15.5.1 訊息傳遞系統
+### 15.5.1 Shape
+Shape 應用 `java.awt.Graphics` 來繪製圖，以下為部分程式碼：
 
-請設計一個訊息傳遞系統，訊息傳遞有多種形態：簡單的 (SimpleNotification)、緊急的 (EmergencyNofication)、排程的（ScheduledNotification）。訊息傳遞有多個方法，例如透過 Email（EmailSender）或是 即時訊息傳遞（IMAppSender），這些傳遞都具備 `send()`, `setTime()`, `setPriority()` 等方法。請透過 `Bridge` 設計樣式來模擬設計此系統，注意緊急的通知是可以設定緊急程度的，排程的通知是可以設定排程週期的。
+```java
+class BridgeSwingExample extends JFrame {
 
-### 15.5.2 報表系統
+    private Shape square;
+
+    public BridgeSwingExample() {
+        super("Bridge Pattern in Swing");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(300, 300);
+        setLocationRelativeTo(null);
+
+        // 創建具體的實現
+        ShapeImpl lineDrawer = new LineDrawingShapeImpl();
+
+        // 創建 Refined Abstraction，並將具體實現橋接進來
+        square = new Square(lineDrawer, 50, 50, 100); // (50, 50) 為座標, 100 是邊長
+
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // 繪製正方形
+                square.draw(g);
+            }
+        };
+        add(panel);
+
+        setVisible(true);
+    }
+}
+```
+
+其中實線的做法：
+```java
+class LineDrawingShapeImpl implements ShapeImpl {
+    @Override
+    public void drawLine(Graphics g, int x1, int y1, int x2, int y2) {
+        g.drawLine(x1, y1, x2, y2);
+    }
+}
+```
+
+虛線的實踐方式：
+```java
+class DashedLineShapeImpl implements ShapeImpl {
+    private static final float[] DASH_PATTERN = {5.0f, 5.0f}; // 定義虛線的樣式 (線段長度, 空格長度)
+    private static final BasicStroke DASHED_STROKE = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, DASH_PATTERN, 0.0f);
+
+    @Override
+    public void drawLine(Graphics g, int x1, int y1, int x2, int y2) {
+        Graphics2D g2d = (Graphics2D) g.create(); // 創建一個 Graphics2D 的副本，避免影響原始 Graphics 物件
+        Stroke originalStroke = g2d.getStroke();
+        g2d.setStroke(DASHED_STROKE);
+        g2d.drawLine(x1, y1, x2, y2);
+        g2d.setStroke(originalStroke); // 恢復原始的 Stroke
+        g2d.dispose(); // 釋放 Graphics2D 資源
+    }
+}
+```
+
+請完成
+1. 實線正方形、虛線正方形
+2. 虛線正方形、虛線正方形
+
+
+### 15.5.2 訊息傳遞系統
+
+請設計一個訊息傳遞系統，訊息傳遞有多種形態：簡單的 (`SimpleNotification`)、緊急的 (`EmergencyNofication`)、排程的（`ScheduledNotification`）。訊息傳遞有多個方法，例如透過 Email（`EmailSender`）或是 即時訊息傳遞（`IMAppSender`），這些傳遞都具備 `send()`, `setTime()`, `setPriority()` 等方法。請透過 `Bridge` 設計樣式來模擬設計此系統，注意緊急的通知是可以設定緊急程度的，排程的通知是可以設定排程週期的。
+
+### 15.5.3 報表系統
 請設計一個報表系統，報表可以分為銷售報表、員工績效報表與年度營收報表等; 需要對報表進行格式的轉換以因應不同的用途，可以轉換為 PDF, HTML, 與 Markdown 等格式，這些格式都具備 `convertTable()`, `convertImage()`, `setTitle(int size)` 等功能。銷售報表的 title size 要最大，且先轉 table, 再轉 image。年度營收則 title 小一點，先轉 image 再轉 table。請用 Bridge 來實踐。

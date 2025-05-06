@@ -1,8 +1,8 @@
 ###### tags: `OOSE`
 
-# Ch17 隻手乾坤：Composite
+# Ch16 隻手乾坤：Composite
    
-## 17.1 目的與動機
+## 16.1 目的與動機
 
 
 > 複合設計樣式的目的是要單元物件與複合物件一視同仁, 以降低程式的複雜度。所謂的複合物件就是它可以包含其他的複合物件或單元物件。
@@ -20,14 +20,16 @@ FIG: 繪圖可視為一個 Composite 物件
 - 物件間有複合的關係。
 - 我們不想區別單元物件與複合物件之間的差異，對他們有相同的呼叫方式。 
 
-## 17.2 結構與方法
+## 16.2 結構與方法
 
 <img src="https://i.imgur.com/GEM8amW.png" width="400">
 
 FIG: Composite 結構
 
+[gugu composite](https://refactoring.guru/design-patterns/composite)
 
-## 17.3 程式樣板
+
+## 16.3 程式樣板
 
 Java 已經有很好的集合物件可以幫我處理元件的管理，所以 Composite 內有一個 ArrayList 的物件，執行新增元件、刪除元件、列舉出元件的工作，也就是說，委託給 ArrayList。
 
@@ -95,16 +97,14 @@ class Leaf extends Component {
 }
 ```
 
-> 應用 Composite 畫出圖 \ref{fig:draw} 的 UML 設計
-
 **優點**
 
 - 容易新增新的元件。
 - 讓客戶端的物件設計更為容易，因為不用區分單元物件與複合物件的差異。
 
-## 17.4 範例
+## 16.4 範例
 
-### 17.4.1 GUI 元件範例
+### 16.4.1 GUI 元件範例
 
 #### 方案1：通通不一樣
 
@@ -168,7 +168,7 @@ public class Window {
 
 在第三個方案中，所有的物件都視為 Component 了，統一的介面方法都是 update(), 程式是不是變得更簡潔了？
 
-### 17.4.2 通透與安全
+### 16.4.2 通透與安全
 實作上有兩種選擇：通透與安全。
 
 **通透（Transparent)**：Component 具備 operation 以外，還具備了 add(Component), remove(Component) 等複合物件的方法。如此一來，Component 和 Composite 是沒有差異的，所以稱為 Transparent。但如此一來，Leaf 物件繼承了 add() 的功能顯得奇怪，通常我們會讓它沒有作用：
@@ -188,7 +188,7 @@ if (c instanceOf Composite) {
     ((Composite)c).add(...)
 ```		
 
-### 17.4.3 `Container` 與 `Component`
+### 16.4.3 `Container` 與 `Component`
 
 在 Java 的圖形使用者介面 (GUI) 程式設計中，`java.awt.Container` 和 `java.awt.Component` 體現了 Composite 模式的思想。
 
@@ -231,7 +231,7 @@ public class ContainerCompositeExample {
 
 在這個例子中，`JFrame` 是一個 `Container` (Composite)，它包含了 `JButton` 和 `JLabel` (Leaf)，以及另一個 `JPanel` (Composite)。`JPanel` 又包含了 `JButton` 和 `JTextField` (Leaf)。當 `JFrame` 需要繪製其內容時，它會要求其所有的子 `Component`（包括 `JPanel`）進行繪製，而 `JPanel` 又會進一步要求其子 `Component` 進行繪製。
 
-### 17.4.4 `JTree` 與 `TreeNode`
+### 16.4.4 `JTree` 與 `TreeNode`
 
 在 Swing 的 `JTree` 組件中，樹狀結構的建立和管理正是 Composite 設計模式的典型應用。
 
@@ -302,7 +302,7 @@ public class JTreeCompositeExample {
 
 在這個例子中，`DefaultMutableTreeNode` 實作了 `TreeNode` 介面。`root`、`parent1` 和 `parent2` 是 Composite 節點，因為它們包含其他的 `TreeNode`。`child1`、`child2` 和 `child3` 是 Leaf 節點，因為在這個簡單的例子中它們沒有子節點。`JTree` 可以統一地處理這些節點，例如在展開 `parent1` 時，它會顯示其子節點 `child1` 和 `child2`。
 
-## 17.5 Check
+## 16.5 Check
 
 1. 在 Composite 設計樣式中，不包含哪一個角色
 	- component 
@@ -433,9 +433,9 @@ class Leaf implements Component {
 在 `Composite` 類別中，`update()` 方法會遍歷其包含的所有子 `Component`，並對每個子 `Component` 呼叫其自身的 `update()` 方法。這樣就實現了將更新操作遞迴地應用到整個 Composite 結構中。Composite 本身在遍歷子節點前後也可以包含一些自身的更新邏輯。
 
 
-## 17.6 Exercise
+## 16.6 Exercise
 
-### 17.6.1 目錄與檔案
+### 16.6.1 目錄與檔案
 目錄（Folder）與檔案（File）可以用 Composite 來設計，每一個 File 檔案有檔案大小（size），每一個 Folder 可以加上很多 Folder 或是 File，其檔案大小為其所包含的檔案大小之總和。FileManager 可以對 AbstractFile 詢問其檔案總大小（如下）。請撰寫程式實驗之。
 
 ```java=
@@ -456,7 +456,7 @@ class Folder ? {
 }               
 ```
 
-### 17.6.2 MLB 棒球大聯盟
+### 16.6.2 MLB 棒球大聯盟
 
 用 Composite 設計模式實作 MLB 聯盟與球隊結構。
 
@@ -703,4 +703,6 @@ public class MLBTreeExample extends JFrame {
     }
 }
 ```
+思考：
+* 為什麼 `MLBComponent` 中的 `add()`, `remove()`, `getChild()` 要拋出例外
 

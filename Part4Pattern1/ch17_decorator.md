@@ -20,14 +20,14 @@ FIG: 由框和捲軸而成的 `TextView`
 為了提供各種可能的`TextView`，我們必須建立12種`TextView`的子類別。這種方法不但繁瑣，無法提供動態的物件生成，甚至連命名都很困難。
 
 
-|                                   |                                       |
-| --------------------------------- | ------------------------------------- |
-| `TextView-Plain`                  | `TextView-Plain-Vertical`             |
-| `TextView-Plain-Horizontal`       | `TextView-Plain-Vertical-Horizontal`  |
-| `TextView-3D`                     | `TextView-3D-Vertical`                |
-| `TextView-3D-Horizontal`          | `TextView-3D-Vertical-Horizontal`     |
-| `TextView-Fancy`                  | `TextView-Fancy-Vertical`             |
-| `TextView-Fancy-Horizontal`       | `TextView-Fancy-Vertical-Horizontal`  |
+|                             |                                      |
+| --------------------------- | ------------------------------------ |
+| `TextView-Plain`            | `TextView-Plain-Vertical`            |
+| `TextView-Plain-Horizontal` | `TextView-Plain-Vertical-Horizontal` |
+| `TextView-3D`               | `TextView-3D-Vertical`               |
+| `TextView-3D-Horizontal`    | `TextView-3D-Vertical-Horizontal`    |
+| `TextView-Fancy`            | `TextView-Fancy-Vertical`            |
+| `TextView-Fancy-Horizontal` | `TextView-Fancy-Vertical-Horizontal` |
 
 
 ### 17.2.2 方案 2: Strategy 樣式
@@ -305,21 +305,21 @@ public class InputStreamExample {
 
 > Composite 和 Decorator 有何異同？
 
-## 17.CHECK
+## 17.CHK
 
 1. Java 的 `FileInputStream` 用了 Decorator 設計樣式，其中 `FilterInputStream` 相當於此樣式中的
 
-A) Client
-B) Decorator
-C) ConcreteDecorator
-D) Component
-E) ConcreteComponent
+    A) Client
+    B) Decorator
+    C) ConcreteDecorator
+    D) Component
+    E) ConcreteComponent
 
 2. 關於 Decorator pattern, 下列何者為錯
 
-A) Decorator 可以包含一個 Decorator 物件
-B) Decorator 和 ConcreteComponent 有部分共同的方法，宣告在 Component 中
-C) Decorator 和 ConcreteComponent 都可以包含 Component
+    A) Decorator 可以包含一個 Decorator 物件
+    B) Decorator 和 ConcreteComponent 有部分共同的方法，宣告在 Component 中
+    C) Decorator 和 ConcreteComponent 都可以包含 Component
 
 
 3. 請說明 Strategy 和 Decorator 設計樣式的異同。

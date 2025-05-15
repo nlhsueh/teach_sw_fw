@@ -3,6 +3,8 @@
 *.iml
 *.iws
 
+*.HW
+
 # Compiled class files
 *.class
 

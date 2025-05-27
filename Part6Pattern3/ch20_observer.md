@@ -183,7 +183,7 @@ public class Fruit extends Observable {
 接著來看看 `Observer` 這一端：
 
 ```java=
-public class Monkey implements `Observer` {
+public class Monkey implements Observer {
     float price;
     public void update(Observable obj, Object newValue) {
        if (newValue instanceof Float) {
@@ -552,7 +552,7 @@ class Stock extends Observable {
 
 ### 20.ex01a Stock
 股票（`Stock`）物件內包含上次價格、現價與成交量三個屬性，現價與成交量每個2秒變動一次（請隨機產生在 7%, 10% 內的價格與成交量），請應用 `Observer` 設計樣式設計以下三個呈現：
-   - `CurrentPriceBoard`: 呈現昨日價格 (Y)、目前價格 (C)、及波動百分比 (`(C-Y)/C`)。
+   - `CurrentPriceBoard`: 呈現昨日價格 (`Y`)、目前價格 (`C`)、及波動百分比 (`(C-Y)/C`)。
    - `AmountBoard`: 呈現現價、成交量。
    - `GreenRedBoard`: 最近三次的價格，如果連三漲，背景設為綠色，如果連三跌，背景設為紅色。否則維持原色（白色）。
 	

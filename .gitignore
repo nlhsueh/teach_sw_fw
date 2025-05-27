@@ -5,6 +5,8 @@
 
 *.HW
 
+exam/
+
 # Compiled class files
 *.class
 

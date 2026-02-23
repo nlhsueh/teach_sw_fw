@@ -147,6 +147,19 @@ public class Main {
      int a = i; // 將 Integer 物件自動拆箱成 int 值
      ```
 
+#### **補充觀念：記憶體模型（Stack vs. Heap）**
+為什麼原生型態與類別型態的行為不同？這涉及到 Java 的記憶體操作方式：
+
+- **堆疊（Stack）：** 
+  - 儲存 **局部變數（Local Variables）** 與 **方法呼叫（Method Calls）**。
+  - 當你宣告 `int a = 10;` 時，數值 `10` 會直接存在 Stack 中。
+- **堆積（Heap）：** 
+  - 儲存所有 **物件實體（Object Instances）**。
+  - 當你執行 `Person p = new Person("Alice");` 時，物件實體存在 Heap，而變數 `p` 存在 Stack 中，它儲存的是指向 Heap 的 **記憶體位址（Reference）**。
+
+> [!NOTE]
+> 這解釋了為什麼將一個物件變數傳遞給方法時，方法內部的修改會影響原物件——因為傳遞的是「位址」，兩者指向同一個實體。
+
 3. **優點與應用：**  
    - **集合應用：** Java 的集合框架（如 `ArrayList`）只能處理物件，無法直接存放原生型態，因此必須使用包裝類別。
    - **工具方法：** 每個包裝類別都提供了許多實用的方法，例如解析字串成數字（`Integer.parseInt("123")`）、數學運算、比較等。
@@ -216,12 +229,6 @@ void paintCar(CarData car, String newColor) {
 ```
 在**物件導向**的設計中，資料和行為被封裝在一起：
 ```java
-class Car {
-    String brand;
-    String color;
-
-    void repaint(String newColor) {
-        this.color = newColor;
     }
 }
 ```
@@ -231,6 +238,30 @@ class Car {
 | **資料與行為** | 資料與操作方法分開         | 物件內部包含資料與行為 |
 | **可擴展性**   | 變更功能時，須修改多個函式 | 只需修改類別內的方法   |
 | **封裝性**     | 易暴露內部結構             | 良好的封裝，降低耦合   |
+
+---
+
+### **1.1.4b 現代 Java 專用：Java Records (Java 14+)**
+在現代 Java 開發中，若一個類別只是單純地用來「攜帶資料」（Data Carrier），例如儲存汽車資訊或學生資料，我們可以使用 **Record** 來簡化程式碼。
+
+Record 會自動生成屬性（private final 且不可變）、建構子、Getter、`toString()`、`equals()` 與 `hashCode()`。
+
+📌 **範例：使用 Record 定義汽車資料**
+```java
+public record CarRecord(String brand, String color) { }
+
+public class Main {
+    public static void main(String[] args) {
+        CarRecord myCar = new CarRecord("Toyota", "紅色");
+        
+        // 注意：Record 的 Getter 命名方式是直接用屬性名，而不是 getBrand()
+        System.out.println(myCar.brand()); 
+        System.out.println(myCar); // 自動生成漂亮的 toString()
+    }
+}
+```
+> [!TIP]
+> 當你只需要設計一個簡單的資料結構，而不需要複雜的行為（Behavior）時，Record 是非常優雅的選擇。
 
 ---
 
@@ -2679,10 +2710,10 @@ Java 目前有許多版本，每個版本的主要功能更新和改善都會有
 - **使用建議**：Java 17 是最新的 LTS 版本，適合長期使用的項目，並且比 Java 8 有更多現代化的功能。
 
 #### 下載建議：在 IntelliJ 上選擇合適的版本
-- **對於大多數學習者**：選擇 **Java 8** 或 **Java 11** 會是比較理想的選擇，這兩個版本都是 LTS 版本，適合穩定開發和學習。
-- **對於新功能需求**：如果你的學習或開發專案需要新的語法和功能，可以選擇 **Java 17**，這是目前的 LTS 版本，並且包含了更多現代化的特性。
+- **對於大多數學習者**：強烈建議選擇 **Java 21 (LTS)** 或 **Java 17 (LTS)**。Java 21 是目前最穩定的長期支持版本，包含了許多現代特性且與多數框架相容。
+- **Java 8 (LTS)**：除非是維護極度老舊的系統，否則不建議初學者從此版本開始，因為許多現代語法（如 Records, var, 簡化 switch）在此版本皆無法使用。
 
-在 IntelliJ 中，你可以選擇安裝 JDK 8、11 或 17，並根據需要設置為專案的 JDK 版本。在創建新專案時，選擇你所需要的 JDK 版本即可。
+在 IntelliJ 中，你可以透過 `File -> Project Structure -> SDKs -> Add SDK` 直接下載 Amazon Corretto 或 Oracle JDK。
 
 Java 目前的版本確實已經進入到了 **Java 23**，並且從 **Java 17** 開始，Oracle 的發佈策略也改變了，Java 在 17 到 23 之間並沒有 LTS（長期支持）版本。這些版本都是「非 LTS」版本，即每個版本的支持周期較短，通常為半年。
 

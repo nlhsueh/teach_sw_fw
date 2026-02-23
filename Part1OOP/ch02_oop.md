@@ -57,7 +57,7 @@ class Bike extends Vehicle {
     this.seatHeight = seatHeight;
   }
 
-  void setHeight(int) {
+  void setHeight(int seatHeight) {
     this.seatHeight = seatHeight;
   }
 }
@@ -245,6 +245,25 @@ class Car extends Vehicle {
 抽象類別是一個半成品，等待子類別去完成。
 :::
 
+---
+
+### **2.1.6 現代 Java 特性：密封類別 (Sealed Classes, Java 17+)**
+在傳統繼承中，任何類別只要不是 `final` 都可以被繼承。Java 17 引入了 **Sealed Classes**，讓開發者可以精確限制哪些類別可以繼承自己。
+
+📌 **範例：限制 Shape 的子類別**
+```java
+// 只允許 Circle 和 Square 繼承 Shape
+public sealed class Shape permits Circle, Square { }
+
+public final class Circle extends Shape { /* ... */ }
+public final class Square extends Shape { /* ... */ }
+
+// 如果嘗試建立其他子類別（如 Triangle），將會編譯錯誤
+// public class Triangle extends Shape { } 
+```
+> [!TIP]
+> 當你希望類別階層是有限且可控的（例如：支付方式只能是信用卡或轉帳），Sealed Classes 是最佳工具。
+
 ### 2.1.test 觀念測驗
 
 #### test.2.1.01
@@ -426,12 +445,20 @@ c.op1(new B()) => print B
 
 汽車的例子：
 ```java=
-class VehicleController {
-  void manage(Vehicle v) {
-     v.turnLeft();
   }   
 }
 ``` 
+
+---
+
+### **2.2.1 進階觀念：編譯時型態 vs. 執行時型態**
+理解多型的關鍵在於區分「變數的型態」與「物件的型態」。
+
+- **編譯時型態 (Compile-time Type)**：變數宣告時的型態（例如 `Vehicle v`）。編譯器以此決定變數能呼叫哪些方法。
+- **執行時型態 (Runtime Type)**：程式執行時實際上由 `new` 產生的物件型態（例如 `new Car()`）。
+
+**動態綁定 (Dynamic Binding)**：
+當呼叫 `v.turnLeft()` 時，即便 `v` 的編譯時型態是 `Vehicle`，Java 也會根據執行時型態（`Car`）來決定要執行哪一個版本的 `turnLeft()`。這就是多型的核心威力。
 
 ### 2.2.test 觀念測驗
 
@@ -522,7 +549,10 @@ interface E {
 }
 ```
 
-m1() m2() 都是抽象的，但我們不需要寫 abstract。請注意介面內只宣告它所提供的方法，及這些方法的使用方式(signature，即該方法的參數型態即傳回型態)。所有的方法內皆沒有實作。當一類別實作一介面時，所使用的關鍵字是 `implements`。
+m1() m2() 預設都是 `public abstract` 的抽象方法，不需要顯式宣告。
+
+> [!NOTE]
+> **現代 Java 補充**：自 Java 8 起，介面可以使用 `default` 關鍵字提供預設實作，並支援 `static` 方法；Java 9 起更支援 `private` 方法供內部共用邏輯。這打破了以前「介面完全不能有實作」的限制。
 
 當一個類別實踐一個介面，表示它必須實踐這個規格。D 必定要實作 m1() 與 m2()，因為這兩個方法都宣告在介面 E 中。
 
@@ -1163,6 +1193,26 @@ NNEntity <|-- String
 * `super().__init__()` 來呼叫父類別的建構子
 * `@abstractmethod` 來表示抽象類別，要 import `abstractmethod`; 程式碼內為 `pass`
 * 繼承 `ABC` 表示設計一個介面。ABC 為 `Abstract Base Class`
+
+#### **Python 特性：多重繼承 (Multiple Inheritance)**
+與 Java 不同，Python 允許一個類別同時繼承多個父類別。這提供了極大的靈活性，但也需要注意 **MRO (Method Resolution Order)** 順序。
+
+```python
+class Swimmer:
+    def swim(self):
+        print("Swimming...")
+
+class Runner:
+    def run(self):
+        print("Running...")
+
+class Athlete(Swimmer, Runner): # 同時繼承兩個父類別
+    pass
+
+a = Athlete()
+a.swim()
+a.run()
+```
 
 以 `Person` 為例，製作一個抽象類別，其下有 `Engineer` 及 `Manager` 兩個子類別，來說明繼承：
 

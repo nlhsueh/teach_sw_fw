@@ -2,16 +2,34 @@
 .idea/
 *.iml
 *.iws
+out/
 
-*.HW
+# VS Code files
+.vscode/
 
-exam/
+# Python files
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# Maven & Gradle
+target/
+.gradle/
+build/
+*.gradle.kts
 
 # Compiled class files
 *.class
 
 # Log files
 *.log
+hs_err_pid*
+replay_pid*
 
 # BlueJ files
 *.ctxt
@@ -19,7 +37,7 @@ exam/
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files #
+# Package Files
 *.jar
 *.war
 *.nar
@@ -28,24 +46,15 @@ exam/
 *.tar.gz
 *.rar
 
-# Virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
-
-# Maven target directory
-target/
-
-# Gradle build directory
-.gradle/
-build/
-
-# IntelliJ-specific Gradle cache
-.gradle/ 
-*.gradle.kts
-
-# Node.js (if applicable)
-node_modules/
-
 # OS-specific files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+thumbs.db
 Thumbs.db
+
+# Project specific
+exam/
+*.HW

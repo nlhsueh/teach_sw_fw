@@ -1,4 +1,4 @@
-package swfw;
+package swfw.generics;
 
 public class GenericMethodExample {
     // 定義一個泛型方法
@@ -10,8 +10,8 @@ public class GenericMethodExample {
     }
 
     public static void main(String[] args) {
-        Integer[] intArray = {1, 2, 3, 4, 5};
-        String[] strArray = {"A", "B", "C"};
+        Integer[] intArray = { 1, 2, 3, 4, 5 };
+        String[] strArray = { "A", "B", "C" };
 
         printArray(intArray);
         printArray(strArray);
@@ -21,6 +21,6 @@ public class GenericMethodExample {
     }
 
     public double toString(int x) {
-        return (double)x;
+        return (double) x;
     }
 }

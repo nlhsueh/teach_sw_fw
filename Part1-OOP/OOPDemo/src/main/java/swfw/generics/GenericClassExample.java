@@ -1,4 +1,4 @@
-package swfw;
+package swfw.generics;
 
 public class GenericClassExample {
     public static void main(String[] args) {
@@ -39,5 +39,3 @@ class MathUtil<T extends Number> {
         return number.doubleValue() * number.doubleValue();
     }
 }
-
-

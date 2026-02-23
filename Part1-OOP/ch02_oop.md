@@ -317,7 +317,12 @@ public final class Square extends Shape { /* ... */ }
 
 ---
 
+<details>
+<summary>👉 點擊查看答案</summary>
+
 參考答案：B, A, B, A, B  
+</details>
+
 
 ---
 

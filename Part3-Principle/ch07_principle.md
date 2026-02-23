@@ -28,9 +28,8 @@
 
 ## 7.2 低耦高聚原則
 
-:::success
-不同模組之間的相依性（耦合性）應該要儘量的低; 同模組內成員相關性（內聚力）要儘量的高。
-:::
+> [!TIP]
+> 不同模組之間的相依性（耦合性）應該要儘量的低; 同模組內成員相關性（內聚力）要儘量的高。
 
 #### 耦合性
 耦合性可以是低耦合性（或稱為鬆散耦合），也可以是高耦合性（或稱為緊密耦合）。以下列出一些耦合性的分類，從高到低依序排列 ：
@@ -98,9 +97,8 @@ Control Coupling
 
 ## 7.3 無雙無對：不重複原則
 
-:::success
-資料或是計算應該只存在一個地方，不要造成重複。
-:::
+> [!TIP]
+> 資料或是計算應該只存在一個地方，不要造成重複。
 
 重複是邪惡的，很容易出錯。例如我們把一筆成績資料存在兩個不同的檔案 $a_1$ 及 $a_2$，分別給 $m_1$ 與 $m_2$ 兩個模組來讀取，當資料修改成績時時必須同時修改 $a_1$ 及 $a_2$ 兩個檔案- 一開始工程師可能還會記得這件事，但時間一久或交接沒有確實，就很容易忘了同步，造成程式的錯誤。不重複原則（==Don't Repeat Yourself Principle; DRY==） 的原則就是不要描述再軟體設計時，不論是資料或是計算，都應該儘量的避免重複。
 
@@ -160,16 +158,14 @@ void setTheta(double theta) {
 
 ## 7.4 私財勿露：資訊隱藏原則
 
-:::success
-不要公開多餘的資訊與服務。
-:::
+> [!TIP]
+> 不要公開多餘的資訊與服務。
 
 
 當系統逐漸變大，資訊隱藏原則能夠幫助我們掌控系統的複雜度。以一個 Client-Server 架構來說明資訊隱藏的概念，Client 根據規格對伺服器提出一個請求，伺服器給予 Client 一個適當的回應，此時伺服器端提供 Client 所需的資訊、知識、或者運算，客戶端不需要知道伺服器端如何執行運算，只要能夠取得它所需的資訊即可，此時伺服器端對客戶端做運算方法的資訊隱藏。
 
-:::success
-Each module has a secret design involves a series of decision: for each such decision, wonder who needs to know and who can be kept in the dark.
-:::
+> [!TIP]
+> Each module has a secret design involves a series of decision: for each such decision, wonder who needs to know and who can be kept in the dark.
 
 
 ### Sort 範例
@@ -194,9 +190,8 @@ public void swap(int x; int y) {
 
 ## 7.5 生人勿語：迪密特原則
 
-:::success
-每個單元只和它的朋友交談，不和陌生單元交談。
-:::
+> [!TIP]
+> 每個單元只和它的朋友交談，不和陌生單元交談。
 
 
 > Law of Demter: ``Only talk to your immediate friends"- *Ian Holland*, 1987
@@ -227,9 +222,8 @@ class Register {
 
 ## 7.6 不變應萬變：開畢原則
 
-:::success
-在不修改程式的情況下擴充或修改程式。
-:::
+> [!TIP]
+> 在不修改程式的情況下擴充或修改程式。
 
 開畢原則（**Open-Closed Principle**的意義即為「擴充程式優於修改程式」。當我們完成一個程式或類別後，日後有很大的可能性要去擴充它的功能，這時候大部分的程式設計師會將原有的程式叫出來修改，修改程式會帶來許多問題：
 
@@ -375,33 +369,32 @@ public class Part {
 
 <!-- ![](https://i.imgur.com/db1bF3L.png)
  -->
-```plantuml
-@startuml
-class Part {
-    - partName: String
-    ---
-    +setPrice(double)
-    +getPrice(): double
-    +setPricePolicy(PricePolicy)
-}
+```mermaid
+classDiagram
+    class Part {
+        -partName: String
+        +setPrice(double)
+        +getPrice() double
+        +setPricePolicy(PricePolicy)
+    }
 
-abstract class PricePolicy {
-    - basePrice: double
-    ---
-    +setPrice(double)
-    +getPrice(): double    
-}
+    class PricePolicy {
+        <<abstract>>
+        -basePrice: double
+        +setPrice(double)
+        +getPrice() double
+    }
 
-class SalePrice {
-    +setDiscount()
-    +getPrice() {override}
-}
+    class SalePrice {
+        +setDiscount()
+        +getPrice()
+    }
 
+    class ChrismaxPolicy
 
-Part o-> PricePolicy
-PricePolicy <|--SalePrice
-PricePolicy <|--ChrismaxPolicy
-@enduml
+    Part o-- PricePolicy
+    PricePolicy <|-- SalePrice
+    PricePolicy <|-- ChrismaxPolicy
 ```
 
 

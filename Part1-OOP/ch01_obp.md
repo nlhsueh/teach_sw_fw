@@ -558,9 +558,8 @@ D)`this` 不能在 `static` 方法內使用。
 
 ### 1.3.1. 方法的基本結構
 
-:::info
-方法是物件間溝通的介面。
-:::
+> [!NOTE]
+> 方法是物件間溝通的介面。
 
 Java 方法的基本語法如下：
 ```java
@@ -1465,12 +1464,11 @@ public class Sample {
 }
 ```
 
-:::danger
-以下幾點注意：
-
-* 靜態方法不可存取物件變數 (instance variable)
-* 靜態方法不可呼叫物件方法 (instance method)
-:::
+> [!CAUTION]
+> 以下幾點注意：
+> 
+> * 靜態方法不可存取物件變數 (instance variable)
+> * 靜態方法不可呼叫物件方法 (instance method)
 
 ---
 

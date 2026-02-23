@@ -455,13 +455,12 @@ EncryptString(Encryption e) {
 }
 ```
 
-:::success
-:basketball: Exercise: 不同種類的員工
-People 的例子中，People 分為 Engineer 和 Manager，請繪製 class diagram
-* People 有姓名，身高體重等屬性; 有獲取 bmi 的方法
-* Engineer 有專長的屬性，有加入計畫的方法
-* Manager 有部門的屬性，有加入下屬的方法
-:::
+> [!TIP]
+> :basketball: Exercise: 不同種類的員工
+> People 的例子中，People 分為 Engineer 和 Manager，請繪製 class diagram
+> * People 有姓名，身高體重等屬性; 有獲取 bmi 的方法
+> * Engineer 有專長的屬性，有加入計畫的方法
+> * Manager 有部門的屬性，有加入下屬的方法
 
 ### 4.2.2 介面實作
 
@@ -762,55 +761,54 @@ PlantUML 可在多個環境下執行
 請根據上述描述，使用 UML Class Diagram 表示類別之間的關係。
 
 ### EX4.02 校園成績
-:::success
-:basketball: University Gradebook
-
-* 一個成績系統，內有類別 Member, Teacher, Student, GradeBook, Course, University 等類別。
-* 學校可以聘僱老師，老師可以開課，學生可以進入學校、選課，老師可以改分數成績將之紀錄於成績單，學校可以列出所有成績，找出所有班級不及格的學生及第一名的學生，學校成員包含老師與學生，都會有姓名與帳號，同時可以查看學校有開哪些課。
-* 以下為情境程式碼，請依據設計個類別，並用 UML 畫出此靜態結構圖。
-
-```java
-University fcu = new University("FCU");
-Teacher nick = new Teacher("Nick");
-Student albert = new Student("albert");
-Student jie = new Student("jie");
-
-fcu.hire(nick, "t01"); // t01 為證號
-nick.offer(java);
-albert.enter(fcu, "s01"); // s01 為學號
-jie.enter(fcu, "s02");
-fcu.showMembers();
-fcu.showCourses();
-
-albert.takeCourse(java);
-jie.takeCourse(java);
-
-nick.score(java, jie, 90);
-nick.score(java, albert, 100);
-
-fcu.listGrade();
-fcu.showTop();
-fcu.showNoPass();
-```
-逐步開發，先繪製 UML, 在寫程式碼
-* (v01) Establish the classes- Student, Teacher 及 Course 
-    * the have *names*, *emails*, *course_name*, and *credit* attributes
-* (v02) Teachers can offer many Courses
-    * the *Association* relationship between them
-    * Teacher.offer(Course); Teacher.showCourse()
-    * use *ArrayList* to keep the courses a teacher offer
-* (v03) Students can take many Courses
-    * many-to-many navigation between Student and Course
-    * Student.takeCourse(Course)
-    * Course.showCourseInfo()
-* (v04) Teachers can *score* a Student's grade in a Course
-    * Teacher.score(Course, Stduent, int)
-    * Student.showGrade() to show all courses he takes and the grades.
-    * modify Course.toString() to show students' grade
-    * a *use* relationship between Teacher and Course, Student.
-* (v05) Generalize Student and Teacher to build a class- Member, which as the attributes of name, email, and their getter/setter/toString
-    * A generalization relationship between Member and Teacher, Student
-:::
+> [!TIP]
+> :basketball: University Gradebook
+> 
+> * 一個成績系統，內有類別 Member, Teacher, Student, GradeBook, Course, University 等類別。
+> * 學校可以聘僱老師，老師可以開課，學生可以進入學校、選課，老師可以改分數成績將之紀錄於成績單，學校可以列出所有成績，找出所有班級不及格的學生及第一名的學生，學校成員包含老師與學生，都會有姓名與帳號，同時可以查看學校有開哪些課。
+> * 以下為情境程式碼，請依據設計個類別，並用 UML 畫出此靜態結構圖。
+> 
+> ```java
+> University fcu = new University("FCU");
+> Teacher nick = new Teacher("Nick");
+> Student albert = new Student("albert");
+> Student jie = new Student("jie");
+> 
+> fcu.hire(nick, "t01"); // t01 為證號
+> nick.offer(java);
+> albert.enter(fcu, "s01"); // s01 為學號
+> jie.enter(fcu, "s02");
+> fcu.showMembers();
+> fcu.showCourses();
+> 
+> albert.takeCourse(java);
+> jie.takeCourse(java);
+> 
+> nick.score(java, jie, 90);
+> nick.score(java, albert, 100);
+> 
+> fcu.listGrade();
+> fcu.showTop();
+> fcu.showNoPass();
+> ```
+> 逐步開發，先繪製 UML, 在寫程式碼
+> * (v01) Establish the classes- Student, Teacher 及 Course 
+>     * the have *names*, *emails*, *course_name*, and *credit* attributes
+> * (v02) Teachers can offer many Courses
+>     * the *Association* relationship between them
+>     * Teacher.offer(Course); Teacher.showCourse()
+>     * use *ArrayList* to keep the courses a teacher offer
+> * (v03) Students can take many Courses
+>     * many-to-many navigation between Student and Course
+>     * Student.takeCourse(Course)
+>     * Course.showCourseInfo()
+> * (v04) Teachers can *score* a Student's grade in a Course
+>     * Teacher.score(Course, Stduent, int)
+>     * Student.showGrade() to show all courses he takes and the grades.
+>     * modify Course.toString() to show students' grade
+>     * a *use* relationship between Teacher and Course, Student.
+> * (v05) Generalize Student and Teacher to build a class- Member, which as the attributes of name, email, and their getter/setter/toString
+>     * A generalization relationship between Member and Teacher, Student
 
 ### EX4.03 故事導向物件設計
 Story and Object Model

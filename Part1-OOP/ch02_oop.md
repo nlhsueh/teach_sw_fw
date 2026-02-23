@@ -6,13 +6,12 @@
 
 ## 2.1 虛虛實實：抽象與繼承
 
-:::success
-* 何謂繼承，如何應用？
-* 繼承時子類別該如何設計建構子？
-* 父類別與子類別的宣告與生成該注意什麼？型態的轉換規則為何？
-* 子類別該如何保存父類別既有功能下延伸功能？
-* 抽象類別、抽象方法的意義為何？使用時機為何？
-:::
+> [!TIP]
+> * 何謂繼承，如何應用？
+> * 繼承時子類別該如何設計建構子？
+> * 父類別與子類別的宣告與生成該注意什麼？型態的轉換規則為何？
+> * 子類別該如何保存父類別既有功能下延伸功能？
+> * 抽象類別、抽象方法的意義為何？使用時機為何？
 
 ### 2.1.1 類別繼承
 
@@ -36,9 +35,8 @@ b.m2(); // => ok
 
 A 稱為父類別，B 稱為子類別
 
-:::info
-子類別的物件生成時，其建構子會呼叫父類別建構子。
-:::
+> [!NOTE]
+> 子類別的物件生成時，其建構子會呼叫父類別建構子。
 
 
 ```java=
@@ -65,7 +63,9 @@ class Bike extends Vehicle {
 
 :question: 上述程式會產生編譯錯誤，為什麼？
 
-:::spoiler 提示
+<details>
+<summary>提示</summary>
+
 父類別並沒有不帶參數的建構子。需改為：
 ```java
   public Bike(int speed, int seatHeight) {
@@ -73,7 +73,7 @@ class Bike extends Vehicle {
     this.seatHeight = seatHeight;
   }
 ```
-:::
+</details>
 
 
 ### 2.1.2 方法覆蓋
@@ -127,9 +127,8 @@ Engineer b = (Engineer)a; //downcasting, compiler, runtime ok
 
 Engineer 繼承 Person 後具備 Person 的特性，所以 Engineer 可以做 Person 所有的事，反之 Person 無法做所有 Engineer 的事。
 
-:::info
-B b = new A()：把一個 弱A 當成一個 強B，產生編譯錯誤。
-:::
+> [!NOTE]
+> B b = new A()：把一個 弱A 當成一個 強B，產生編譯錯誤。
 
 例子：
 
@@ -241,9 +240,8 @@ class Car extends Vehicle {
 }
 ```
 
-:::info
-抽象類別是一個半成品，等待子類別去完成。
-:::
+> [!NOTE]
+> 抽象類別是一個半成品，等待子類別去完成。
 
 ---
 
@@ -407,8 +405,6 @@ public class FruitParser extends StringTokenizer {
     }
 }
 ```
-:::
-
 
 ## 2.2 一法多形：多型
 
@@ -445,6 +441,9 @@ c.op1(new B()) => print B
 
 汽車的例子：
 ```java=
+class VehicleController {
+  void manage(Vehicle v) {
+     v.turnLeft();
   }   
 }
 ``` 
@@ -497,9 +496,12 @@ public class Main {
      }
 }
 ```
-:::spoiler 提示
+<details>
+<summary>提示</summary>
+
 子類別會自動的呼叫父類別的預設建構子。所以會印出 hi
-:::
+
+</details>
 
 #### test2.2.03
 **回答以下問題：**
@@ -574,11 +576,10 @@ class Client { //Client 是介面的使用者
 ```
 
 
-:::info
-* 能做什麼，是類別
-* 該做什麼，是介面
-* 能做什麼，又該做什麼，是抽象類別
-:::
+> [!NOTE]
+> * 能做什麼，是類別
+> * 該做什麼，是介面
+> * 能做什麼，又該做什麼，是抽象類別
 
 ```plantuml
 interface Vehicle {
@@ -618,10 +619,9 @@ class Bike extends Vehicle {
 
 ### 介面實踐與使用
 
-:::info
-* 一個好的建築，需要有一個人會蓋，一個人會欣賞。
-* 一個介面，需要有類別去實作，也需要有 client 去使用。
-:::
+> [!NOTE]
+> * 一個好的建築，需要有一個人會蓋，一個人會欣賞。
+> * 一個介面，需要有類別去實作，也需要有 client 去使用。
 
 
 只要能實踐 E 的物件， m1() 都可以呼叫使用。
@@ -632,13 +632,11 @@ class Bike extends Vehicle {
 * extends 享受到 code reuse 的好處，但 implements 沒有（因為 interface 內沒有程式碼），它只有被規範**要去履行介面所定義的功能**。
 
 
-:::info
-他一生下來，就背負著「皇帝」的使命，對它來說，是一種責任，一種規範。從這個觀點來看，皇命是一個介面（規格）實踐。
-:::
+> [!NOTE]
+> 他一生下來，就背負著「皇帝」的使命，對它來說，是一種責任，一種規範。從這個觀點來看，皇命是一個介面（規格）實踐。
 
-:::info
-他一生下來，就擁有龐大的繼承資源，即使什麼都不會做，很多是還是順理成章的完成了。從這個觀點來看，皇命是一個資源的繼承。
-:::
+> [!NOTE]
+> 他一生下來，就擁有龐大的繼承資源，即使什麼都不會做，很多是還是順理成章的完成了。從這個觀點來看，皇命是一個資源的繼承。
 
 
 ### 2.3.1 多重繼承
@@ -691,9 +689,8 @@ public class G extends C implements E, F {
 
 如果要比較的不是一般數字呢？
 
-:::info
-一般化：整數比較 $\Longrightarrow$ 物件比較
-:::
+> [!NOTE]
+> 一般化：整數比較 $\Longrightarrow$ 物件比較
 
 #### Comparable 介面
 
@@ -751,37 +748,36 @@ class Fruit implements Comparable {
 } 
 ```
 
-```plantuml
-@startuml
-interface Comparable {
-    + boolean compare()
-}
+```mermaid
+classDiagram
+    class Comparable {
+        <<interface>>
+        +boolean compare()
+    }
 
-class Fruit implements Comparable {}
-class Student implements Comparable {}
-class Book implements Comparable {}
+    class Fruit
+    class Student
+    class Book
 
-
-@enduml
+    Comparable <|.. Fruit
+    Comparable <|.. Student
+    Comparable <|.. Book
 ```
 
 設計一個 Student 的類別，也透過 `Comparable` 介面、`Util.best` 來比較學生（以學生的成績作為比較的基準）。
 
-:::warning
-Student 和 Fruit 都實踐了 `Comparable`，那 Student 可以和 Fruit 相互比較嗎？如果不能，上述的程式需要如何修改？
-:::
+> [!WARNING]
+> Student 和 Fruit 都實踐了 `Comparable`，那 Student 可以和 Fruit 相互比較嗎？如果不能，上述的程式需要如何修改？
 
-:::warning
-上述的程式的優點為何？從 reuse 的角度來看，我們 reuse 了什麼？
-:::
+> [!WARNING]
+> 上述的程式的優點為何？從 reuse 的角度來看，我們 reuse 了什麼？
 
-:::success
-:thinking_face: Collections.sort()
-
-Study [This example](https://medium.com/@thecodebean/java-object-sorting-explained-using-comparable-and-comparator-03b93b988f75)
-
-Think: how the Java API design the framework?
-:::
+> [!TIP]
+> :thinking_face: Collections.sort()
+> 
+> Study [This example](https://medium.com/@thecodebean/java-object-sorting-explained-using-comparable-and-comparator-03b93b988f75)
+> 
+> Think: how the Java API design the framework?
 
 ### 2.3.3 介面內的常數
 
@@ -847,13 +843,11 @@ pq  pqab   pqxy   pqpq
 ```
 
 
-:::info
-一般化：9\*9 $\Longrightarrow$ N\*N $\Longrightarrow$ 物件 **R** 物件
-:::
+> [!NOTE]
+> 一般化：9\*9 $\Longrightarrow$ N\*N $\Longrightarrow$ 物件 **R** 物件
 
-:::info
-以下是局部的程式碼，該如何設計 NNEntity? 整數 (NNInteger)、字串 (NNString)、顏色 (NNColor) 又該如何設計？
-:::
+> [!NOTE]
+> 以下是局部的程式碼，該如何設計 NNEntity? 整數 (NNInteger)、字串 (NNString)、顏色 (NNColor) 又該如何設計？
 
 顏色的混和：
 
@@ -992,13 +986,11 @@ public class NNMultiplication {
 }
 ```
 
-:::warning
-這樣的程式重用了什麼？
-:::
+> [!WARNING]
+> 這樣的程式重用了什麼？
 
-:::warning
-上述程式 NNEntity 可否改為 interface? 請實做看看
-:::
+> [!WARNING]
+> 上述程式 NNEntity 可否改為 interface? 請實做看看
 
 
 
@@ -1019,7 +1011,9 @@ public class NNMultiplication {
 * 可具備常數
 * 是一種型態
 
-:::spoiler 提示
+<details>
+<summary>提示</summary>
+
 | -                    | class | abs class | interface |
 | -------------------- | ----- | --------- | --------- |
 | 可具備抽象方法       | x     | v         | v         |
@@ -1028,7 +1022,8 @@ public class NNMultiplication {
 | 可具備實體變數       | v     | v         | x         |
 | 可具備常數           | v     | v         | v         |
 | 是一種型態           | v     | v         | v         |
-:::
+
+</details>
 
 #### test2.3.03
 **回答以下問題**
@@ -1148,41 +1143,40 @@ String s = super.nextToken();
 * 透過委託 `SuperStringTokenizer` 將 **包含** `StringTokenizer`。你一樣要宣告一個 `nextToken()` 來傳回每一個大寫字元的 token。	
 
 
-:::success
-##### EX-lucky-number
-請參考  NNEntity 的例子，製作一個星座速配幸運號碼表，例如 巨蟹座X雙子座 => 06220522 % 144 => 10 是此搭配的幸運號碼，其中0622是巨蟹的起始日，0522是雙子的起始日，% 表示取餘數。
-* TableDisplay 可以用 System.out.print 來輸出此幸運號碼表; 但以 HTML table 的方式輸出更好。
-:::
+> [!TIP]
+> ##### EX-lucky-number
+> 請參考  NNEntity 的例子，製作一個星座速配幸運號碼表，例如 巨蟹座X雙子座 => 06220522 % 144 => 10 是此搭配的幸運號碼，其中0622是巨蟹的起始日，0522是雙子的起始日，% 表示取餘數。
+> * TableDisplay 可以用 System.out.print 來輸出此幸運號碼表; 但以 HTML table 的方式輸出更好。
 
-:::spoiler Hint
-```plantuml
-@startuml
+<details>
+<summary>Hint</summary>
 
-interface NNEntity {
-    {abstract} + multiply(NNEntity): Object
-}
-class Sign {}
-class TableDisplayer {
-    - xList: List of NNEntity
-    - yList: List of NNEntity
-    + TableDisplayer (xList, yList): void
-    + displayTable(): void
-}
+```mermaid
+classDiagram
+    class NNEntity {
+        <<interface>>
+        +multiply(NNEntity) Object*
+    }
+    class Sign
+    class TableDisplayer {
+        -xList: List of NNEntity
+        -yList: List of NNEntity
+        +TableDisplayer(xList, yList) void
+        +displayTable() void
+    }
 
-class TableDisplayer2 {
-    {static} + displayTable(list of NNEntity, list of NNEntity)
-}
-note bottom: 使用靜態方法 \n 注意他和 NNEntity 的關係是一種 dependency 關係
+    class TableDisplayer2 {
+        +displayTable(list of NNEntity, list of NNEntity)$
+    }
 
-TableDisplayer o- NNEntity
-NNEntity <. TableDisplayer2
-NNEntity <|-- Sign
-NNEntity <|-- Integer 
-NNEntity <|-- String
-
-@enduml
+    TableDisplayer o-- NNEntity
+    NNEntity <.. TableDisplayer2
+    NNEntity <|-- Sign
+    NNEntity <|-- Integer 
+    NNEntity <|-- String
 ```
-:::
+
+</details>
 
 
 ## 2.3 Python 物件導向
@@ -1254,25 +1248,29 @@ class Manager(Person):
 ```
 
 用圖片更容易看得出關係：
-```plantuml
-class Person {
-    name: String
-    age: int
-    + __init__()
-    + display()
-}
+```mermaid
+classDiagram
+    class Person {
+        name: String
+        age: int
+        +__init__()
+        +display()
+    }
 
-class Engineer extends Person {
-    expertise: String
-    + display()
-    + add_project()
-}
+    class Engineer {
+        expertise: String
+        +display()
+        +add_project()
+    }
 
-class Manager extends Person {
-    department: String
-    + display()
-    + add_subordinate()
-}
+    class Manager {
+        department: String
+        +display()
+        +add_subordinate()
+    }
+
+    Person <|-- Engineer
+    Person <|-- Manager
 ```
 
 以下為呼叫端：
@@ -1351,70 +1349,65 @@ class Vehicle(ABC):
     
 ```
 
-```plantuml
-@startuml
+```mermaid
+classDiagram
+    class Vehicle {
+        <<interface>>
+        +turnRight()
+        +turnLeft()
+    }
 
-interface Vehicle {
-    + turnRight()
-    + turnLeft()
-}
-
-class Bike extends Vehicle {}
-
-@enduml
+    class Bike
+    Vehicle <|-- Bike
 ```
 
 
 
 ### 2.3.lab 小節練習
 
-:::success
-:basketball: EX-male-female
-* Person 有身高體重等資訊，有兩個子類別：Male and Female，其 BMI 計算方式都一樣，但高低標不同。請設計一個類別架構來檢查 Person 的健康狀況。
-* 同上，設計一個 list 存放一群人的資訊，依據 BMI 由高至低進行排序，並且給予呈現出給予的健康建議。
-:::
+> [!TIP]
+> :basketball: EX-male-female
+> * Person 有身高體重等資訊，有兩個子類別：Male and Female，其 BMI 計算方式都一樣，但高低標不同。請設計一個類別架構來檢查 Person 的健康狀況。
+> * 同上，設計一個 list 存放一群人的資訊，依據 BMI 由高至低進行排序，並且給予呈現出給予的健康建議。
 
 ## 2.EX 綜合練習
 
 ### EX2.1
-:::success
-:basketball: EX-share-area
-* 建立一個 `Shape` 的介面，裡面有 `getArea()` 來回傳面積
-* 建立圓形 (`Circle`)、正方形(`Square`)、矩形(`Rectangle`)、三角形(`Triangle`)等圖形的類別，實作Shape
-* 請以 Java 及 Python 完成此練習
-:::
+> [!TIP]
+> :basketball: EX-share-area
+> * 建立一個 `Shape` 的介面，裡面有 `getArea()` 來回傳面積
+> * 建立圓形 (`Circle`)、正方形(`Square`)、矩形(`Rectangle`)、三角形(`Triangle`)等圖形的類別，實作Shape
+> * 請以 Java 及 Python 完成此練習
 
 ### EX2.2
-:::success
-:basketball: EX-compare-student
-* 應用 `Comparable（內有 int compareTo(Comparable) 方法)` 介面來寫一個排序的程式，並且用來排序以下的物件。
-	* 一個類別 Student, 裡面的屬性包含身高、體重、成績，如果 「身高+成績-體重」 比較較高，則較好。
-	* 請以 selection sort 來完成此作業	
-:::
+> [!TIP]
+> :basketball: EX-compare-student
+> * 應用 `Comparable（內有 int compareTo(Comparable) 方法)` 介面來寫一個排序的程式，並且用來排序以下的物件。
+> 	* 一個類別 Student, 裡面的屬性包含身高、體重、成績，如果 「身高+成績-體重」 比較較高，則較好。
+> 	* 請以 selection sort 來完成此作業
 
 ### EX2.3
-:::success
-:basketball: :basketball: :basketball: EX-abstract-chess
-* 考慮一個象棋翻棋遊戲，32 個棋子會隨機的落在 4*8的棋盤上。透過 Chess 的建構子產生這些棋子並隨機編排位置，再印出這些棋子的名字、位置
-	* ChessGame
-	    * void showAllChess(); 
-	    * void generateChess();
-	* Chess: 
-	    * Chess(name, weight, side, loc); 
-	    * String toString();	
-* 同上， 
-    * ChessGame 繼承一個抽象的 AbstractGame; AbstractGame 宣告若干抽象的方法：
-        * setPlayers(Player, Player)
-        * boolean gameOver()
-        * boolean move(int location)
-* 撰寫一個簡單版、非 GUI 介面的 Chess 系統。使用者可以在 console 介面輸入所要選擇的棋子的位置 (例如 A2, B3)，若該位置的棋子未翻開則翻開，若以翻開則系統要求輸入目的的位置進行移動或吃子，如果不成功則系統提示錯誤回到原來狀態。每個動作都會重新顯示棋盤狀態。
-* 規則：請參考 [這裏](https://zh.wikipedia.org/wiki/%E6%9A%97%E6%A3%8B#%E5%8F%B0%E7%81%A3%E6%9A%97%E6%A3%8B)
-
-```
-   1   2   3  4   5  6   7   8
-A  ＿  兵  ＿  車  Ｘ  ＿  象  Ｘ
-B  Ｘ  ＿  包  Ｘ  士  ＿  馬  Ｘ   
-C  象  兵  Ｘ  車  馬  ＿  ＿  將 
-D  Ｘ  包  ＿  士  兵  Ｘ  ＿  Ｘ  
-```
-:::
+> [!TIP]
+> :basketball: :basketball: :basketball: EX-abstract-chess
+> * 考慮一個象棋翻棋遊戲，32 個棋子會隨機的落在 4*8的棋盤上。透過 Chess 的建構子產生這些棋子並隨機編排位置，再印出這些棋子的名字、位置
+> 	* ChessGame
+> 	    * void showAllChess(); 
+> 	    * void generateChess();
+> 	* Chess: 
+> 	    * Chess(name, weight, side, loc); 
+> 	    * String toString();	
+> * 同上， 
+>     * ChessGame 繼承一個抽象的 AbstractGame; AbstractGame 宣告若干抽象的方法：
+>         * setPlayers(Player, Player)
+>         * boolean gameOver()
+>         * boolean move(int location)
+> * 撰寫一個簡單版、非 GUI 介面的 Chess 系統。使用者可以在 console 介面輸入所要選擇的棋子的位置 (例如 A2, B3)，若該位置的棋子未翻開則翻開，若以翻開則系統要求輸入目的的位置進行移動或吃子，如果不成功則系統提示錯誤回到原來狀態。每個動作都會重新顯示棋盤狀態。
+> * 規則：請參考 [這裏](https://zh.wikipedia.org/wiki/%E6%9A%97%E6%A3%8B#%E5%8F%B0%E7%81%A3%E6%9A%97%E6%A3%8B)
+> 
+> ```
+>    1   2   3  4   5  6   7   8
+> A  ＿  兵  ＿  車  Ｘ  ＿  象  Ｘ
+> B  Ｘ  ＿  包  Ｘ  士  ＿  馬  Ｘ   
+> C  象  兵  Ｘ  車  馬  ＿  ＿  將 
+> D  Ｘ  包  ＿  士  兵  Ｘ  ＿  Ｘ  
+> ```

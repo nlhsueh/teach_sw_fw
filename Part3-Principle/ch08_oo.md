@@ -27,32 +27,27 @@ by NL Hsueh
 
 圖：委託取代繼承
  -->
-```plantuml
-@startuml
+```mermaid
+classDiagram
+    class Parent {
+        +op()
+    }
+    class Child
+    Parent <|-- Child
 
-note "Left: Using delegation\nRight: Using inheritance" as title
+    class ClientA
+    ClientA ..> Child : op()
 
-class Parent {
-    +op()
-}
-Parent <|-- Child
+    class Expert {
+        +op()
+    }
+    class Boss {
+        +op()
+    }
+    Boss o-- Expert
 
-ClientA -> Child: op()
-
-class Expert {
-    +op()
-}
-
-class Boss {
-    +op()
-}
-Boss o-up-> Expert
-
-ClientB -> Boss: op()
-note right of Boss::op()  
-   expert.op()
-end note
-@enduml
+    class ClientB
+    ClientB ..> Boss : op()
 ```
 
 相較於包含，繼承的缺點：
@@ -71,43 +66,34 @@ end note
 
 可以透過委託的方式來解決這個問題，如圖。
 
-```plantuml
-@startuml
-class Client {}
+```mermaid
+classDiagram
+    class Client
+    class AbstractPlayer {
+        <<abstract>>
+        -IPlayer player
+        +AbstractPlayer(IPlayer p)
+        +play()
+    }
+    class IPlayer {
+        <<interface>>
+        +play()
+    }
+    class PlaySpeaker
+    class PlayHeadphone
+    class RecordPlayer
+    class EightTrackPlayer
+    class MP3Player
+    class PortableCassetePlayer
 
-Client .> AbstractPlayer
-
-abstract class AbstractPlayer {
-	IPlayer player
-	--
-	+AbstractPlayer(IPlayer p)	
-	+public void play() 
-}
-
-interface IPlayer {
-	+ void play();
-}
-
-AbstractPlayer o- "1" IPlayer
-
-note "play abc" as N1
-PlaySpeaker . N1
-
-class PlayHeadphone
-note "play xyz" as N2
-PlayHeadphone . N2
-class PlaySpeaker
-
-IPlayer  <|.. PlaySpeaker 
-IPlayer  <|.. PlayHeadphone 
-
-AbstractPlayer <|-- RecordPlayer
-AbstractPlayer <|-- EightTrackPlayer
-AbstractPlayer <|--- MP3Player
-AbstractPlayer <|--- PortableCassetePlayer
-
-
-@enduml
+    Client ..> AbstractPlayer
+    AbstractPlayer o-- "1" IPlayer
+    IPlayer <|.. PlaySpeaker
+    IPlayer <|.. PlayHeadphone
+    AbstractPlayer <|-- RecordPlayer
+    AbstractPlayer <|-- EightTrackPlayer
+    AbstractPlayer <|-- MP3Player
+    AbstractPlayer <|-- PortableCassetePlayer
 ```
 
 <!-- ![](https://i.imgur.com/8IaLiDj.png) -->
@@ -116,35 +102,26 @@ AbstractPlayer <|--- PortableCassetePlayer
 
 <!-- ![](https://i.imgur.com/K7yMWY8.png) -->
 
-```plantuml
-@startuml
-class Client
-class ClassB { 
-    +op1()
-}
-abstract class ClassA {
-    {abstract} +op1()
-    +op2()
-}
-class ClassA1 {
-    +op1()
-}
-class ClassA2 {
-    +op1()
-}
-class ClassA3 {
-    +op1()
-}
+```mermaid
+classDiagram
+    class Client
+    class ClassB {
+        +op1()
+    }
+    class ClassA {
+        <<abstract>>
+        +op1()*
+        +op2()
+    }
+    class ClassA1
+    class ClassA2
+    class ClassA3
 
-Client -> ClassB: op1
-ClassB o-> ClassA: op1
-ClassA <|-- ClassA1
-ClassA <|-- ClassA2
-ClassA <|-- ClassA3
-
-note "\n善用繼承與包含\n" as title
-
-@enduml
+    Client ..> ClassB : op1
+    ClassB o-- ClassA : op1
+    ClassA <|-- ClassA1
+    ClassA <|-- ClassA2
+    ClassA <|-- ClassA3
 ```
 
 ## 8.3 空為上：善用介面
@@ -380,30 +357,27 @@ class TimerClient {
 
 圖：Timer1
  -->
-```plantuml
-@startuml
-abstract class Door {
-    ..
-    {abstract} lock()
-    {abstract} unlock()
-    {abstract} isOpen()
-}
+```mermaid
+classDiagram
+    class Door {
+        <<abstract>>
+        +lock()*
+        +unlock()*
+        +isOpen()*
+    }
 
-class Timer {
-    register(int, TimerClient)
-}
-Timer -> TimerClient
-
-
-@enduml
+    class Timer {
+        +register(int, TimerClient)
+    }
+    class TimerClient
+    Timer ..> TimerClient
 ```
 
 
-```plantuml
-@startuml
-main -> timer: register(12, timerClient)
-timer -> timerClient: timeOut()
-@enduml
+```mermaid
+sequenceDiagram
+    main->>timer: register(12, timerClient)
+    timer->>timerClient: timeOut()
 ```
 
 當 timeout 的時間到了，他就會通知 client。如果有一個物件想要被通知，他就可以呼叫 register 來做一個註冊，以便在 timeout 來時被通知。
@@ -421,13 +395,11 @@ class Door extends TimerClient { //錯誤的設計！！
 
 一開始的設計者可能知道此方法僅是為了 **「讓編譯器通過」** 的權宜設計，但到了維護期，如果 timeout() 的介面有所更動而需要 Door 重新編寫時，維護者就不一定知道其意義為何，而造成困擾。簡言之，目前的設計錯誤為：
 
-:::info
-錯誤設計：TimedDoor 為了要成為一種 TimerClient，但本身又不能繼承 TimerClient，只好讓 Door 去繼承 TimerClient。
-:::
+> [!NOTE]
+> 錯誤設計：TimedDoor 為了要成為一種 TimerClient，但本身又不能繼承 TimerClient，只好讓 Door 去繼承 TimerClient。
 
-:::warning
-請畫出上述設計的 UML 類別圖
-::: 
+> [!WARNING]
+> 請畫出上述設計的 UML 類別圖
 
 其實這個問題我們可以有兩個解決方法
 
@@ -438,28 +410,24 @@ class Door extends TimerClient { //錯誤的設計！！
 
 簡單的說，介面分離原則建議：==擁有許多方法的介面應該被分離不同的介面，每一個介面擁有一群緊密相關的方法，被一些特定的客端物件使用==。
 
-:::success
-Interface pollution must be broken up into groups of methods, every group serves a different set of client.
-:::
+> [!TIP]
+> Interface pollution must be broken up into groups of methods, every group serves a different set of client.
 
 <!-- ![](https://i.imgur.com/4czFXXP.png) -->
 
-```plantuml
-@startuml
-abstract class Door
-class TimedDoor
-class TimerClient
-class DoorTimerAdapter {
-    timeOut()
-}
-note left of DoorTimerAdapter::timeOut
-   tDoor.timeOut()
-end note
-Door <|-- TimedDoor
-TimerClient <|-- DoorTimerAdapter
-TimedDoor "tDoor"--o DoorTimerAdapter
-
-@enduml
+```mermaid
+classDiagram
+    class Door {
+        <<abstract>>
+    }
+    class TimedDoor
+    class TimerClient
+    class DoorTimerAdapter {
+        +timeOut()
+    }
+    Door <|-- TimedDoor
+    TimerClient <|-- DoorTimerAdapter
+    TimedDoor "tDoor" --o DoorTimerAdapter
 ```
 
 ## 8.5 所依皆幻：相依反轉原則
@@ -485,24 +453,14 @@ void Copy() {
 ```
 	
 <!-- ![](https://i.imgur.com/ATnkhGY.png) -->
-```plantuml
-@startuml
-class Copy
-note "High level modeul" as N1
-Copy . N1
+```mermaid
+classDiagram
+    class Copy
+    class Reader
+    class Writer
 
-class Reader
-class Writer
-
-Copy ..> Reader
-Copy ..> Writer
-
-note "low level module" as N2
-Reader .. N2
-Writer .. N2
-
-note "\n高階模組呼叫（相依於）低階模組\n" as title
-@enduml
+    Copy ..> Reader
+    Copy ..> Writer
 ```
 
 
@@ -543,22 +501,22 @@ void copy(Reader r, Writer w)  {
 
 <!-- ![](https://i.imgur.com/IbY2oow.png) -->
 
-```plantuml
-@startuml
-class Copy
+```mermaid
+classDiagram
+    class Copy
+    class Reader {
+        <<abstract>>
+    }
+    class Writer {
+        <<abstract>>
+    }
+    class KeyboardReader
+    class PrinterWriter
 
-abstract class Reader
-abstract class Writer
-
-class KeyboardReader
-class PrinterWriter
-
-Copy o-- Reader
-Copy o-- Writer
-Reader <|-- KeyboardReader
-Writer <|-- PrinterWriter
-
-@enduml
+    Copy o-- Reader
+    Copy o-- Writer
+    Reader <|-- KeyboardReader
+    Writer <|-- PrinterWriter
 ```
 
 圖：相依於抽象
@@ -678,9 +636,8 @@ class AC implements ButtonControlable {
 
 ### 相依注入
 
-::: success
-將相依性移除於模組之中，透過相依性注入（dependency injection）的方式來建立相依性。
-:::
+> [!TIP]
+> 將相依性移除於模組之中，透過相依性注入（dependency injection）的方式來建立相依性。
 
 
 #### Creation injection
@@ -882,38 +839,35 @@ class People ? {
 
 <!-- ![](https://i.imgur.com/fJMgrym.png) -->
 
-```plantuml
-@startuml
+```mermaid
+classDiagram
+    class JPanel
+    class ActionListener {
+        <<interface>>
+    }
+    class ButtonPanel {
+        -onButton: JButton
+        -offButton: JButton
+        +connect(ButtonControlable)
+        +actionPerformed()
+    }
 
-note "\n Dependency Inversion Principle \n" as title
+    class ButtonControlable {
+        <<interface>>
+        +turnOn()
+        +turnOff()
+    }
 
-class JPanel
-interface ActionListener
-class ButtonPanel {
-    onButton: JButton
-    offButton: JButton
-    ---
-    connect(ButtonControlable)
-    actionPerformed()
-}
+    class Lamp
+    class Fan
+    class Computer
 
-interface ButtonControlable {
-    turnOn()
-    turnOff()
-}
-
-class Lamp
-class Fan
-class Computer
-
-JPanel <|-- ButtonPanel
-ActionListener <|.. ButtonPanel
-ButtonPanel o-> ButtonControlable
-ButtonControlable <|.. Lamp
-ButtonControlable <|.. Fan
-ButtonControlable <|.. Computer
-
-@enduml
+    JPanel <|-- ButtonPanel
+    ActionListener <|.. ButtonPanel
+    ButtonPanel o-- ButtonControlable
+    ButtonControlable <|.. Lamp
+    ButtonControlable <|.. Fan
+    ButtonControlable <|.. Computer
 ```
 
 

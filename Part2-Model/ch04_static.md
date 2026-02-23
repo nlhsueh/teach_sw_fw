@@ -33,42 +33,35 @@
 
 <!-- <img src="https://i.imgur.com/lxW4T37.png" width="350" /> -->
 
-```plantuml
-@startuml
-
-class Chess {
-    - name
-    - status
-    + eat(Chess)
-    + move(Loc)
-    + jump(Loc)    
-}
-
-class Loc {}
-
-class ChessBoard {
-    - size
-    - bgColor   
-}
-
-class Player {
-    - name
-    - side   
-    - status
-}
-
-class ChessGame {
-    - status
-    + start()
-    + close()
-}
-
-ChessBoard o-- Chess
-ChessGame o-- "2" Player
-Player -- ChessGame : win/lose
-Player --> Chess : select/move/eat
-
-@enduml
+```mermaid
+classDiagram
+    class Chess {
+        -name
+        -status
+        +eat(Chess)
+        +move(Loc)
+        +jump(Loc)
+    }
+    class Loc {
+    }
+    class ChessBoard {
+        -size
+        -bgColor
+    }
+    class Player {
+        -name
+        -side
+        -status
+    }
+    class ChessGame {
+        -status
+        +start()
+        +close()
+    }
+    ChessBoard o-- Chess
+    ChessGame o-- "2" Player
+    Player -- ChessGame : win/lose
+    Player --> Chess : select/move/eat
 ```
 
 Fig_象棋系統的概念圖
@@ -140,14 +133,12 @@ Fig_類別物件可以是真實世界物體或觀念的對應
 - 第二區塊是「==屬性==」，用以描述該類別的相關屬性，例如汽車具備的屬性就有型號、汽缸數、里程數等相關的屬性。
 - 第三區塊描述此類別的「==方法==」，用以描述可以作用在這個類別上的方法或此類別具備的功能。例如汽車具備發動、行駛、轉彎等方法或功能。
 
-```plantuml
-@startuml
-class 類別名稱 {
-    屬性
-    --
-    方法
-}
-@enduml
+```mermaid
+classDiagram
+    class 類別名稱 {
+        屬性
+        方法()
+    }
 ```
 Fig_類別的宣告
 
@@ -191,29 +182,24 @@ Fig_類別的宣告
 
 <!-- <img src=https://i.imgur.com/9NZfeib.png width=350> -->
 
-```plantuml
-@startuml
-abstract ClassName2 
-
-class ClassName {
-    - private_attribute
-    # protected_attribute
-    ~ package_attribute
-    + public_attribute
-    {static} static_attribute
-    ---
-    - private_method
-    # protected_method
-    ~ package_method
-    + public_method
-    {static} static_method
-    {abstract} abstract_method
-    final_method {leaf}
-}
-note right: UML notation \n using PlantUML
-
-
-@enduml
+```mermaid
+classDiagram
+    class ClassName2 {
+        <<abstract>>
+    }
+    class ClassName {
+        -private_attribute
+        #protected_attribute
+        ~package_attribute
+        +public_attribute
+        $static_attribute
+        -private_method()
+        #protected_method()
+        ~package_method()
+        +public_method()
+        $static_method()
+        *abstract_method()
+    }
 ```
 
 屬性與方法的可視性
@@ -334,48 +320,34 @@ Stack 的方法如下：
 
 <!-- <img src=https://i.imgur.com/5QZBWoR.png width=450> -->
 
-```plantuml
-@startuml
-
-Car <|-- Bicycle
-Car <|-- Automobile
-Car <|-- Train
-Automobile  <|-- Bus 
-Automobile <|-- Truck
-
-class Car {
-    - speed
-    - price
-    - color
-    ---
-    + drive()
-    + trunLeft()
-    # getSpeed()
-}
-class Bicycle {
-    ---
-    + drive()
-    + turnLeft()
-}
-
-class Automobile {
-    ---
-    + activate()
-}
-
-class Train {
-    
-}
-
-class Bus {
-    
-}
-
-class Truck {
-    
-}
-
-@enduml
+```mermaid
+classDiagram
+    Car <|-- Bicycle
+    Car <|-- Automobile
+    Car <|-- Train
+    Automobile <|-- Bus
+    Automobile <|-- Truck
+    class Car {
+        -speed
+        -price
+        -color
+        +drive()
+        +turnLeft()
+        #getSpeed()
+    }
+    class Bicycle {
+        +drive()
+        +turnLeft()
+    }
+    class Automobile {
+        +activate()
+    }
+    class Train {
+    }
+    class Bus {
+    }
+    class Truck {
+    }
 ```
 
 Fig: 汽車的繼承樹
@@ -407,17 +379,13 @@ b.turnLeft(); //儘管Bus內沒有宣告turnLeft()，它還是此功能。
 
 <!-- <img src=https://i.imgur.com/B5kl5Jl.png width=300> -->
 
-```plantuml
-@startuml
-
-Icon <|-- RectangleIcon
-Icon <|-- ImageIcon
-
-abstract class Icon {
-}
-
-
-@enduml
+```mermaid
+classDiagram
+    Icon <|-- RectangleIcon
+    Icon <|-- ImageIcon
+    class Icon {
+        <<abstract>>
+    }
 ```
 
 Fig_斜體字表示該類別是一個抽象類別
@@ -437,26 +405,32 @@ Fig_斜體字表示該類別是一個抽象類別
 類別通常只有一個父類別，但也允許有多個父類別。在下圖中，汽車與帆船都有兩個父類別，在繼承上稱為多重繼承(multiple inheritance)。同一個類別有兩種以上的分類方式時，可以在分類的符號( )旁寫上分類的基準為何(discriminator)。在此例中，介質與動力為分類交通工具的兩個不同基準。
  
 
-```plantuml
-@startuml
-
-交通工具 <|-- 風力
-交通工具 <|-- 引擎
-交通工具 <|-- 路上
-交通工具 <|-- 海上
-引擎 <|-- 汽車
-路上 <|-- 汽車
-風力 <|-- 帆船
-海上 <|-- 帆船
-
-interface 交通工具 {
-    {abstract} move()
-}
-interface 風力 {}
-interface 引擎 {}
-interface 海上 {}
-interface 路上 {}
-@enduml
+```mermaid
+classDiagram
+    交通工具 <|-- 風力
+    交通工具 <|-- 引擎
+    交通工具 <|-- 路上
+    交通工具 <|-- 海上
+    引擎 <|-- 汽車
+    路上 <|-- 汽車
+    風力 <|-- 帆船
+    海上 <|-- 帆船
+    class 交通工具 {
+        <<interface>>
+        *move()
+    }
+    class 風力 {
+        <<interface>>
+    }
+    class 引擎 {
+        <<interface>>
+    }
+    class 海上 {
+        <<interface>>
+    }
+    class 路上 {
+        <<interface>>
+    }
 ```
 
 Fig: 多重繼承
@@ -501,15 +475,17 @@ People 的例子中，People 分為 Engineer 和 Manager，請繪製 class diagr
 ---
 
 
-```plantuml
-@startuml
-
-interface Sortable 
-class String implements Sortable
-class A {}
-A .> Sortable
-
-@enduml
+```mermaid
+classDiagram
+    class Sortable {
+        <<interface>>
+    }
+    class String {
+    }
+    Sortable <|.. String
+    class A {
+    }
+    A ..> Sortable
 ```
 
 介面的使用用一條虛線的「相依性」來表達，例如 `SortedStringList` 對 `Sortable` 的引用。
@@ -531,13 +507,11 @@ A .> Sortable
 <!-- <img src=https://i.imgur.com/VDHE70N.png width=450> -->
 用「角色」為關聯命名
 
-```plantuml
-@startuml
-class Professor
-class Course
-
-Course "1..*" --> "instructor 1" Professor : teach <
-@enduml
+```mermaid
+classDiagram
+    class Professor
+    class Course
+    Course "1..*" --> "instructor 1" Professor : teach
 ```
 
 #### Multiplicity
@@ -705,26 +679,24 @@ Person "1" -- "*" Course: enrolls
 - `"1"` `"*"` 表示多重性（1 對多）
 
 呈現出的結果：
-```plantuml
-@startuml
-class Person {
-  - name: String
-  - age: int
-  + getName(): String
-  + getAge(): int
-}
-
-class Student extends Person {
-  + studentID: String
-  + enrollCourse(course: Course)
-}
-
-class Course {
-  + courseName: String
-  + courseCode: String
-}
-
-Person "1" -- "*" Course: enrolls
+```mermaid
+classDiagram
+    class Person {
+        -name: String
+        -age: int
+        +getName(): String
+        +getAge(): int
+    }
+    class Student {
+        +studentID: String
+        +enrollCourse(course: Course)
+    }
+    Person <|-- Student
+    class Course {
+        +courseName: String
+        +courseCode: String
+    }
+    Person "1" -- "*" Course: enrolls
 ```
 
 在使用 hackmd 呈現 plainuml 時，需使用 ````plantuml` 來開頭，並且第一行寫上 `@startuml`

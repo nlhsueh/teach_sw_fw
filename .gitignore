@@ -56,5 +56,6 @@ thumbs.db
 Thumbs.db
 
 # Project specific
+_OOSE/
 exam/
 *.HW

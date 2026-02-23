@@ -8,6 +8,8 @@ import swfw.ch02.poly.PolyDemo;
 import swfw.ch02.modern.SealedShapeDemo;
 import swfw.ch02.interfaces.InterfaceDemo;
 import swfw.generics.GenericClassExample;
+import swfw.labs.lab01.StudentLab;
+import swfw.labs.lab02.RPGGameLab;
 
 import java.util.Scanner;
 
@@ -25,6 +27,9 @@ public class Main {
             System.out.println("5) 多型與動態綁定 (Polymorphism)");
             System.out.println("6) 密封類別 (Sealed Classes)");
             System.out.println("7) 介面實作 (Interfaces)");
+            System.out.println("--- Lab Exercises (實習課練習) ---");
+            System.out.println("L1) Lab 01: 學生封裝練習");
+            System.out.println("L2) Lab 02: RPG 多型練習");
             System.out.println("--- Others ---");
             System.out.println("8) 泛型範例 (Generics)");
             System.out.println("0) 結束程式");
@@ -32,7 +37,7 @@ public class Main {
 
             if (!scanner.hasNextLine())
                 break;
-            String input = scanner.nextLine();
+            String input = scanner.nextLine().toUpperCase();
             if ("0".equals(input))
                 break;
 
@@ -46,6 +51,8 @@ public class Main {
                     case "6" -> SealedShapeDemo.main(null);
                     case "7" -> InterfaceDemo.main(null);
                     case "8" -> GenericClassExample.main(null);
+                    case "L1" -> StudentLab.main(null);
+                    case "L2" -> RPGGameLab.main(null);
                     default -> System.out.println("無效的選擇，請重新輸入。");
                 }
             } catch (Exception e) {

@@ -9,7 +9,11 @@ import swfw.ch02.modern.SealedShapeDemo;
 import swfw.ch02.interfaces.InterfaceDemo;
 import swfw.generics.GenericClassExample;
 import swfw.labs.lab01.StudentLab;
+import swfw.labs.lab01.BankAccountLab;
+import swfw.labs.lab01.CarLab;
 import swfw.labs.lab02.RPGGameLab;
+import swfw.labs.lab02.ShapeAreaLab;
+import swfw.labs.lab02.PeopleBMILab;
 
 import java.util.Scanner;
 
@@ -28,8 +32,12 @@ public class Main {
             System.out.println("6) 密封類別 (Sealed Classes)");
             System.out.println("7) 介面實作 (Interfaces)");
             System.out.println("--- Lab Exercises (實習課練習) ---");
-            System.out.println("L1) Lab 01: 學生封裝練習");
-            System.out.println("L2) Lab 02: RPG 多型練習");
+            System.out.println("L1) Lab 01: 學生封裝練習 (Student)");
+            System.out.println("L2) Lab 01: 銀行帳戶練習 (BankAccount)");
+            System.out.println("L3) Lab 01: 汽車控制練習 (Car)");
+            System.out.println("L4) Lab 02: RPG 多型練習 (Character)");
+            System.out.println("L5) Lab 02: 圖形面積練習 (Shape)");
+            System.out.println("L6) Lab 02: 健康檢查練習 (BMI)");
             System.out.println("--- Others ---");
             System.out.println("8) 泛型範例 (Generics)");
             System.out.println("0) 結束程式");
@@ -52,7 +60,11 @@ public class Main {
                     case "7" -> InterfaceDemo.main(null);
                     case "8" -> GenericClassExample.main(null);
                     case "L1" -> StudentLab.main(null);
-                    case "L2" -> RPGGameLab.main(null);
+                    case "L2" -> BankAccountLab.main(null);
+                    case "L3" -> CarLab.main(null);
+                    case "L4" -> RPGGameLab.main(null);
+                    case "L5" -> ShapeAreaLab.main(null);
+                    case "L6" -> PeopleBMILab.main(null);
                     default -> System.out.println("無效的選擇，請重新輸入。");
                 }
             } catch (Exception e) {

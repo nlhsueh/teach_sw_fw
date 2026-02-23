@@ -1,7 +1,7 @@
 package swfw.labs.lab02;
 
 /**
- * Lab 02: 繼承、多型與介面練習
+ * 練習 2.2.1：繼承、多型與介面進階練習 (RPG)
  * 
  * 任務：
  * 1. 閱讀 Character 抽象類別與其抽象方法 skill()。

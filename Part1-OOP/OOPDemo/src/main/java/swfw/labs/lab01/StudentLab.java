@@ -1,7 +1,7 @@
 package swfw.labs.lab01;
 
 /**
- * Lab 01: 基礎物件與封裝練習
+ * 練習 1.4.1：基礎物件與封裝練習 (Student)
  * 
  * 任務：
  * 1. 將 Student 類別的欄位改為私有 (private)。

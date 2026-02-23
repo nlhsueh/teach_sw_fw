@@ -262,24 +262,21 @@ public final class Square extends Shape { /* ... */ }
 > [!TIP]
 > 當你希望類別階層是有限且可控的（例如：支付方式只能是信用卡或轉帳），Sealed Classes 是最佳工具。
 
-### 2.1.test 觀念測驗
+### 🔍 觀念測驗 2.1
 
-#### test.2.1.01
-**關於 Java 的類別繼承，以下哪一項是正確的？**  
+1️⃣ **關於 Java 的類別繼承，以下哪一項是正確的？**  
    A) Java 支援多重繼承（multiple inheritance）  
    B) `final` 關鍵字可用來防止類別被繼承  
    C) `private` 方法可以被子類別覆寫（override）  
    D) 抽象類別（abstract class）無法包含已實作的方法  
 
-#### test.2.1.02
-**以下關於方法覆蓋（Method Overriding）說法正確的是？**  
+2️⃣ **以下關於方法覆蓋（Method Overriding）說法正確的是？**  
    A) 子類別的覆蓋方法可以擴大訪問權限，例如從 `protected` 改為 `public`  
    B) `@Override` 註解是強制性的，否則無法覆蓋  
    C) 子類別的覆蓋方法可以減小訪問權限，例如從 `public` 改為 `private`  
    D) 父類別的方法若標記為 `static`，子類別仍然可以覆蓋  
 
-#### test.2.1.03
-**以下哪個 Java 程式碼片段會產生編譯錯誤？**  
+3️⃣ **以下哪個 Java 程式碼片段會產生編譯錯誤？**  
    ```java
    class Animal {
        public void speak() {
@@ -300,16 +297,14 @@ public final class Square extends Shape { /* ... */ }
    D) `Dog` 不能繼承 `Animal`  
 
 
-#### test.2.1.04
-**型態轉換（Type Casting）時，何時會發生 `ClassCastException`？**  
+4️⃣ **型態轉換（Type Casting）時，何時會發生 `ClassCastException`？**  
    A) 向下轉型（downcasting）時，若物件實際類型與目標類型不匹配  
    B) 向上轉型（upcasting）時，若目標類型不匹配  
    C) 任何時候執行 `instanceof` 之前  
    D) 只有當類別包含 `static` 方法時  
 
 
-#### test.2.1.05
-**關於 Java 的多態性（Polymorphism），以下說法正確的是？**  
+5️⃣ **關於 Java 的多態性（Polymorphism），以下說法正確的是？**  
    A) 只有介面（interface）才能實現多態性  
    B) 方法超載（method overloading）與方法覆蓋（method overriding）都能實現多態性  
    C) 多態性只適用於靜態方法（static methods）  
@@ -326,16 +321,14 @@ public final class Square extends Shape { /* ... */ }
 
 ---
 
-#### test.2.1.05
-**Java 中，以下何者正確：**
+6️⃣ **Java 中，以下何者正確：**
 1. 抽象類別內至少有一抽象方法 
 2. 抽象類別多個抽象方法，也可以沒有
 3. 抽象類別可以有多個個具體方法 ，也可以沒有
 4. 具體類別不可以有任何抽象方法
 5. 抽象類別不能直接生成物件; 具體類別可以
 
-#### test.2.1.06
-**B 是 A 的子類別，下列何者正確？**
+7️⃣ **B 是 A 的子類別，下列何者正確？**
 
 ```java
 1. public B do1() { return new A(); } 
@@ -344,9 +337,9 @@ public final class Square extends Shape { /* ... */ }
 4. public A do2() { return new B(); } 
 ```
 
-### 2.1.lab 練習
+### ✍ 練習 2.1
 
-#### lab2.1.01 方法覆蓋
+#### 📌 練習 2.1.1：方法覆蓋
 **問題描述：**  
 請建立一個 `Shape` 類別，並讓 `Rectangle` 類別繼承 `Shape`，然後覆寫 `area()` 方法，使其返回矩形的面積。
 
@@ -358,7 +351,7 @@ System.out.println(s.area());  // 輸出: 50.0
 
 ---
 
-#### lab2.1.02 型態轉換
+#### 📌 練習 2.1.2：型態轉換
 **問題描述：**  
 請建立一個 `Animal` 父類別，以及 `Dog` 和 `Cat` 子類別。  
 1. 建立一個 `speak()` 方法，並讓 `Dog` 和 `Cat` 覆寫該方法。  
@@ -378,7 +371,7 @@ if (a instanceof Dog) {
 
 ---
 
-#### lab2.1.03 覆寫 `toString()`
+#### 📌 練習 2.1.3：覆寫 `toString()`
 **問題描述：**  
 請建立 `Person` 類別，包含 `name` 和 `age` 屬性，並覆寫 `toString()` 方法，使其輸出 `"Name: XXX, Age: YYY"`。  
 
@@ -391,7 +384,7 @@ System.out.println(p);
 
 這些題目涵蓋了**類別繼承、方法覆蓋、型態轉換**的核心概念，適合作為學習 Java 物件導向的練習！ 🚀
 
-#### lab2.1.04 Fruit parser
+#### 📌 練習 2.1.4：Fruit parser
 擴充 StringTokenizer 為 FruitParser，字串中若有水果名稱，可以透過固定的介面取得水果的名稱。請應用 StringTokenizer 既有的方法 (hasMoreToken(), nextToken() 等方法)。
 
 ```java
@@ -464,11 +457,9 @@ class VehicleController {
 **動態綁定 (Dynamic Binding)**：
 當呼叫 `v.turnLeft()` 時，即便 `v` 的編譯時型態是 `Vehicle`，Java 也會根據執行時型態（`Car`）來決定要執行哪一個版本的 `turnLeft()`。這就是多型的核心威力。
 
-### 2.2.test 觀念測驗
+### 🔍 觀念測驗 2.2
 
-#### test2.2.01 
-
-以下會印出什麼   
+1️⃣ **以下會印出什麼**   
 ```java= 
 public class Game {
   public static void main(String[] args) {
@@ -484,8 +475,7 @@ class LongChessBoard extends ChessBoard{
 }
 ```
 
-#### test2.2.02
-**以下會出現什麼訊息？**
+2️⃣ **以下會出現什麼訊息？**
 ```java=
 class A {
    public A() {
@@ -508,8 +498,7 @@ public class Main {
 
 </details>
 
-#### test2.2.03
-**回答以下問題：**
+3️⃣ **回答以下問題：**
 ```java
 class A {
     int max(int x, int y) {
@@ -526,8 +515,7 @@ A a = new B();
 a.max(100,20)=?
 ```
 
-#### test2.2.04
-**回答以下問題**
+4️⃣ **回答以下問題**
 
 我們宣告 print(Object) 於下方。以下哪些不會造成 compiler 錯誤 
 ```java
@@ -539,9 +527,9 @@ public static void print(Object x) {...}
 4. print("abc");
 5. print(new Integer(12));	
 
-### 2.2.lab 練習
+### ✍ 練習 2.2
 
-#### lab2.2.01
+#### 📌 練習 2.2.1：不同族群的健康檢查
 People 內部宣告一個 `boolean overWeight()` 的抽象方法。People 的建構子會帶入身高體重。Student 和 Athlete 都是 People 的子類別，前者的 bmi > 24 時過重，後者超過 22 時過重。請實作之。
 
 
@@ -1001,14 +989,11 @@ public class NNMultiplication {
 
 也試著說明 NNEntity 如何實踐物件特性：封裝、繼承、介面、多型。
 
-### 2.3.test 觀念測驗
+### 🔍 觀念測驗 2.3
 
-#### test2.3.01
-設計以下問題：宣告一個 Moveable 的介面，應用在 Chess 系統。
+1️⃣ **宣告一個 Moveable 的介面，應用在 Chess 系統。**
 
-#### test2.3.02
-
-從以下項目比較 class, abstract class, interface：
+2️⃣ **從以下項目比較 class, abstract class, interface：**
 * 可具備抽象方法
 * 可具備 "非" 抽象方法
 * 可生成物件
@@ -1030,8 +1015,7 @@ public class NNMultiplication {
 
 </details>
 
-#### test2.3.03
-**回答以下問題**
+3️⃣ **回答以下問題**
 
 介面會有實作者 (implementer) 和用戶 (client)。下面程式中，哪個是實作者？哪個是用戶?
 ```java
@@ -1046,9 +1030,7 @@ class B {
 }
 ```
 
-#### test2.3.04 
-
-請改以 interface 的方式重新設計：A 不要直接對 B, 而是對 「會做 m1()」 的物件。
+4️⃣ **請改以 interface 的方式重新設計：A 不要直接對 B, 而是對 「會做 m1()」 的物件。**
 
 ```java
  class A {
@@ -1064,8 +1046,7 @@ class B {
  }
 ```
 
-#### test2.3.05
-**以下哪裡錯？**
+5️⃣ **以下哪裡錯？**
 
 下述程式為某系統的部分程式碼，是否會發生編譯錯誤？執行錯誤？
 
@@ -1081,8 +1062,7 @@ class B {
 }
 ```
 
-#### test2.3.06
-**以下程式有哪些錯誤？**
+6️⃣ **以下程式有哪些錯誤？**
 
 ```java
 interface IA {
@@ -1140,8 +1120,8 @@ class D {
 String s = super.nextToken();	
 ```    
 
-### 2.3.lab 練習
-#### lab2.3.01 SuperStringTokenizer
+### ✍ 練習 2.3
+#### 📌 練習 2.3.1：SuperStringTokenizer
 
 請寫一個 `SuperStringTokenizer`, 它除了可以解析字元以外,還會把 解析的字元轉成大寫回傳回來。
 * 透過繼承 `SuperStringTokenzier` 繼承 `StringTokenizer` 來實作。(注意 `SuperStringTokenizer` 將 override 父類別的 nextToken()
@@ -1375,23 +1355,23 @@ classDiagram
 > * Person 有身高體重等資訊，有兩個子類別：Male and Female，其 BMI 計算方式都一樣，但高低標不同。請設計一個類別架構來檢查 Person 的健康狀況。
 > * 同上，設計一個 list 存放一群人的資訊，依據 BMI 由高至低進行排序，並且給予呈現出給予的健康建議。
 
-## 2.EX 綜合練習
+## 2.4 綜合練習
 
-### EX2.1
+### ✍ 練習 2.4.1：圖形介面實作
 > [!TIP]
 > :basketball: EX-share-area
 > * 建立一個 `Shape` 的介面，裡面有 `getArea()` 來回傳面積
 > * 建立圓形 (`Circle`)、正方形(`Square`)、矩形(`Rectangle`)、三角形(`Triangle`)等圖形的類別，實作Shape
 > * 請以 Java 及 Python 完成此練習
 
-### EX2.2
+### ✍ 練習 2.4.2：學生排序
 > [!TIP]
 > :basketball: EX-compare-student
 > * 應用 `Comparable（內有 int compareTo(Comparable) 方法)` 介面來寫一個排序的程式，並且用來排序以下的物件。
 > 	* 一個類別 Student, 裡面的屬性包含身高、體重、成績，如果 「身高+成績-體重」 比較較高，則較好。
 > 	* 請以 selection sort 來完成此作業
 
-### EX2.3
+### ✍ 練習 2.4.3：象棋翻棋遊戲
 > [!TIP]
 > :basketball: :basketball: :basketball: EX-abstract-chess
 > * 考慮一個象棋翻棋遊戲，32 個棋子會隨機的落在 4*8的棋盤上。透過 Chess 的建構子產生這些棋子並隨機編排位置，再印出這些棋子的名字、位置

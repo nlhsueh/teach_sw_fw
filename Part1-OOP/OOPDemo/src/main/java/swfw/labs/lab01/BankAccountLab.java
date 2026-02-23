@@ -3,7 +3,7 @@ package swfw.labs.lab01;
 import java.util.Scanner;
 
 /**
- * 實習課練習 1-2：銀行帳戶封裝與驗證
+ * 練習 1.1.2：銀行帳戶封裝與驗證 (BankAccount)
  * 
  * 要求：
  * 1. 將 balance 設為 private。

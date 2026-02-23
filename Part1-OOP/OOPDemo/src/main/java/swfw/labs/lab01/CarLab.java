@@ -1,7 +1,7 @@
 package swfw.labs.lab01;
 
 /**
- * 實習課練習 1-3：汽車加速與剎車控制
+ * 練習 1.2.1：汽車加速與剎車控制 (Car)
  * 
  * 要求：
  * 1. 屬性 model (String) 與 speed (int) 需封裝。

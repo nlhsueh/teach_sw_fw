@@ -1,7 +1,7 @@
 package swfw.labs.lab02;
 
 /**
- * 實習課練習 2-2：不同族群的健康檢查 (抽象類別練習)
+ * 練習 2.2.1：不同族群的健康檢查 (People BMI)
  * 
  * 要求：
  * 1. 定義抽象類別 People，包含 height, weight。

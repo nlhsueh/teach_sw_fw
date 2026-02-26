@@ -3,6 +3,10 @@
 
 **目標：** 介紹物件的基本概念，如何設計類別與物件，並掌握封裝的原則。
 
+Slide: 
+
+Slide: [Mastering_Java_OOP.pdf](./PDF/Mastering_Java_OOP.pdf)
+
 ## **1.1 物件與類別的基本概念**  
 
 ### 1.1.1 物件與類別（Class）  

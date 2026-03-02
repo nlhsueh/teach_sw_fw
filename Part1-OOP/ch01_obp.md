@@ -609,7 +609,7 @@ public class MathUtil {
 Java 方法的參數傳遞採用 **值傳遞 (Pass by Value)**，這表示當你傳遞變數到方法時，Java 會建立變數的「複製」，方法內的變數變動不影響原變數。
 
 ```mermaid
-graph TD
+graph LR
     subgraph "案例 1：原始型態 (Primitive Type)"
         direction LR
         main1["main 區域"] --- a["a = 100"]
@@ -618,7 +618,10 @@ graph TD
         style a fill:#e1f5fe,stroke:#01579b
         style arg_new fill:#fff9c4,stroke:#fbc02d
     end
+```
 
+```mermaid
+graph LR
     subgraph "案例 2：參考型態 (Reference Type)"
         direction LR
         main2["main 區域"] --- p["p = 0xAF2 (位址)"]
@@ -776,6 +779,26 @@ D)B)和 C)
 封裝（Encapsulation）是物件導向程式設計（OOP）的四大核心概念之一，其主要目的是將物件的狀態（屬性）與行為（方法）包裝在同一個單位中，同時隱藏內部實作細節，只提供必要的介面與存取方式。這樣可以有效地保護資料，避免外部程式直接修改物件內部狀態，減少耦合性並提升程式的維護性與安全性。
 
 ![Access control](./img/access.png)
+
+```mermaid
+graph LR
+    User([外部程式])
+    
+    subgraph Object [物件封裝]
+        direction LR
+        Methods{公開方法<br/>Getter / Setter}
+        Attributes[(私有屬性<br/>Private Fields)]
+        
+        Methods -->|存取/修改| Attributes
+    end
+    
+    User -->|僅能透過| Methods
+    User -.->|X 禁止直接存取 X| Attributes
+    
+    style Attributes fill:#ff8a80,stroke:#d32f2f
+    style Methods fill:#c8e6c9,stroke:#2e7d32
+    style Object fill:#e1f5fe,stroke:#01579b,stroke-dasharray: 5 5
+```
 
 ### 1.4.1 封裝的概念
 - **封裝（Encapsulation）**：將物件的資料（屬性）與行為（方法）集中管理，隱藏內部的實作細節，僅對外提供有限的操作介面。

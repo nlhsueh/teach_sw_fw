@@ -43,5 +43,9 @@ public class CarDemo {
         for (Car car : carList) {
             car.displayInfo();
         }
+
+        // 4. 使用 Java 8 Stream API 走訪
+        System.out.println("\n--- 使用 Java 8 Stream API ---");
+        carList.forEach(car -> car.displayInfo());
     }
 }

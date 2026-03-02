@@ -11,6 +11,7 @@ public class WrapperDemo {
         Integer numObj = 100;
         // 自動拆箱：將 Integer 物件轉換回原生 int
         int num = numObj;
+        System.out.println("Unboxed num: " + num);
 
         // 使用包裝類別的方法：解析字串為整數
         String strNumber = "123";

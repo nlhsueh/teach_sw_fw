@@ -608,6 +608,30 @@ public class MathUtil {
 ### 1.3.2 方法的參數傳遞
 Java 方法的參數傳遞採用 **值傳遞 (Pass by Value)**，這表示當你傳遞變數到方法時，Java 會建立變數的「複製」，方法內的變數變動不影響原變數。
 
+```mermaid
+graph TD
+    subgraph "案例 1：原始型態 (Primitive Type)"
+        direction LR
+        main1["main 區域"] --- a["a = 100"]
+        m1["m1 區域"] --- arg["arg = 100 (副本)"]
+        arg -.-> arg_new["arg = 200"]
+        style a fill:#e1f5fe,stroke:#01579b
+        style arg_new fill:#fff9c4,stroke:#fbc02d
+    end
+
+    subgraph "案例 2：參考型態 (Reference Type)"
+        direction LR
+        main2["main 區域"] --- p["p = 0xAF2 (位址)"]
+        m2["m2 區域"] --- p2["p2 = 0xAF2 (副本位址)"]
+        p --- heap["堆積區物件 (0xAF2)"]
+        p2 --- heap
+        heap --- name["name: 'Jack'"]
+        name -.-> name_new["name: 'Alice'"]
+        style name_new fill:#fff9c4,stroke:#fbc02d
+        style heap fill:#e1f5fe,stroke:#01579b
+    end
+```
+
 
 📍 **基本型別的傳遞 (不會影響原變數)**
 ```java
@@ -633,7 +657,7 @@ class Person {
 
 public class Test {
     public static void m2(Person p2) {
-        p.name = "Alice"; // 修改物件屬性，影響原物件
+        p2.name = "Alice"; // 修改物件屬性，影響原物件
     }
 
     public static void main(String[] args) {

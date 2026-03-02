@@ -423,25 +423,6 @@ class Person {
 
 ---
 
-### 1.2.3 方法的回傳與參數
-方法可以回傳資料，或接收參數來執行操作：
-```java
-class MathOperations {
-    int add(int a, int b) {
-        return a + b;
-    }
-}
-```
-**範例：**
-
-```java
-MathOperations math = new MathOperations();
-int sum = math.add(3, 5);
-System.out.println(sum);  // 輸出 8
-```
-
----
-
 ### 1.2.4 屬性的封裝與存取修飾子
 Java 提供四種存取修飾子：
 | 修飾子    | 同類別內 | 同 package | 子類別 | 其他類別 |
@@ -621,13 +602,12 @@ public class MathUtil {
 ### 1.3.2 方法的參數傳遞
 Java 方法的參數傳遞採用 **值傳遞 (Pass by Value)**，這表示當你傳遞變數到方法時，Java 會建立變數的「複製」，方法內的變數變動不影響原變數。
 
-![call by value](https://github.com/nlhsueh/teach_sw_fw/raw/main/Part1OOP/img/call_by_value.png)
-
 
 📍 **基本型別的傳遞 (不會影響原變數)**
 ```java
 public class Test {
     public static void m1(int arg) {
+        arg = 200;
         System.out.println(arg); // 只改變副本，不影響原變數
     }
 
@@ -1004,7 +984,7 @@ public class Main {
 
 ---
 
-#### 📌 練習 1.4.3：模擬日常生活情境
+#### 📌 練習 1.4.3：模擬汽車物件
 請設計一個 `Car` 類別，要求如下：
 - **屬性：**  
   - `private String model`：車型  
@@ -2056,7 +2036,7 @@ public class GenericCollectionsExample {
 
 ---
 
-### 🎯 總結 1.8
+### 🎯 小結 
 | **特點**             | **優勢**                                                 |
 | -------------------- | -------------------------------------------------------- |
 | **泛型與集合類別**   | 使 `ArrayList`、`HashMap` 等更加安全                     |

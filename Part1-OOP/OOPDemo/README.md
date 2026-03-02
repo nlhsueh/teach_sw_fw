@@ -25,7 +25,7 @@
     *   Maven 可以自動生成專案的報告。
 
     為什麼要用 Java 21?
-    *   Java 21 是目前最新的 Java 版本。
+    *   Java 21 是目前最新的 LTS (Long-Term Support) Java 版本。
     *   Java 21 提供了許多新特性，例如：
         *   虛擬執行緒（Virtual Threads）
         *   記錄（Records）

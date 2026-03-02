@@ -9,8 +9,11 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>23</maven.compiler.source>
-        <maven.compiler.target>23</maven.compiler.target>
+        <!-- 指定原始碼所使用的 Java 版本 -->
+        <maven.compiler.source>21</maven.compiler.source>
+        <!-- 指定生成的 class 檔 (Bytecode) 應相容的 Java 版本 -->
+        <maven.compiler.target>21</maven.compiler.target>
+        <!-- 指定專案原始碼的字元編碼格式 (通常使用 UTF-8 以支援多國語言) -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

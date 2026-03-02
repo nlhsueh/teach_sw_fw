@@ -3,10 +3,6 @@
 
 **目標：** 介紹物件的基本概念，如何設計類別與物件，並掌握封裝的原則。
 
-Slide: 
-
-Slide: [Mastering_Java_OOP.pdf](./PDF/Mastering_Java_OOP.pdf)
-
 ## **1.1 物件與類別的基本概念**  
 
 ### 1.1.1 物件與類別（Class）  
@@ -611,7 +607,7 @@ Java 方法的參數傳遞採用 **值傳遞 (Pass by Value)**，這表示當你
 ```mermaid
 graph TD
     subgraph "案例 1：原始型態"
-        direction TB
+        direction LR
         main1["main()"] --- a["a = 100"]
         m1["m1()"] --- arg["arg = 100 (副本)"]
         arg -.-> arg_new["arg = 200"]
@@ -621,19 +617,43 @@ graph TD
 ```
 
 ```mermaid
-graph TD
-    subgraph "案例 2：參考型態"
-        direction TB
-        main2["main()"] --- p["p = 0xAF2 (位址)"]
-        m2["m2()"] --- p2["p2 = 0xAF2 (副本位址)"]
-        p --- heap["堆積區物件 (0xAF2)"]
-        p2 --- heap
-        heap --- name["name: 'Jack'"]
-        name -.-> name_new["name: 'Alice'"]
-        style name_new fill:#fff9c4,stroke:#fbc02d
-        style heap fill:#e1f5fe,stroke:#01579b
+graph LR
+    subgraph "案例 2：參考型態 (狀態更新)"
+        direction LR
+        
+        %% 棧區的部分
+        subgraph Stack ["棧區 (Stack)"]
+            direction TB
+            main2["main(): p = 0xAF2"]
+            m2["m2(): p2 = 0xAF2"]
+        end
+
+        %% 堆積區的部分
+        subgraph Heap ["堆積區 (Heap)"]
+            direction TB
+            obj["物件實體 (0xAF2)"]
+            
+            %% 強制 name 與 name_new 垂直排列
+            subgraph State ["欄位狀態變更"]
+                direction TB
+                name["舊值: name = 'Jack'"]
+                name_new["新值: name = 'Alice'"]
+                name -.-> name_new
+            end
+            
+            obj --- State
+        end
+
+        %% 指標指向堆積區
+        main2 ==> obj
+        m2 ==> obj
     end
-```
+
+    %% 樣式設定
+    style name_new fill:#fff9c4,stroke:#fbc02d
+    style Heap fill:#e1f5fe,stroke:#01579b
+    style Stack fill:#f5f5f5,stroke:#9e9e9e
+```    
 
 
 📍 **基本型別的傳遞 (不會影響原變數)**

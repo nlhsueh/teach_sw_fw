@@ -29,7 +29,7 @@ Slide: [Mastering_Java_OOP.pdf](./PDF/Mastering_Java_OOP.pdf)
 
 ---
 
-### **1.1.2a Java 的類別與物件**  
+### **1.1.2 Java 的類別與物件**  
 在 Java 中，類別是用 `class` 關鍵字來定義的，而物件則是用 `new` 關鍵字來建立。  
 
 📌 **範例：定義類別與建立物件**  
@@ -73,7 +73,7 @@ public class Main {
 ```
 ---
 
-### 1.1.2b Java 類別型態與原生型態
+### 1.1.3 Java 類別型態與原生型態
 
 在 Java 中，資料型態主要分為 **原生型態（Primitive Types）** 和 **類別型態（Reference Types）**。以下是它們的主要說明與差別：
 
@@ -135,7 +135,7 @@ public class Main {
   Person p = new Person("Alice");
   System.out.println(p.getName()); // 輸出：Alice
   
-### 1.1.2c Java 包裝類別
+### 1.1.4 Java 包裝類別
 
 在 Java 中，**Wrapper Class**（包裝類別）是用來將原生型態（primitive types）的值包裝成物件的類別。這樣的設計讓原生型態可以享有物件的特性，例如可以呼叫方法、參與泛型集合（如 ArrayList）等。
 
@@ -207,7 +207,7 @@ public class WrapperExample {
 }
 ```
 
-### 1.1.3 物件的屬性與行為
+### 1.1.4 物件的屬性與行為
 
 **（1）屬性（Attributes，或稱為 Fields, Properties）**  
 - 屬性用來存儲物件的狀態，例如汽車的品牌、顏色、速度等資訊。  
@@ -230,7 +230,7 @@ public class WrapperExample {
 
 ---
 
-### **1.1.4 物件 vs. 資料結構的差異**
+### **1.1.5 物件 vs. 資料結構的差異**
 在傳統的 **資料結構** 設計中，資料和行為通常是分開的，例如：
 ```java
 class CarData {
@@ -261,7 +261,7 @@ class Car {
 
 ---
 
-### **1.1.4b 現代 Java 專用：Java Records (Java 14+)**
+### **1.1.6 現代 Java 專用：Java Records (Java 14+)**
 在現代 Java 開發中，若一個類別只是單純地用來「攜帶資料」（Data Carrier），例如儲存汽車資訊或學生資料，我們可以使用 **Record** 來簡化程式碼。
 
 Record 會自動生成屬性（private final 且不可變）、建構子、Getter、`toString()`、`equals()` 與 `hashCode()`。
@@ -285,7 +285,7 @@ public class Main {
 
 ---
 
-### 1.1.5 物件導向的優勢
+### 1.1.7 物件導向的優勢
 物件導向設計（OOP）帶來幾個重要的好處：
 1. **封裝（Encapsulation）：**  
    - 物件內部的屬性可被隱藏，外部只能透過公開的方法來操作，提高安全性。
@@ -361,8 +361,8 @@ public class Main {
 ---
 
 #### 📌 練習 1.1.3：物件 vs. 資料結構  
-在不使用物件導向的情況下（僅使用變數和函式），設計一個程式來管理學生的姓名與分數，並提供一個函式來計算平均分數。  
-接著，將程式改寫為物件導向的方式，並比較兩種方式的優缺點。
+1. 在不使用物件導向的情況下（僅使用變數和函式），設計一個程式來管理學生的姓名與分數，並提供一個函式來計算平均分數。
+2. 接著，將程式改寫為物件導向的方式，並比較兩種方式的優缺點。
 
 ---
 
@@ -531,7 +531,7 @@ D)`this` 不能在 `static` 方法內使用。
 1. 兩個私有屬性：`brand`（品牌，字串）和 `speed`（速度，整數）。  
 2. 一個建構子來初始化這些屬性。  
 3. 提供 `getBrand()` 和 `setBrand(String brand)` 方法來存取 `brand`。  
-4. 提供 `accelerate(int increase)` 方法來增加 `speed`，每次調用應該輸出當前速度。  
+4. 提供 `accelerate(int increase)` 方法來增加 `speed`，每次調用應該輸出當前速度。如果車速度超過 120，則輸出「車速過快，無法新增」。  
 5. 在 `main()` 方法中，建立 `Car` 物件並測試其功能。  
 
 **範例輸出（執行 `accelerate(10)` 三次後）：**  
@@ -743,11 +743,7 @@ D)B)和 C)
 3. 測試 `modify()` 是否影響原 `Person` 物件的 `name` 值。
 
 #### 📌 練習 1.3.3：方法重載
-建立 `print()` 方法：
-- `print(int)` 顯示整數
-- `print(double)` 顯示浮點數
-- `print(String)` 顯示字串  
-在 `main()` 測試這些方法是否能正確執行。
+上述練習中的 `Person` 類別，請改寫為使用方法重載的方式 (print())。
 
 ---
 
@@ -956,7 +952,8 @@ D)該屬性在不同 package 中的子類別也無法存取
 - **方法：**  
   - `public String getId()` 與 `public void setId(String id)`  
   - `public String getName()` 與 `public void setName(String name)`  
-  - `public double getGpa()` 與 `public void setGpa(double gpa)`（在 setter 中，檢查 GPA 是否在 0.0 到 4.0 之間，否則輸出錯誤訊息）  
+  - 在 setter 中，檢查 GPA 是否在 0.0 到 4.0 之間，否則輸出錯誤訊息
+  - `public double getGpa()` 與 `public void setGpa(double gpa)`
   - `public void displayStudentInfo()`：顯示學生的所有資訊
 
 在 `main()` 方法中建立至少兩個 `Student` 物件，並測試 getter 與 setter 的功能。
@@ -989,20 +986,9 @@ public class Main {
 
 ---
 
-#### 📌 練習 1.4.3：模擬汽車物件
-請設計一個 `Car` 類別，要求如下：
-- **屬性：**  
-  - `private String model`：車型  
-  - `private int speed`：車速
-- **建構子：** 初始化 `model` 與 `speed`（預設 `speed` 為 0）
-- **方法：**  
-  - `public void accelerate(int increment)`：將 `speed` 增加指定數值  
-  - `public void brake(int decrement)`：將 `speed` 減少指定數值，但不低於 0  
-  - `public void displayStatus()`：顯示車型與目前車速  
-- **提示：** 利用封裝確保 `speed` 不能被設定成負值。
-
-在 `main()` 方法中建立 `Car` 物件，並模擬加速與剎車的情境，驗證封裝與存取控制的效果。
-
+#### 📌 練習 1.4.3：protected 存取修飾子
+1. 在上述練習 1.4.2 中，將 `balance` 改為 protected，並在 `BankAccount` 類別中建立一個 `protected void deposit(double amount)` 方法，用於增加餘額。然後在 `main()` 方法中建立 `BankAccount` 物件，並測試 `protected` 存取修飾子的功能。
+2. 在不同目錄下建立一個 `BankAccount` 的子類別，並在子類別中建立一個 `protected void deposit(double amount)` 方法，用於增加餘額。然後在 `main()` 方法中建立 `BankAccount` 物件，並測試 `protected` 存取修飾子的功能。
 
 ## 1.5 建構子與物件初始化
 
@@ -1402,7 +1388,27 @@ D)用於返回當前物件的參考
 - **要求：**  
   在 `main()` 方法中建立 `Counter` 物件，觀察並驗證實例初始化區塊與建構子執行的順序與結果。
 
+```java
+class Counter {
+    private int count;
 
+    // 實例初始化區塊
+    {
+        count = 100;
+        System.out.println("實例初始化區塊：count 設定為 " + count);
+    }
+
+    public Counter() {
+        System.out.println("建構子：count 的值為 " + count);
+    }
+
+    public static void main(String[] args) {
+        Counter c = new Counter();
+    }
+}
+```
+
+---
 ## **1.6 靜態成員與類別方法**
 
 在 Java 中，`static` 關鍵字用來宣告靜態成員，也稱為類別成員。這些成員屬於整個類別，而非單一的物件實例。這一章節將深入探討：

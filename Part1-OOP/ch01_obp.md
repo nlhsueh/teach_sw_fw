@@ -609,11 +609,11 @@ public class MathUtil {
 Java 方法的參數傳遞採用 **值傳遞 (Pass by Value)**，這表示當你傳遞變數到方法時，Java 會建立變數的「複製」，方法內的變數變動不影響原變數。
 
 ```mermaid
-graph LR
-    subgraph "案例 1：原始型態 (Primitive Type)"
-        direction LR
-        main1["main 區域"] --- a["a = 100"]
-        m1["m1 區域"] --- arg["arg = 100 (副本)"]
+graph TD
+    subgraph "案例 1：原始型態"
+        direction TB
+        main1["main()"] --- a["a = 100"]
+        m1["m1()"] --- arg["arg = 100 (副本)"]
         arg -.-> arg_new["arg = 200"]
         style a fill:#e1f5fe,stroke:#01579b
         style arg_new fill:#fff9c4,stroke:#fbc02d
@@ -621,11 +621,11 @@ graph LR
 ```
 
 ```mermaid
-graph LR
-    subgraph "案例 2：參考型態 (Reference Type)"
-        direction LR
-        main2["main 區域"] --- p["p = 0xAF2 (位址)"]
-        m2["m2 區域"] --- p2["p2 = 0xAF2 (副本位址)"]
+graph TD
+    subgraph "案例 2：參考型態"
+        direction TB
+        main2["main()"] --- p["p = 0xAF2 (位址)"]
+        m2["m2()"] --- p2["p2 = 0xAF2 (副本位址)"]
         p --- heap["堆積區物件 (0xAF2)"]
         p2 --- heap
         heap --- name["name: 'Jack'"]
@@ -777,8 +777,6 @@ D)B)和 C)
 ## 1.4 封裝與存取控制
 
 封裝（Encapsulation）是物件導向程式設計（OOP）的四大核心概念之一，其主要目的是將物件的狀態（屬性）與行為（方法）包裝在同一個單位中，同時隱藏內部實作細節，只提供必要的介面與存取方式。這樣可以有效地保護資料，避免外部程式直接修改物件內部狀態，減少耦合性並提升程式的維護性與安全性。
-
-![Access control](./img/access.png)
 
 ```mermaid
 graph LR
@@ -958,7 +956,7 @@ graph TD
     subgraph "Heap (堆積區)"
         emp["Employee 物件"]
         orig_date["內部 Date 實體 (1970/1/1)"]
-        copy_date["防禦性複製 實體"]
+        copy_date["副本 Date 實體 (1970/1/1)"]
         emp -.->|private| orig_date
     end
 
@@ -967,7 +965,6 @@ graph TD
     end
 
     main ===>|取得副本| copy_date
-    copy_date -.->|修改時不會影響| orig_date
     
     style orig_date fill:#c8e6c9,stroke:#2e7d32
     style copy_date fill:#fff9c4,stroke:#fbc02d

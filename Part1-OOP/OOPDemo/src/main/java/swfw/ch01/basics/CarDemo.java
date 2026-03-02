@@ -1,5 +1,8 @@
 package swfw.ch01.basics;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 演示 類別（Class）與 物件（Object）的基本定義與建立。
  */
@@ -22,10 +25,23 @@ class Car {
 
 public class CarDemo {
     public static void main(String[] args) {
-        // 建立物件
-        Car myCar = new Car("Toyota", "紅色");
+        // 1. 建立多個物件並加入 List
+        List<Car> carList = new ArrayList<>();
 
-        // 呼叫物件的方法
-        myCar.displayInfo();
+        carList.add(new Car("Toyota", "紅色"));
+        carList.add(new Car("BMW", "黑色"));
+        carList.add(new Car("Tesla", "白色"));
+
+        // 2. 使用傳統 for 迴圈走訪
+        System.out.println("--- 使用傳統 for 迴圈 ---");
+        for (int i = 0; i < carList.size(); i++) {
+            carList.get(i).displayInfo();
+        }
+
+        // 3. 使用增強型 for 迴圈 (for-each) 走訪
+        System.out.println("\n--- 使用增強型 for 迴圈 ---");
+        for (Car car : carList) {
+            car.displayInfo();
+        }
     }
 }

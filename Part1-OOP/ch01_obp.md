@@ -889,6 +889,24 @@ public class Person {
   
   這樣，原本應該由 `Employee` 類別控制的狀態就被外部直接更改，造成隱私洩漏。
 
+```mermaid
+graph TD
+    subgraph "Heap (堆積區)"
+        emp["Employee 物件"] 
+        date["Date 物件 (1970/1/1)"]
+        emp -.->|private| date
+    end
+
+    subgraph "Stack (堆疊區/外部)"
+        main["Main 方法 (變數 d)"]
+    end
+
+    main ===>|直接操作| date
+    note["外部變數 d 與內部私有屬性 hireDate 指向同一個實體"]
+    style date fill:#ff8a80,stroke:#d32f2f
+    style emp fill:#e1f5fe,stroke:#01579b
+```
+
 ---
 
 #### **如何避免隱私洩漏**

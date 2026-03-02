@@ -427,12 +427,14 @@ class Person {
 
 ### 1.2.3 屬性的封裝與存取修飾子
 Java 提供四種存取修飾子：
-| 修飾子    | 同類別內 | 同 package | 子類別 | 其他類別 |
+| 修飾子    | 同類別內 | 同 package | 子類別(註) | 其他類別 |
 | --------- | -------- | ---------- | ------ | -------- |
 | private   | ✅        | ❌          | ❌      | ❌        |
 | default   | ✅        | ✅          | ❌      | ❌        |
 | protected | ✅        | ✅          | ✅      | ❌        |
 | public    | ✅        | ✅          | ✅      | ✅        |
+
+註：子類別表示在不同 package 下的子類別
 
 📌 範例：
 ```java
@@ -618,7 +620,7 @@ graph TD
 
 ```mermaid
 graph LR
-    subgraph "案例 2：參考型態 (狀態更新)"
+    subgraph "案例 2：參考型態"
         direction LR
         
         %% 棧區的部分
@@ -829,12 +831,14 @@ graph LR
 
 在 Java 中，存取控制（Access Control）可以透過修飾子來實現，不同的存取修飾子決定了類別、屬性或方法的可見範圍：
 
-| 修飾子                      | 同一類別 | 同一 Package | 子類別（不同 Package） | 其他類別 |
-| --------------------------- | -------- | ------------ | ---------------------- | -------- |
-| **public**                  | ✅        | ✅            | ✅                      | ✅        |
-| **protected**               | ✅        | ✅            | ✅                      | ❌        |
-| **(default)**（不寫修飾子） | ✅        | ✅            | ❌                      | ❌        |
-| **private**                 | ✅        | ❌            | ❌                      | ❌        |
+| 修飾子    | 同類別內 | 同 package | 子類別(註) | 其他類別 |
+| --------- | -------- | ---------- | ------ | -------- |
+| private   | ✅        | ❌          | ❌      | ❌        |
+| default   | ✅        | ✅          | ❌      | ❌        |
+| protected | ✅        | ✅          | ✅      | ❌        |
+| public    | ✅        | ✅          | ✅      | ✅        |
+
+註：子類別表示在不同 package 下的子類別
 
 - **private**：僅能在本類別中存取。
 - **default**（沒有修飾子）：在同一 package 中存取。
@@ -1405,6 +1409,27 @@ public class Person {
 }
 ```
 
+```mermaid
+graph TD
+    subgraph "Heap (堆積區)"
+        subgraph "Original Object"
+            orig["Person (Original)"]
+            addr1["Address (0x111)"]
+            orig -.-> addr1
+        end
+
+        subgraph "Copied Object (Deep Copy)"
+            copy["Person (Copy)"]
+            addr2["Address (0x222)"]
+            copy -.-> addr2
+        end
+    end
+
+    style addr1 fill:#c8e6c9,stroke:#2e7d32
+    style addr2 fill:#fff9c4,stroke:#fbc02d
+    note["深複製：物件與其內部的物件屬性皆有獨立實體"]
+```
+
 在這個例子中，`Person` 的複製建構子同時對 `Address` 進行深複製，確保 `original` 與 `copy` 的地址資料互不干擾。
 
 
@@ -1523,6 +1548,26 @@ class Counter {
 ---
 
 ### **1.6.1 static 修飾詞的用途**
+
+```mermaid
+graph TD
+    subgraph ClassZone ["類別區 (Class Area)"]
+        staticMember["static 變數/方法<br/>(所有物件共用一份)"]
+    end
+
+    subgraph Heap ["堆積區 (Heap)"]
+        obj1["物件實體 1"]
+        obj2["物件實體 2"]
+        obj3["物件實體 3"]
+    end
+
+    obj1 -.-> staticMember
+    obj2 -.-> staticMember
+    obj3 -.-> staticMember
+    
+    style staticMember fill:#fff9c4,stroke:#fbc02d
+    style ClassZone fill:#f5f5f5,stroke:#9e9e9e
+```
 
 - **靜態成員（Static Members）**：  
   靜態變數與靜態方法屬於整個類別，而不是單一物件。這意味著所有物件共用同一份靜態成員資料。
@@ -1756,6 +1801,21 @@ public class Student {
 ```
 在上述例子中，`Student` 與 `Teacher` 之間就存在一種關聯關係。
 
+```mermaid
+classDiagram
+    direction LR
+    class Teacher {
+        -String name
+        +getName() String
+    }
+    class Student {
+        -String name
+        -Teacher advisor
+        +displayInfo() void
+    }
+    Student --> Teacher : advisor
+```
+
 ---
 
 ### 1.7.2 聚合
@@ -1765,6 +1825,21 @@ public class Student {
 - **範例：** 一個系所（Department）包含多位教授（Professor），但教授可以不依賴於某個系所獨立存在。
 
 **範例：**  
+
+```mermaid
+classDiagram
+    direction LR
+    class Professor {
+        -String name
+        +getName() String
+    }
+    class Department {
+        -String departmentName
+        -List~Professor~ professors
+        +addProfessor(Professor) void
+    }
+    Department "1" o-- "0..*" Professor : contains
+```
 ```java
 import java.util.ArrayList;
 import java.util.List;
@@ -1827,6 +1902,21 @@ public class Department {
 - **範例：** 一棟房子（House）包含房間（Room），如果房子不存在，房間也無法獨立存在。
 
 **範例：**  
+
+```mermaid
+classDiagram
+    direction LR
+    class Room {
+        -String name
+        +getName() String
+    }
+    class House {
+        -String address
+        -List~Room~ rooms
+        +addRoom(String) void
+    }
+    House "1" *-- "1..*" Room : has
+```
 ```java
 import java.util.ArrayList;
 import java.util.List;

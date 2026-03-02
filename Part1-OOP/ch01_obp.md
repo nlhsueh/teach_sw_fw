@@ -930,6 +930,27 @@ graph TD
   }
   ```
   
+```mermaid
+graph TD
+    subgraph "Heap (堆積區)"
+        emp["Employee 物件"]
+        orig_date["內部 Date 實體 (1970/1/1)"]
+        copy_date["防禦性複製 實體"]
+        emp -.->|private| orig_date
+    end
+
+    subgraph "Stack (堆疊區/外部)"
+        main["Main 方法 (變數 d)"]
+    end
+
+    main ===>|取得副本| copy_date
+    copy_date -.->|修改時不會影響| orig_date
+    
+    style orig_date fill:#c8e6c9,stroke:#2e7d32
+    style copy_date fill:#fff9c4,stroke:#fbc02d
+    style emp fill:#e1f5fe,stroke:#01579b
+```
+  
 - **不可變物件：**  
   盡量使用不可變的物件（Immutable Objects）作為內部狀態，例如 `String` 或設計自己的不可變類別，這樣即使直接回傳也不會造成資料被修改。
 

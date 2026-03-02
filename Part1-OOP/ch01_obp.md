@@ -243,6 +243,12 @@ void paintCar(CarData car, String newColor) {
 ```
 在**物件導向**的設計中，資料和行為被封裝在一起：
 ```java
+class Car {
+    String brand;
+    String color;
+
+    void paint(String newColor) {
+        this.color = newColor;
     }
 }
 ```
@@ -423,7 +429,7 @@ class Person {
 
 ---
 
-### 1.2.4 屬性的封裝與存取修飾子
+### 1.2.3 屬性的封裝與存取修飾子
 Java 提供四種存取修飾子：
 | 修飾子    | 同類別內 | 同 package | 子類別 | 其他類別 |
 | --------- | -------- | ---------- | ------ | -------- |
@@ -453,7 +459,7 @@ class Person {
 
 ---
 
-### 1.2.5 靜態成員（Static）
+### 1.2.4 靜態成員（Static）
 
 - `static` 修飾的屬性和方法**屬於類別本身**，不需要建立物件即可使用。
 - **適用場景：** 計數器、常數、工具方法等。
@@ -749,7 +755,7 @@ D)B)和 C)
 
 封裝（Encapsulation）是物件導向程式設計（OOP）的四大核心概念之一，其主要目的是將物件的狀態（屬性）與行為（方法）包裝在同一個單位中，同時隱藏內部實作細節，只提供必要的介面與存取方式。這樣可以有效地保護資料，避免外部程式直接修改物件內部狀態，減少耦合性並提升程式的維護性與安全性。
 
-![Access control](https://github.com/nlhsueh/teach_sw_fw/raw/main/Part1OOP/img/access.png)
+![Access control](./img/access.png)
 
 ### 1.4.1 封裝的概念
 - **封裝（Encapsulation）**：將物件的資料（屬性）與行為（方法）集中管理，隱藏內部的實作細節，僅對外提供有限的操作介面。
@@ -894,12 +900,11 @@ String a = "this is a book"
 a.append(", not a pen");
 // a=?
 ```    
-append後 a 字串變化了嗎？**沒有!**。真實的運作是先產生一個新的字串，它的內容是 **this is a book, not a pen**。所以上述的程式碼應改為以下才有意義。append 後的值可以用 b 或 a 來參考，都可以。
+append後 a 字串變化了嗎？**沒有!**。真實的運作是先產生一個新的字串，它的內容是 **this is a book, not a pen**。所以上述的程式碼應改為以下才有意義。
 
 ```java
 String a = "this is a book"
 b = a.append(", not a pen"); // ok
-a = a.append(", not a pen"); // ok, too
 ```     
 
 ---
@@ -1063,6 +1068,9 @@ public class Animal {
     }
 }
 ```
+
+> [!CAUTION]
+> 注意：當我們自訂了建構子，Java 就不再自動生成預設建構子。
 
 ---
 
@@ -1736,8 +1744,9 @@ public class House {
         this.rooms = new ArrayList<>();
     }
     
-    public void addRoom(Room room) {
-        rooms.add(room);
+    // 組合核心：外部不傳入 Room 物件，而是由 House 內部自行建立處理
+    public void addRoom(String roomName) {
+        rooms.add(new Room(roomName));
     }
     
     public void displayHouse() {
@@ -1749,11 +1758,10 @@ public class House {
     
     public static void main(String[] args) {
         House house = new House("123 Main St");
-        Room livingRoom = new Room("Living Room");
-        Room kitchen = new Room("Kitchen");
         
-        house.addRoom(livingRoom);
-        house.addRoom(kitchen);
+        // 由 House 內部建立 Room，展現其依賴關係
+        house.addRoom("Living Room");
+        house.addRoom("Kitchen");
         house.displayHouse();
     }
 }

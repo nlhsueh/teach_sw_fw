@@ -1,5 +1,3 @@
-###### tags: `OOSE`
-
 # Ch02 物件導向設計
 
 @nlhsueh 
@@ -404,37 +402,100 @@ public class FruitParser extends StringTokenizer {
 }
 ```
 
-## 2.2 一法多形：多型
+## 2.2 一法多形：多型 (Polymorphism)
 
-一個方法（method）可以有很多的形式/實作方法。
+「多型」是物件導向的三大支柱之一。它的字面意義是「多種形式」。在 Java 中，多型允許我們將子類別物件視為父類別物件來處理，這使得程式碼具備極高的靈活性與擴充性。
+
+### 2.2.1 多型的核心觀念
+
+1.  **向上轉型 (Upcasting)**：子類別物件可以自動轉換為父類別型態。這也是多型發生的前提。
+2.  **方法覆蓋 (Method Overriding)**：父類別定義介面，子類別提供不同的實作。
+3.  **動態綁定 (Dynamic Binding)**：JVM 在執行時期才決定呼叫哪一個類別的方法。
 
 ```java=
 class A {
   void m1() {
-      print A;
+      System.out.println("執行 A 的 m1");
   }
 }
 
 class B extends A {
+  @Override
   void m1() {
-      print B;
+      System.out.println("執行 B 的 m1");
   }
 }
 
 class Client {
   void op1(A a) {
-    a.m1();
+    // 這裡只知道 a 是一個 A，但不知道它具體是 A 還是 B
+    a.m1(); 
   }
 }
 ```
 
-
-對 Client 的 op1 而言，a 可能是一個 A 的物件或是 B 的物件，取決於 runtime 時帶進的物件。不要以為 a 的 type 是 A，就認為它會執行 print A。runtime 時才做 binding, 稱之為 **dynamic binding**。
+對 `Client` 的 `op1` 而言，`a` 可能是一個 `A` 的物件或是 `B` 的物件，取決於 runtime 時帶進的物件。**不要以為 a 的型態宣告為 A，就認為它執行的是 A 的邏輯。** runtime 時才做 binding, 稱之為 **dynamic binding**。
 
 ```java=
-Client c = new C();
-c.op1(new A()) => print A
-c.op1(new B()) => print B
+Client c = new Client();
+c.op1(new A()); // 輸出：執行 A 的 m1
+c.op1(new B()); // 輸出：執行 B 的 m1 (這就是多型！)
+```
+
+### 2.2.2 為什麼需要多型？（擴充性範例）
+
+假設我們正在開發一個繪圖軟體，需要管理各種形狀。
+
+**沒有多型時：**
+如果要繪製圓形和正方形，我們可能需要針對每種形狀寫不同的方法：
+`drawCircle(Circle c)`, `drawSquare(Square s)`... 每增加一種形狀，主程式就要修改一次。
+
+**有了多型後：**
+我們定義一個父類別 `Shape`，並讓所有形狀繼承它。
+
+```java=
+abstract class Shape {
+    abstract void draw();
+}
+
+class Circle extends Shape {
+    void draw() { System.out.println("畫一個圓"); }
+}
+
+class Square extends Shape {
+    void draw() { System.out.println("畫一個正方形"); }
+}
+
+class DrawingApp {
+    // 使用多型：只需接收 Shape 即可處理所有子類別
+    void render(Shape s) {
+        s.draw();
+    }
+
+    public static void main(String[] args) {
+        DrawingApp app = new DrawingApp();
+        app.render(new Circle());
+        app.render(new Square());
+        // 未來新增 Triangle, 這裡的 render 方法完全不需要改動！
+    }
+}
+```
+
+這體現了設計模式中的 **開閉原則 (Open-Closed Principle)**：對於擴充是開放的，對於修改是封閉的。
+
+### 2.2.3 多型容器 (Polymorphic Collections)
+
+多型讓不同的物件可以儲存在同一個集合中。
+
+```java
+ArrayList<Shape> shapes = new ArrayList<>();
+shapes.add(new Circle());
+shapes.add(new Square());
+
+// 統一處理不同類型的物件
+for (Shape s : shapes) {
+    s.draw();
+}
 ```
 
 汽車的例子：
@@ -448,7 +509,7 @@ class VehicleController {
 
 ---
 
-### **2.2.1 進階觀念：編譯時型態 vs. 執行時型態**
+### **2.2.4 進階觀念：編譯時型態 vs. 執行時型態**
 理解多型的關鍵在於區分「變數的型態」與「物件的型態」。
 
 - **編譯時型態 (Compile-time Type)**：變數宣告時的型態（例如 `Vehicle v`）。編譯器以此決定變數能呼叫哪些方法。
@@ -610,7 +671,7 @@ class Bike extends Vehicle {
 
 ```
 
-### 介面實踐與使用
+### 2.3.1 介面實踐與使用
 
 > [!NOTE]
 > * 一個好的建築，需要有一個人會蓋，一個人會欣賞。
@@ -619,7 +680,7 @@ class Bike extends Vehicle {
 
 只要能實踐 E 的物件， m1() 都可以呼叫使用。
 
-### 繼承和實作的異同
+### 2.3.2 繼承和實作的異同
 
 * 兩者都具備多型，也就是說，當 `class C extends D implements E`, 則 `c instanceof D`, `c instanceof E` 都是 true;
 * extends 享受到 code reuse 的好處，但 implements 沒有（因為 interface 內沒有程式碼），它只有被規範**要去履行介面所定義的功能**。
@@ -632,7 +693,7 @@ class Bike extends Vehicle {
 > 他一生下來，就擁有龐大的繼承資源，即使什麼都不會做，很多是還是順理成章的完成了。從這個觀點來看，皇命是一個資源的繼承。
 
 
-### 2.3.1 多重繼承
+### 2.3.3 多重繼承
 
 Java 所謂的多重繼承是指多重的介面繼承。一個類別可以實作很多的介面，但只能繼承一個類別。類別 G 繼承類別 C 並實作介面 E 與 F 是被允許的。
 
@@ -664,7 +725,7 @@ public class G extends C implements E, F {
 ```
 
 
-### 2.3.2 介面的應用：best
+### 2.3.4 介面的應用：best
 
 假設我們要寫一個副程式來找到三個整數中最大的一個，相信這很簡單：
 
@@ -772,7 +833,7 @@ classDiagram
 > 
 > Think: how the Java API design the framework?
 
-### 2.3.3 介面內的常數
+### 2.3.5 介面內的常數
 
 Interface 可以宣告常數
 ```java=
@@ -786,7 +847,7 @@ interface Vehicle {
 只能宣告常數，不能宣告 instance variable。
 
 
-### 2.3.4 抽象的應用：NNEntity
+### 2.3.6 抽象的應用：NNEntity
 
 大家都寫過 99 乘法表:
 

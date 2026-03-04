@@ -607,7 +607,7 @@ public class MathUtil {
 Java 方法的參數傳遞採用 **值傳遞 (Pass by Value)**，這表示當你傳遞變數到方法時，Java 會建立變數的「複製」，方法內的變數變動不影響原變數。
 
 ```mermaid
-graph TD
+graph LR
     subgraph "案例 1：原始型態"
         direction LR
         main1["main()"] --- a["a = 100"]
@@ -935,7 +935,7 @@ public class Person {
   這樣，原本應該由 `Employee` 類別控制的狀態就被外部直接更改，造成隱私洩漏。
 
 ```mermaid
-graph TD
+graph LR
     subgraph "Heap (堆積區)"
         emp["Employee 物件"] 
         date["Date 物件 (1970/1/1)"]
@@ -976,7 +976,7 @@ graph TD
   ```
   
 ```mermaid
-graph TD
+graph LR
     subgraph "Heap (堆積區)"
         emp["Employee 物件"]
         orig_date["內部 Date 實體 (1970/1/1)"]
@@ -1410,7 +1410,7 @@ public class Person {
 ```
 
 ```mermaid
-graph TD
+graph LR
     subgraph "Heap (堆積區)"
         subgraph "Original Object"
             orig["Person (Original)"]
@@ -1550,7 +1550,7 @@ class Counter {
 ### **1.6.1 static 修飾詞的用途**
 
 ```mermaid
-graph TD
+graph LR
     subgraph ClassZone ["類別區 (Class Area)"]
         staticMember["static 變數/方法<br/>(所有物件共用一份)"]
     end

@@ -59,12 +59,12 @@ class Car {
     String brand; // 屬性
     String color; 
     
-    Car(String brand, String color) { // 建構子
+    public Car(String brand, String color) { // 建構子
         this.brand = brand;
         this.color = color;
     }
     
-    void displayInfo() { // 行為 (方法)
+    public void displayInfo() { // 行為 (方法)
         System.out.println("這是一台 " + color + " 的 " + brand);
     }
 }
@@ -85,9 +85,8 @@ class Car {
 
 ### 記憶體模型 (Memory Model)
 
-![diagram](img/diag_1.png)
-
----
+<br>
+<img src="img/heap.png" alt="heap" width="80%">
 
 ---
 
@@ -133,6 +132,9 @@ D) Java 物件必須在定義類別時就創建
 | protected | ✅      | ✅          | ✅      | ❌        |
 | public    | ✅      | ✅          | ✅      | ✅        |
 
+* default 也就是不寫任何修飾子
+* 子類別指的是在不同package下的繼承
+
 ---
 
 ### ❓ 互動問題 1.2
@@ -172,11 +174,55 @@ D) `static` 變數無法被修改
 
 ---
 
-### 傳遞機制示意圖
+### 傳遞原生型態
 
-![diagram](img/diag_2.png)
+```java
+
+public class Test {
+    public static void m1(int x) {
+        x = 20; // 只修改區域變數 x，不影響外部
+    }
+
+    public static void main(String[] args) {
+        int a = 10;
+        m1(a);
+        System.out.println("a: " + a); // 結果仍為 10
+    }
+}
+```
 
 ---
+
+### 傳遞機制示意圖- 傳遞原生型態
+<br>
+<img src="img/call_by_value_primitive.png" alt="call by value: primitive" width="80%">
+
+---
+
+### 傳遞物件
+
+```java
+class Person {
+    String name;
+}
+
+public class Test {
+    public static void m2(Person p2) {
+        p2.name = "Alice"; // 修改物件屬性，影響原物件
+    }
+
+    public static void main(String[] args) {
+        Person p = new Person("Jack");
+        m2(p);
+        System.out.println("p.name：" + p.name); // 結果變為 "Alice"
+    }
+}
+```
+
+---
+### 傳遞機制示意圖- 傳遞物件
+<br>
+<img src="img/call_by_value_object.png" alt="call by value: object" width="1000px">
 
 ---
 
@@ -224,7 +270,28 @@ D) 因為方法內部的變數是靜態的
 - 降低模組間的耦合度。
 
 ---
-![diagram](img/diag_3.png)
+
+### 封裝示意圖
+<br>
+<img src="img/encapsulation.png" alt="encapsulation" width="80%">
+
+---
+
+### ❓互動問題
+
+**為什麼把屬性設為私有，又提供 Getter 和 Setter 讓外部來存取？** 
+
+A) 讓外部可以修改屬性
+B) 讓外部可以存取屬性
+C) 讓外部可以修改屬性，又可以存取屬性
+D) 讓外部可以修改屬性，又可以存取屬性，而且可以控制屬性的存取
+
+---
+
+### 💡 解答
+
+**答案：D**
+
 ---
 
 ### 隱私洩漏 (Privacy Leak)
@@ -236,10 +303,12 @@ D) 因為方法內部的變數是靜態的
 ---
 
 ### 防禦性複製 (Defensive Copy)
-
-![diagram](img/diag_4.png)
+<br>
+<img src="img/defensive_copy.png" alt="defensive copy" width="80%">
 
 ---
+
+
 
 ---
 
@@ -292,8 +361,8 @@ D) `return null;`
 ---
 
 ### 靜態成員記憶體配置
-
-![diagram](img/diag_5.png)
+<br>
+<img src="img/static.png" alt="static member" width="80%">
 
 ---
 
@@ -357,7 +426,24 @@ D) 因為 Java 規格書禁止
 | **聚合 (Aggregation)** | 弱擁有，部分可獨立存在 | `Dept` o-- `Professor` |
 | **組合 (Composition)** | 強擁有，生命週期一致 | `House` *-- `Room` |
 
+
 ---
+
+### 關聯 (Association)
+<br>
+<img src="img/association.png" alt="association" width="80%">
+
+---
+
+### 聚合 (Aggregation)
+<br>
+<img src="img/aggregation.png" alt="aggregation" width="80%">
+
+---
+
+### 組合 (Composition)
+<br>
+<img src="img/composition.png" alt="composition" width="80%">
 
 ---
 
@@ -388,11 +474,42 @@ D) 老師與學生互相知道對方的名字
 - **消除類型轉換 (Eliminate Casting)**：不需要寫 `(String)list.get(0)`。
 - **程式碼重用**：一個類別處理多種型別。
 
+---
+
+### 為什麼需要泛型？ (反例)
+- 在沒有泛型之前，`ArrayList` 內部以 `Object` 儲存資料。
+- 缺點：取出時需要 **強制轉型**，且容易在執行時發生錯誤。
+
+```java
+ArrayList list = new ArrayList(); // 未指定型別
+list.add("Hello");
+list.add(123); // 誤存入整數
+
+String s = (String) list.get(0); // 必須轉型
+// String s2 = (String) list.get(1); // 運行時噴出 ClassCastException!
+```
+
+---
+
 ### 語法範例
 ```java
 ArrayList<String> list = new ArrayList<>();
 list.add("Hello");
 String s = list.get(0); // 不需要強制轉型
+```
+
+---
+
+### 泛型的應用
+- **容器類別**：如 `ArrayList`, `HashMap` 等集合框架。
+- **介面定義**：如 `Comparable<T>`, `Comparator<T>`。
+- **自訂泛型類別**：
+```java
+public class Box<T> {
+    private T content;
+    public void set(T t) { this.content = t; }
+    public T get() { return content; }
+}
 ```
 
 ---
@@ -404,9 +521,23 @@ String s = list.get(0); // 不需要強制轉型
 | `HashMap<K, V>` | 鍵值對 (Key-Value) |
 | `HashSet<T>` | 不重複集合 |
 
-### 型別擦除 (Type Erasure)
-- 泛型資訊僅存在於 **編譯時期**。
-- 運行時會被「擦除」為 `Object`，以相容舊版 Java。
+---
+
+### 集合的程式碼應用
+```java
+// 使用 ArrayList 儲存字串
+ArrayList<String> names = new ArrayList<>();
+names.add("Alice");
+names.add("Bob");
+
+// 使用 HashMap 儲存鍵值對 (Key-Value)
+HashMap<String, Integer> scores = new HashMap<>();
+scores.put("Alice", 95);
+scores.put("Bob", 88);
+
+System.out.println("Alice's score: " + scores.get("Alice"));
+```
+
 
 ---
 
@@ -440,6 +571,26 @@ D) `Box<Object> box`
 ### 輸入與輸出
 - **輸出**：`System.out.println()`
 - **輸入**：`Scanner sc = new Scanner(System.in);`
+
+---
+
+### for 迴圈與 for-each
+- **傳統 for 迴圈**：適用於需要控制索引 (index) 的情況。
+- **增強型 for 迴圈 (for-each)**：程式碼簡潔，適用於遍歷集合或陣列。
+
+```java
+String[] colors = {"Red", "Green", "Blue"};
+
+// 傳統型
+for (int i = 0; i < colors.length; i++) {
+    System.out.println(colors[i]);
+}
+
+// for-each (更直覺)
+for (String c : colors) {
+    System.out.println(c);
+}
+```
 
 ---
 

@@ -2241,6 +2241,15 @@ public class GenericCollectionsExample {
 ✅ **`Collections.sort()` 可排序泛型集合中的元素**。  
 ✅ **型別安全，避免錯誤類型的比較**。
 
+> [!NOTE]
+> **想一想：`ArrayList` 本身有排序功能嗎？**
+> 
+> *   **不自動排序**：`ArrayList` 是動態陣列，它會按照你「加入」的順序來儲存元素。它並不像 `TreeSet` 那樣會自動維持排序。
+> *   **排序方式**：
+>     1.  **使用 `Collections.sort(list)`**：這是傳統的做法（如上例），適用於所有 `List` 實作。
+>     2.  **使用 `list.sort(Comparator)`**：自 Java 8 起，`List` 介面新增了 `sort` 方法。例如 `numbers.sort(null);` 也可以達到字母排序的效果。也可以定義 `Comparator` 來實現自訂排序。
+> *   **結論**：`ArrayList` 本身定位為「可變長度的陣列」，排序是「額外」的操作，而非內建的自動行為。
+
 ---
 
 ### 🎯 小結 
@@ -2252,7 +2261,7 @@ public class GenericCollectionsExample {
 | **提高程式碼可讀性** | 透過 `ArrayList<String>` 直接知道集合的類型              |
 
 ### 1.8.2 泛型方法
-泛型方法（Generic Method）允許方法使用獨立於類別的類型參數，使方法可以適用於不同類型的數據。在 Java 的泛型方法宣告中，<T> 放在 void 之前的原因是 明確告知編譯器這是一個泛型方法，並且 T 是該方法專屬的類型參數。
+泛型方法（Generic Method）允許方法使用獨立於類別的類型參數，使方法可以適用於不同類型的數據。在 Java 的泛型方法宣告中，<T> 放在 void 之前的原因是：明確告知編譯器這是一個泛型方法，並且 T 是該方法專屬的類型參數。
 
 **範例：定義泛型方法**
 ```java
@@ -2387,18 +2396,15 @@ public static void addNumbers(List<? super Integer> list) {
 ```
 這表示 `list` 至少是 `Integer` 的超類別（如 `List<Number>`）。
 
----
-
-### 1.8.6 泛型與 Java 原始類型（Type Erasure）
-Java 的泛型在編譯時會進行**型別擦除（Type Erasure）**，這表示泛型資訊不會保留在運行時，而是轉換為 `Object` 或其邊界類型。例如：
-```java
-Box<String> box = new Box<>();
-```
-編譯後，泛型類型 `String` 會被擦除，實際運行時的類型為：
-```java
-Box box = new Box(); // T 被擦除為 Object
-```
-這是為了與舊版 Java 相容，但也導致了**型別資訊的丟失**。
+以下是關於泛型語法的整理：
+    
+| 語法 | 意義 | 範例 |
+| --- | --- | --- |
+| `<T>` | 泛型類型參數 | `class Box<T>` |
+| `<T extends Number>` | 泛型類型參數，且必須是 `Number` 的子類別 | `class MathUtil<T extends Number>` |
+| `<T super Integer>` | 泛型類型參數，且必須是 `Integer` 的超類別 | `class AddUtil<T super Integer>` |
+| `<? extends T>` | 上限通配符，允許接受 `T` 或 `T` 的子類別 | `List<? extends Number>` |
+| `<? super T>` | 下限通配符，允許接受 `T` 或 `T` 的超類別 | `List<? super Integer>` |
 
 ---
 

@@ -2469,7 +2469,7 @@ class A<T> {
 <summary>👉 點擊查看答案</summary>
 
 **正確答案：**
-1. A)(B)
+1. A)(B)。C 是錯的，<T super Integer>  只能用在方法中。
 2. (C)
 3. (A)
 </details>

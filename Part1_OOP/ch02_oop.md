@@ -302,18 +302,16 @@ public final class Square extends Shape { /* ... */ }
    D) 只有當類別包含 `static` 方法時  
 
 
-5️⃣ **關於 Java 的多態性（Polymorphism），以下說法正確的是？**  
-   A) 只有介面（interface）才能實現多態性  
-   B) 方法超載（method overloading）與方法覆蓋（method overriding）都能實現多態性  
-   C) 多態性只適用於靜態方法（static methods）  
-   D) `final` 類別可以被繼承但不能被實例化  
-
 ---
 
 <details>
 <summary>👉 點擊查看答案</summary>
 
-參考答案：B, A, B, A, B  
+參考答案：
+1. **B** (`final` 關鍵字可用來防止類別被繼承)
+2. **A** (覆蓋方法可以維持或擴大存取權限，但不能縮小。例如：`protected` 可以改為 `public`)
+3. **B** (子類別覆寫時不能將訪問權限從 `public` 縮小為 `private`)
+4. **A** (當嘗試將父類別物件轉換為不正確的子類別型態時，會發生 `ClassCastException`)
 </details>
 
 
@@ -337,39 +335,31 @@ public final class Square extends Shape { /* ... */ }
 
 ### ✍ 練習 2.1
 
-#### 📌 練習 2.1.1：方法覆蓋
-**問題描述：**  
-請建立一個 `Shape` 類別，並讓 `Rectangle` 類別繼承 `Shape`，然後覆寫 `area()` 方法，使其返回矩形的面積。
 
-**範例輸入輸出：**
-```java
-Shape s = new Rectangle(5, 10);
-System.out.println(s.area());  // 輸出: 50.0
-```
+#### 📌 練習 2.1.1：型態轉換與物件識別
+**問題描述：**
+設計一個簡單的動物體系來練習轉型：
+1. **類別設計**：建立 `Animal` 父類別（含 `speak()` 方法），以及 `Dog` 和 `Cat` 子類別（分別覆寫 `speak()` 輸出 "Dog barks" 與 "Cat meows"）。
+2. **向上轉型 (Upcasting)**：宣告一個 `Animal` 變數並指向 `Dog` 物件，嘗試執行 `speak()` 並觀察結果。
+3. **安全轉型 (Downcasting)**：撰寫一個方法 `performAnimalAction(Animal a)`，在方法內部：
+   - 使用 `instanceof` 判斷 `a` 是否為 `Dog`。
+   - 若是，將其向下轉型為 `Dog` 並呼叫其方法。
+   - 觀察若將 `Cat` 物件帶入此方法時，如何避免 `ClassCastException`。
 
----
-
-#### 📌 練習 2.1.2：型態轉換
-**問題描述：**  
-請建立一個 `Animal` 父類別，以及 `Dog` 和 `Cat` 子類別。  
-1. 建立一個 `speak()` 方法，並讓 `Dog` 和 `Cat` 覆寫該方法。  
-2. 使用向上轉型（upcasting）與向下轉型（downcasting）來呼叫子類別的方法。  
-3. 使用 `instanceof` 確保轉型安全。  
-
-**範例輸入輸出：**
+**範例代碼結構：**
 ```java
 Animal a = new Dog();
 a.speak();  // 輸出: "Dog barks"
 
 if (a instanceof Dog) {
     Dog d = (Dog) a;
-    d.speak();  // 輸出: "Dog barks"
+    d.speak();  // 成功轉型並呼叫
 }
 ```
 
 ---
 
-#### 📌 練習 2.1.3：覆寫 `toString()`
+#### 📌 練習 2.1.2：覆寫 `toString()`
 **問題描述：**  
 請建立 `Person` 類別，包含 `name` 和 `age` 屬性，並覆寫 `toString()` 方法，使其輸出 `"Name: XXX, Age: YYY"`。  
 
@@ -380,9 +370,7 @@ System.out.println(p);
 // 輸出: "Name: Alice, Age: 25"
 ```
 
-這些題目涵蓋了**類別繼承、方法覆蓋、型態轉換**的核心概念，適合作為學習 Java 物件導向的練習！ 🚀
-
-#### 📌 練習 2.1.4：Fruit parser
+#### 📌 練習 2.1.3：Fruit parser
 擴充 StringTokenizer 為 FruitParser，字串中若有水果名稱，可以透過固定的介面取得水果的名稱。請應用 StringTokenizer 既有的方法 (hasMoreToken(), nextToken() 等方法)。
 
 ```java
@@ -587,6 +575,24 @@ public static void print(Object x) {...}
 3. print(12);
 4. print("abc");
 5. print(new Integer(12));	
+
+5️⃣ **關於 Java 的多態性（Polymorphism），以下說法正確的是？**  
+   A) 只有介面（interface）才能實現多態性  
+   B) 方法超載（method overloading）與方法覆蓋（method overriding）都能實現多態性  
+   C) 多態性只適用於靜態方法（static methods）  
+   D) `final` 類別可以被繼承 but cannot be instantiated (這選項原意可能是 D, 但 B 比較正確)
+   D) `final` 類別可以被繼承但不能被實例化  
+
+<details>
+<summary>👉 點擊查看答案</summary>
+
+參考答案：
+1. **一般象棋** (子類別覆寫方法時若權限設為 `private` 會導致編譯錯誤，但以此題 code 來看，若能編譯執行，動態綁定會呼叫實際物件的方法)
+2. **hi** (子類別建構時會先呼叫父類別建構子)
+3. **90** (動態綁定會呼叫 B 的 max，此方法會調用 `super.max(20, 100)` 得到 100，再減去 10)
+4. **1, 2, 3, 4, 5** (這題考的是 Upcasting。在 Java 中，所有類別都繼承自 Object，因此任何物件、字串、甚至經過 Auto-boxing 的基本型態都能傳入)
+5. **B** (多型分為編譯時多型（Overloading）與執行時多型（Overriding）)
+</details>
 
 ### ✍ 練習 2.2
 

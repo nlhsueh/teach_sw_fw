@@ -243,7 +243,7 @@ class Car extends Vehicle {
 
 ---
 
-### **2.1.6 現代 Java 特性：密封類別 (Sealed Classes, Java 17+)**
+### 2.1.6 現代 Java 特性：密封類別
 在傳統繼承中，任何類別只要不是 `final` 都可以被繼承。Java 17 引入了 **Sealed Classes**，讓開發者可以精確限制哪些類別可以繼承自己。
 
 📌 **範例：限制 Shape 的子類別**
@@ -402,9 +402,9 @@ public class FruitParser extends StringTokenizer {
 }
 ```
 
-## 2.2 一法多形：多型 (Polymorphism)
+## 2.2 一法多形：多型 
 
-「多型」是物件導向的三大支柱之一。它的字面意義是「多種形式」。在 Java 中，多型允許我們將子類別物件視為父類別物件來處理，這使得程式碼具備極高的靈活性與擴充性。
+「多型」(Polymorphism) 是物件導向的三大支柱之一。它的字面意義是「多種形式」。在 Java 中，多型允許我們將子類別物件視為父類別物件來處理，這使得程式碼具備極高的靈活性與擴充性。
 
 ### 2.2.1 多型的核心觀念
 
@@ -442,7 +442,7 @@ c.op1(new A()); // 輸出：執行 A 的 m1
 c.op1(new B()); // 輸出：執行 B 的 m1 (這就是多型！)
 ```
 
-### 2.2.2 為什麼需要多型？（擴充性範例）
+### 2.2.2 為什麼需要多型？
 
 假設我們正在開發一個繪圖軟體，需要管理各種形狀。
 
@@ -483,9 +483,9 @@ class DrawingApp {
 
 這體現了設計模式中的 **開閉原則 (Open-Closed Principle)**：對於擴充是開放的，對於修改是封閉的。
 
-### 2.2.3 多型容器 (Polymorphic Collections)
+### 2.2.3 多型容器
 
-多型讓不同的物件可以儲存在同一個集合中。
+多型讓不同的物件可以儲存在同一個集合中，稱之為 **多型容器 (Polymorphic Collections)**。
 
 ```java
 ArrayList<Shape> shapes = new ArrayList<>();
@@ -593,6 +593,14 @@ public static void print(Object x) {...}
 #### 📌 練習 2.2.1：不同族群的健康檢查
 People 內部宣告一個 `boolean overWeight()` 的抽象方法。People 的建構子會帶入身高體重。Student 和 Athlete 都是 People 的子類別，前者的 bmi > 24 時過重，後者超過 22 時過重。請實作之。
 
+---
+
+#### 📌 練習 2.2.2：薪資系統 (Payroll System)
+請建立一個抽象類別 `Employee`，包含一個抽象方法 `double calculateSalary()`。建立兩個子類別：
+1. `FullTimeEmployee`：擁有固定月薪。
+2. `PartTimeEmployee`：根據時薪 (`hourlyRate`) 與工作時數 (`hoursWorked`) 計算。
+練習建立一個 `ArrayList<Employee>`，存入不同類型的員工，並計算出總薪資支出。
+
 
 ## 2.3 無色無相：介面
 
@@ -608,7 +616,8 @@ interface E {
 m1() m2() 預設都是 `public abstract` 的抽象方法，不需要顯式宣告。
 
 > [!NOTE]
-> **現代 Java 補充**：自 Java 8 起，介面可以使用 `default` 關鍵字提供預設實作，並支援 `static` 方法；Java 9 起更支援 `private` 方法供內部共用邏輯。這打破了以前「介面完全不能有實作」的限制。
+> **現代 Java 補充**：自 Java 8 起，介面可以使用 `default` 關鍵字提供預設實作，並支援 `static` 方法；Java 9 起更支援 `private` 方法供內部共用邏輯。
+> **為什麼要這樣改？** 主要原因在於 **向後相容性 (Backward Compatibility)**。當我們想要在現有的介面（例如 `java.util.Iterable`）中加入新方法（例如 `forEach`）時，若不支援預設實作，所有已實作成千上萬個舊類別都會編譯失敗。透過 `default` 方法，我們可以在不破壞既有程式碼的情況下擴充介面功能。
 
 當一個類別實踐一個介面，表示它必須實踐這個規格。D 必定要實作 m1() 與 m2()，因為這兩個方法都宣告在介面 E 中。
 
@@ -635,40 +644,44 @@ class Client { //Client 是介面的使用者
 > * 該做什麼，是介面
 > * 能做什麼，又該做什麼，是抽象類別
 
-```plantuml
-interface Vehicle {
-    +left() {abstract}
-    +right() {abstract}
-}
-
-class Car implements Vehicle {
-    +left()
-    +right()    
-}
-class Bike implements Vehicle {
-    +left()
-    +right()    
-}
+```mermaid
+classDiagram
+    class Vehicle {
+        <<interface>>
+        +left()*
+        +right()*
+    }
+    class Car {
+        +left()
+        +right()
+    }
+    class Bike {
+        +left()
+        +right()
+    }
+    Vehicle <|.. Car
+    Vehicle <|.. Bike
 ```
 
-```plantuml
-abstract Vehicle {
-    countWheel
-    color
-    ---
-    +left() {abstract}
-    +right() {abstract}
-}
-
-class Car extends Vehicle {
-    +left()
-    +right()    
-}
-class Bike extends Vehicle {
-    +left()
-    +right()    
-}
-
+```mermaid
+classDiagram
+    class Vehicle {
+        <<abstract>>
+        countWheel
+        color
+        +left()*
+        +right()*
+    }
+    class Car {
+        +left()
+        +right()
+    }
+    class Bike {
+        +left()
+        +right()
+    }
+    Vehicle <|-- Car
+    Vehicle <|-- Bike
 ```
 
 ### 2.3.1 介面實踐與使用

@@ -796,9 +796,9 @@ public class OverloadExample {
 - `divide(int, int)`：當除數為 0 時，回傳 0，否則回傳商。
 
 #### 📌 練習 1.3.2：值傳遞與參考傳遞
-1. 建立 `Person` 類別，包含 `name` 和 `age` 屬性。
-2. 建立 `modify(Person p)` 方法，修改 `p.name` 為 `"Alice"`。
-3. 測試 `modify()` 是否影響原 `Person` 物件的 `name` 值。
+1. 建立 `Person` 類別，包含 `name` 和 `age` 屬性，具備 `modify(Person)`, `modify(String name, int age)` 方法。
+2. 生成一個名為 `peter`, 年齡為 `20` 的 `Person` 物件。
+3. 呼叫上述兩個 `modify` 方法，並觀察結果。
 
 #### 📌 練習 1.3.3：方法重載
 上述練習中的 `Person` 類別，請改寫為使用方法重載的方式 (print())。
@@ -1108,6 +1108,60 @@ public class Main {
 #### 📌 練習 1.4.3：protected 存取修飾子
 1. 在上述練習 1.4.2 中，將 `balance` 改為 protected，並在 `BankAccount` 類別中建立一個 `protected void deposit(double amount)` 方法，用於增加餘額。然後在 `main()` 方法中建立 `BankAccount` 物件，並測試 `protected` 存取修飾子的功能。
 2. 在不同目錄下建立一個 `BankAccount` 的子類別，並在子類別中建立一個 `protected void deposit(double amount)` 方法，用於增加餘額。然後在 `main()` 方法中建立 `BankAccount` 物件，並測試 `protected` 存取修飾子的功能。
+
+#### 📌 練習 1.4.4：privacy leak
+
+請閱讀並實作下列內容。以下程式碼中，`Person` 類別內含有一個私有的可變物件 `Account`。
+
+```java
+class Account {
+    private double balance;
+    public Account(double balance) { this.balance = balance; }
+    public double getBalance() { return balance; }
+    public void setBalance(double b) { this.balance = b; }
+}
+
+class Person {
+    private String name;
+    private Account account;
+
+    public Person(String name, Account account) {
+        this.name = name;
+        this.account = account; // 這裡可能會有隱私洩漏嗎？ (建立時)
+    }
+
+    public Account getAccount() {
+        return account; // 這裡可能會有隱私洩漏嗎？ (取得時)
+    }
+
+    public void display() {
+        System.out.println(name + " 的帳戶餘額為: " + account.getBalance());
+    }
+}
+
+public class PrivacyLeakDemo {
+    public static void main(String[] args) {
+        Account myAcc = new Account(1000);
+        Person p = new Person("John", myAcc);
+        
+        // 觀察 1: 透過外部參考修改
+        myAcc.setBalance(500); 
+        p.display(); // 餘額變成了 500!
+
+        // 觀察 2: 透過 Getter 修改
+        Account leakedAcc = p.getAccount();
+        leakedAcc.setBalance(0);
+        p.display(); // 餘額變成了 0!
+    }
+}
+```
+
+**要求：**
+1. 觀察上述程式碼，說明為什麼外部可以直接修改 `Person` 內部的 `account` 狀態。
+2. 請修改 `Person` 類別，使用**防禦性複製 (Defensive Copying)** 技術，在建構子與 Getter 中分別建立 `Account` 的副本，以確保 `Person` 內部的 `Account` 物件不被外部直接存取與修改。
+   > 提示：在建構子使用 `this.account = new Account(account.getBalance());`，在 Getter 使用 `return new Account(account.getBalance());`。
+
+---
 
 ## 1.5 建構子與物件初始化
 
@@ -2063,7 +2117,7 @@ public class House {
 
 ---
 
-### 1.8.1a 泛型類別
+### 1.8.1 泛型類別
 泛型類別允許我們在類別宣告時指定類型參數。
 
 **範例：定義一個泛型類別**
@@ -2102,7 +2156,7 @@ Hello Generics
 
 ---
 
-### 1.8.1b 泛型與集合物件
+### 1.8.2 泛型與集合物件
 
 **泛型（Generics）** 在 Java 中**最常用於集合類別（Collections）**，例如 `ArrayList`、`HashMap`、`HashSet` 等。Java 集合框架（Java Collections Framework, JCF）大量使用泛型，以提供類型安全（Type Safety）並減少類型轉換（Casting）。
 
@@ -2273,15 +2327,8 @@ public class GenericCollectionsExample {
 
 ---
 
-### 🎯 小結 
-| **特點**             | **優勢**                                                 |
-| -------------------- | -------------------------------------------------------- |
-| **泛型與集合類別**   | 使 `ArrayList`、`HashMap` 等更加安全                     |
-| **型別安全**         | 在編譯時檢查類型錯誤，避免 `ClassCastException`          |
-| **不需手動轉型**     | `String s = list.get(0);` 直接取值，無需 `(String)` 轉型 |
-| **提高程式碼可讀性** | 透過 `ArrayList<String>` 直接知道集合的類型              |
 
-### 1.8.2 泛型方法
+### 1.8.3 泛型方法
 泛型方法（Generic Method）允許方法使用獨立於類別的類型參數，使方法可以適用於不同類型的數據。在 Java 的泛型方法宣告中，<T> 放在 void 之前的原因是：明確告知編譯器這是一個泛型方法，並且 T 是該方法專屬的類型參數。
 
 **範例：定義泛型方法**
@@ -2311,130 +2358,18 @@ A B C
 ```
 在 `printArray` 方法中，`<T>` 宣告了泛型類型 `T`，允許該方法接收任何類型的陣列。
 
----
-
-### 1.8.3 泛型介面
-泛型也可以應用於介面（Generic Interface），使介面能夠適用於不同的數據類型。
-
-**範例：定義泛型介面**
-```java
-// 定義泛型介面
-public interface Container<T> {
-    void add(T item);
-    T get(int index);
-}
-
-// 實作泛型介面
-class StringContainer implements Container<String> {
-    private List<String> items = new ArrayList<>();
-
-    @Override
-    public void add(String item) {
-        items.add(item);
-    }
-
-    @Override
-    public String get(int index) {
-        return items.get(index);
-    }
-}
-
-public class Main {
-    public static void main(String[] args) {
-        Container<String> container = new StringContainer();
-        container.add("Hello");
-        container.add("World");
-
-        System.out.println(container.get(0)); // Hello
-        System.out.println(container.get(1)); // World
-    }
-}
-```
-在這個例子中，`Container<T>` 是一個泛型介面，而 `StringContainer` 則將 `T` 指定為 `String` 來實作這個介面。
 
 ---
 
-### 1.8.4 泛型的邊界
-有時，我們希望限制泛型的類型，使其必須是某個類別的子類別或實作某個介面。此機制稱為泛型的邊界（Bounded Type Parameters）
-
-**範例：使用 extends 限制類型**
-```java
-// 只允許 T 為 Number 的子類別（如 Integer、Double）
-public class MathUtil<T extends Number> {
-    private T number;
-
-    public MathUtil(T number) {
-        this.number = number;
-    }
-
-    public double square() {
-        return number.doubleValue() * number.doubleValue();
-    }
-}
-
-public class Main {
-    public static void main(String[] args) {
-        MathUtil<Integer> intMath = new MathUtil<>(10);
-        MathUtil<Double> doubleMath = new MathUtil<>(3.5);
-
-        System.out.println(intMath.square());   // 100.0
-        System.out.println(doubleMath.square()); // 12.25
-    }
-}
-```
-這裡 `T extends Number` 表示 `T` 只能是 `Number` 的子類別，例如 `Integer` 或 `Double`，確保 `doubleValue()` 方法可以被使用。
+### 🎯 小結 
+| **特點**             | **優勢**                                                 |
+| -------------------- | -------------------------------------------------------- |
+| **泛型與集合類別**   | 使 `ArrayList`、`HashMap` 等更加安全                     |
+| **型別安全**         | 在編譯時檢查類型錯誤，避免 `ClassCastException`          |
+| **不需手動轉型**     | `String s = list.get(0);` 直接取值，無需 `(String)` 轉型 |
+| **提高程式碼可讀性** | 透過 `ArrayList<String>` 直接知道集合的類型              |
 
 ---
-
-### 1.8.5 泛型的通配符
-通配符（Wildcard） `?` 表示不確定的類型，用於允許方法或結構接受不同類型的泛型參數。
-
-**上限通配符 `? extends T`（Upper Bounded Wildcard）**
-允許接受 `T` 或 `T` 的子類別。
-```java
-public static void printNumbers(List<? extends Number> list) {
-    for (Number num : list) {
-        System.out.println(num);
-    }
-}
-
-public static void main(String[] args) {
-    List<Integer> intList = Arrays.asList(1, 2, 3);
-    List<Double> doubleList = Arrays.asList(1.1, 2.2, 3.3);
-
-    printNumbers(intList);
-    printNumbers(doubleList);
-}
-```
-
-**下限通配符 `? super T`（Lower Bounded Wildcard）**
-允許接受 `T` 或 `T` 的超類別。
-```java
-public static void addNumbers(List<? super Integer> list) {
-    list.add(10);
-    list.add(20);
-}
-```
-這表示 `list` 至少是 `Integer` 的超類別（如 `List<Number>`）。
-
-以下是關於泛型語法的整理：
-    
-| 語法 | 意義 | 範例 |
-| --- | --- | --- |
-| `<T>` | 泛型類型參數 | `class Box<T>` |
-| `<T extends Number>` | 泛型類型參數，且必須是 `Number` 的子類別 | `class MathUtil<T extends Number>` |
-| `<T super Integer>` | 泛型類型參數，且必須是 `Integer` 的超類別 | `class AddUtil<T super Integer>` |
-| `<? extends T>` | 上限通配符，允許接受 `T` 或 `T` 的子類別 | `List<? extends Number>` |
-| `<? super T>` | 下限通配符，允許接受 `T` 或 `T` 的超類別 | `List<? super Integer>` |
-
----
-
-### 1.8.7 結論
-- 泛型提供了型別安全與程式碼重用的能力。
-- 泛型可用於**類別、方法、介面**等。
-- **邊界（extends、super）**可限制類型參數的範圍。
-- Java 泛型在運行時會進行**型別擦除**。
-
 
 ### 🔍 觀念測驗 1.8
 
@@ -2444,13 +2379,7 @@ public static void addNumbers(List<? super Integer> list) {
     C)`public class Box<T super Integer> { private T item; }`  
     D)以上皆是  
 
-2. 關於 Java 泛型，以下敘述何者正確？  
-    A)Java 泛型支援基本類型，如 `List<int>`。  
-    B)`List<?>` 允許添加任何類型的元素。  
-    C)`List<? extends Number>` 允許讀取 `Number` 或其子類，但不能寫入（除了 `null`）。  
-    D)Java 的泛型是運行時機制，因此 `T.class` 是合法的。  
-
-3. 給定以下程式碼：
+2. 給定以下程式碼：
 ```java
 class A<T> {
     T value;
@@ -2470,27 +2399,26 @@ class A<T> {
 
 **正確答案：**
 1. A)(B)。C 是錯的，<T super Integer>  只能用在方法中。
-2. (C)
-3. (A)
+2. (A)
 </details>
 
 ---
 
 ### ✍ 練習 1.8
 
-#### 📌 練習 1.8.1：設計泛型類 Pair
-請設計一個泛型類 `Pair<T, U>`，用來存儲一對值，並提供 `getFirst()` 和 `getSecond()` 方法來獲取這兩個值。
+#### 📌 練習 1.8.1：修課
+一個學生可以修很多課，但不確定有多少。Student 類別內有一個 `ArrayList<Course>` 屬性。Course 有課名和學分數屬性，建立一個學生物件，讓他修一些課程，印出修的學分總數。
 
-#### 📌 練習 1.8.2：實作泛型方法 swap
-請實作一個泛型方法 `swap`，能夠交換陣列中的兩個元素。例如：
-```java
-Integer[] arr = {1, 2, 3, 4};
-swap(arr, 1, 3);
-System.out.println(Arrays.toString(arr)); // 輸出: [1, 4, 3, 2]
+#### 📌 練習 1.8.2：修課成績
+延續練習 1.8.1 的 `Student` 與 `Course` 類別，請使用 `HashMap` 來記錄成績：
+1. 在 `Student` 類別中新增屬性 `private Map<Course, Integer> grades = new HashMap<>();`。
+2. 實作方法 `public void addGrade(Course course, int score)`，將成績存入 Map 中。
+3. 實作方法 `public Integer getGrade(Course course)`，輸入課程物件並回傳該課成績。
+4. 在 `main` 方法中，建立學生物件與數個課程物件，設定成績後並且每一科的成績和平均成績
+。
+
 ```
 
-#### 📌 練習 1.8.3：實作泛型類 Box with Comparable  
-請實作一個泛型類 `Box<T extends Comparable<T>>`，並提供 `compare(Box<T> other)` 方法，讓 `Box<T>` 物件可以與另一個 `Box<T>` 物件比較大小。  
 
 ---
 
@@ -2896,13 +2824,13 @@ public class Person {
 9 x 9 = 81
 ```
 
-## 1.10 Intellij/Java 安裝與使用
+## 1.9 Intellij/Java 安裝與使用
 
 ### Java 版本
 
 Java 目前有許多版本，每個版本的主要功能更新和改善都會有所不同。以下是對主要版本（包括 LTS 版本）的簡要介紹，並包括在 IntelliJ 上下載時應選擇的版本：
 
-#### Java 8 (LTS)
+Java 8 (LTS)
 - **發布時間**：2014年3月
 - **主要更新**：
   - **Lambda 表達式**：Java 8 引入了 Lambda 表達式，這是對函數式編程的支持，讓代碼更加簡潔和表達力強。
@@ -2912,7 +2840,7 @@ Java 目前有許多版本，每個版本的主要功能更新和改善都會有
 
 - **使用建議**：由於是 LTS（長期支持）版本，Java 8 仍然是許多企業和開發者的首選，特別是需要穩定和長期支持的情況下。
 
-#### Java 9
+Java 9
 - **發布時間**：2017年9月
 - **主要更新**：
   - **模組系統（Java Platform Module System, JPMS）**：Java 9 引入了模組化系統，將 JDK 分割成了多個模組，有助於提高應用的可維護性和性能。
@@ -2920,14 +2848,14 @@ Java 目前有許多版本，每個版本的主要功能更新和改善都會有
 
 - **使用建議**：Java 9 引入了大量新特性，但由於它並非 LTS 版本，許多公司可能會選擇跳過這個版本，直到需要特定功能時才會使用。
 
-#### Java 10
+Java 10
 - **發布時間**：2018年3月
 - **主要更新**：
   - **局部變量類型推斷（`var`）**：引入了 `var` 關鍵字，讓開發者在聲明變量時可以省略類型，讓代碼更加簡潔。
 
 - **使用建議**：Java 10 只是較小的更新，並不是 LTS 版本，適合需要使用新語言特性的開發者，但對於長期穩定性需求的項目，建議選擇 LTS 版本。
 
-#### Java 11 (LTS)
+Java 11 (LTS)
 - **發布時間**：2018年9月
 - **主要更新**：
   - **移除不必要的功能**：一些過時的功能（如 Java EE 模塊）被移除，從而簡化了 JDK。
@@ -2936,7 +2864,7 @@ Java 目前有許多版本，每個版本的主要功能更新和改善都會有
 
 - **使用建議**：Java 11 是另一個 LTS 版本，因此適合需要長期支持的企業應用。
 
-#### Java 12
+Java 12
 - **發布時間**：2019年3月
 - **主要更新**：
   - **Shenandoah 垃圾回收器**：另一種低延遲垃圾回收器的引入。
@@ -2944,7 +2872,7 @@ Java 目前有許多版本，每個版本的主要功能更新和改善都會有
 
 - **使用建議**：由於 Java 12 不是 LTS 版本，對於長期運行的應用不建議使用。
 
-#### Java 13 和 14
+Java 13 和 14
 - **發布時間**：2019年9月（Java 13），2020年3月（Java 14）
 - **主要更新**：
   - **增強的 Switch 表達式**：讓 `switch` 語句更加靈活，能夠返回值並且支持多條語句。
@@ -2952,7 +2880,7 @@ Java 目前有許多版本，每個版本的主要功能更新和改善都會有
 
 - **使用建議**：這些版本都不是 LTS 版本，適合需要快速採用新特性的開發者，但對於穩定性要求高的項目，建議使用 LTS 版本。
 
-#### Java 15
+Java 15
 - **發布時間**：2020年9月
 - **主要更新**：
   - **隱式和顯式的數據類型封裝**：Java 15 引入了封裝的 `sealed` 類型，可以讓類型繼承層次結構更加可控。
@@ -2960,7 +2888,7 @@ Java 目前有許多版本，每個版本的主要功能更新和改善都會有
 
 - **使用建議**：Java 15 並非 LTS 版本，適合追求最新功能的開發者，但一般不建議用於生產環境。
 
-#### Java 16
+Java 16
 - **發布時間**：2021年3月
 - **主要更新**：
   - **JEP 396（強封裝的 JDK）**：更強化了 JDK 的封裝，提升了安全性。
@@ -2968,7 +2896,7 @@ Java 目前有許多版本，每個版本的主要功能更新和改善都會有
 
 - **使用建議**：此版本是短期支持版本，建議有特殊需求的開發者使用。
 
-#### Java 17 (LTS)
+Java 17 (LTS)
 - **發布時間**：2021年9月
 - **主要更新**：
   - **移除 `Applets`**：Java 17 移除了 Applet 支持，標誌著一個歷史性變化。
@@ -2977,7 +2905,7 @@ Java 目前有許多版本，每個版本的主要功能更新和改善都會有
 
 - **使用建議**：Java 17 是最新的 LTS 版本，適合長期使用的項目，並且比 Java 8 有更多現代化的功能。
 
-#### 下載建議：在 IntelliJ 上選擇合適的版本
+下載建議：在 IntelliJ 上選擇合適的版本
 - **對於大多數學習者**：強烈建議選擇 **Java 21 (LTS)** 或 **Java 17 (LTS)**。Java 21 是目前最穩定的長期支持版本，包含了許多現代特性且與多數框架相容。
 - **Java 8 (LTS)**：除非是維護極度老舊的系統，否則不建議初學者從此版本開始，因為許多現代語法（如 Records, var, 簡化 switch）在此版本皆無法使用。
 
@@ -2985,11 +2913,7 @@ Java 目前有許多版本，每個版本的主要功能更新和改善都會有
 
 Java 目前的版本確實已經進入到了 **Java 23**，並且從 **Java 17** 開始，Oracle 的發佈策略也改變了，Java 在 17 到 23 之間並沒有 LTS（長期支持）版本。這些版本都是「非 LTS」版本，即每個版本的支持周期較短，通常為半年。
 
-#### Java 17 到 23 之間沒有 LTS 的情況：
-- Oracle 在 **Java 17** 提供了最後一個 LTS 版本，之後的 **Java 18, 19, 20, 21, 22, 23** 都是非 LTS 版本。這些版本的更新周期較短，通常是每個版本約 6 個月就會推出新版本。
-- 非 LTS 版本主要針對新功能、性能改進和一些實驗性特性進行快速迭代更新，這對於探索新特性或需要快速迭代的開發者來說是有價值的，但對於企業級應用而言，使用非 LTS 版本可能會有風險，因為支持周期短。
-
-#### Amazon Corretto、JetBrains Runtime（JBR）、Oracle JDK 的差異：
+### Amazon Corretto、JetBrains Runtime（JBR）、Oracle JDK 的差異：
 1. **Oracle JDK**：
    - 這是 Java 的官方版本，Oracle 提供的商業支持。
    - 每個 LTS 版本（例如 Java 8 和 Java 11）都會有至少 8 年的支持（包括公共和商業支持）。
@@ -3005,12 +2929,12 @@ Java 目前的版本確實已經進入到了 **Java 23**，並且從 **Java 17**
    - JetBrains Runtime 是 JetBrains 團隊基於 OpenJDK 構建的 JDK，主要用於 IntelliJ IDEA 等 JetBrains 開發工具的運行時環境。
    - 它的目標是提升 IDE 的性能和穩定性，並且作為內嵌 JDK 用於 JetBrains 的 IDE。對於一般 Java 開發而言，JBR 可能不太適合作為獨立的開發 JDK 使用，但如果你主要是用 IntelliJ 開發，JBR 可能會提供更好的整合體驗。
 
-#### 如何選擇：
+### 如何選擇：
 - **如果你需要穩定性和長期支持**：選擇 **Oracle JDK 17（LTS）** 或 **Amazon Corretto 17（LTS）** 會比較合適。這些版本有較長的支持周期，並且得到了很多企業的廣泛使用，對於長期運行的項目比較合適。
 - **如果你想探索新功能，並且不介意更新頻繁**：選擇 **Java 18 到 Java 23**（非 LTS版本）可以讓你使用最新的功能和改進，但需要注意更新周期較短，對於生產環境不建議頻繁更換。
 - **如果你的主要開發環境是 IntelliJ IDEA**：你可以選擇 **JetBrains Runtime (JBR)**，這是為 IntelliJ 提供的 JDK，能夠提供最佳的整合體驗。通常，如果你已經在使用 IntelliJ 開發，這也是一個不錯的選擇。
 
-### 🎯 總結 1.9
+**🎯 總結**
 - **企業和長期支持需求**：選擇 **Oracle JDK 17 (LTS)** 或 **Amazon Corretto 17 (LTS)**。
 - **對最新特性有需求的開發者**：選擇 **Java 18, 19, 20, 21, 22, 23**（非 LTS 版本），但需要留意更新周期。
 - **在 IntelliJ 中開發，尋求最佳集成體驗**：選擇 **JetBrains Runtime (JBR)**。
@@ -3019,7 +2943,7 @@ Java 目前的版本確實已經進入到了 **Java 23**，並且從 **Java 17**
 
 ---
 
-### 1. 安裝 Java Development Kit (JDK)
+1. 安裝 Java Development Kit (JDK)
 1. **下載 JDK**：
    - 前往 [Oracle 官網](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html) 下載 JDK。或者，選擇 OpenJDK（如 [AdoptOpenJDK](https://adoptopenjdk.net/)）。
    - 根據系統選擇適合的版本。強烈建議使用 LTS（長期支持）版本，例如 JDK 11 或 JDK 17。
@@ -3035,7 +2959,7 @@ Java 目前的版本確實已經進入到了 **Java 23**，並且從 **Java 17**
 4. **測試安裝**：
    - 開啟終端或命令提示字元，輸入 `java -version` 來檢查 Java 是否安裝成功。
 
-### 2. 安裝 IntelliJ IDEA
+2. 安裝 IntelliJ IDEA
 1. **下載 IntelliJ IDEA**：
    - 進入 [IntelliJ IDEA 官方網站](https://www.jetbrains.com/idea/download/)。
    - 根據系統選擇適合的版本（Windows、macOS 或 Linux）。如果是初學者，可以選擇免費的 Community 版本。
@@ -3048,7 +2972,7 @@ Java 目前的版本確實已經進入到了 **Java 23**，並且從 **Java 17**
    - 安裝完成後，啟動 IntelliJ IDEA。首次啟動會提示選擇配寘（如是否導入舊設定），可根據需求進行設定。
 
 
-### 3. Maven 專案的概念
+3. Maven 專案的概念
 1. **什麼是 Maven**：
    - Maven 是一個專案管理工具，主要用來管理 Java 項目的構建、依賴、測試等過程。它通過 `pom.xml` 文件來定義專案的依賴關係、構建規則等。
    

@@ -58,7 +58,9 @@ Thumbs.db
 # Project specific
 _OOSE/
 exam/
-HW/
+*.HW
 gh/
 tools/
 *_slide.md
+HW/
+*.pptx

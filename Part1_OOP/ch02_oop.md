@@ -576,11 +576,6 @@ public static void print(Object x) {...}
 4. print("abc");
 5. print(new Integer(12));	
 
-5️⃣ **關於 Java 的多態性（Polymorphism），以下說法正確的是？**  
-   A) 只有介面（interface）才能實現多態性  
-   B) 方法超載（method overloading）與方法覆蓋（method overriding）都能實現多態性  
-   C) 多態性只適用於靜態方法（static methods）  
-   D) `final` 類別可以被繼承 but cannot be instantiated (這選項原意可能是 D, 但 B 比較正確)
    D) `final` 類別可以被繼承但不能被實例化  
 
 <details>
@@ -623,7 +618,32 @@ m1() m2() 預設都是 `public abstract` 的抽象方法，不需要顯式宣告
 
 > [!NOTE]
 > **現代 Java 補充**：自 Java 8 起，介面可以使用 `default` 關鍵字提供預設實作，並支援 `static` 方法；Java 9 起更支援 `private` 方法供內部共用邏輯。
-> **為什麼要這樣改？** 主要原因在於 **向後相容性 (Backward Compatibility)**。當我們想要在現有的介面（例如 `java.util.Iterable`）中加入新方法（例如 `forEach`）時，若不支援預設實作，所有已實作成千上萬個舊類別都會編譯失敗。透過 `default` 方法，我們可以在不破壞既有程式碼的情況下擴充介面功能。
+> 
+> ```java
+> interface SmartDevice {
+>     void operate(); // 抽象方法
+> 
+>     default void powerOn() { // 預設實作 (Java 8+)
+>         log("Powering on...");
+>         System.out.println("Device is now ON.");
+>     }
+> 
+>     static void basicCheck() { // 靜態方法 (Java 8+)
+>         System.out.println("System integrity check: OK.");
+>     }
+> 
+>     private void log(String msg) { // 私有方法 (Java 9+)
+>         System.out.println("[LOG]: " + msg);
+>     }
+> }
+> ```
+> 
+> **為什麼要這樣改？** 主要原因在於 **向後相容性 (Backward Compatibility)**。
+> 考慮 Java 的 `Iterable` 介面：在 Java 1.5 引入時，它只有 `iterator()` 方法。到了 Java 8，開發者想增加 `forEach()` 方法來支援 Lambda。
+> 
+> 如果直接新增一個抽象方法 `void forEach(...)`，全世界所有實作了 `Iterable` 的自定義類別（例如某個舊系統s的 `MyList`）都會**編譯失敗**，因為它們沒有實作新加的方法。
+> 
+> 透過 `default` 關鍵字，Java 官方可以直接在介面中提供 `forEach()` 的預設邏輯。舊的類別不需要修改任何程式碼就能直接升級到 Java 8 並繼續執行，甚至能自動「繼承」到這個新功能。
 
 當一個類別實踐一個介面，表示它必須實踐這個規格。D 必定要實作 m1() 與 m2()，因為這兩個方法都宣告在介面 E 中。
 
@@ -714,24 +734,35 @@ classDiagram
 
 ### 2.3.3 多重繼承
 
-Java 所謂的多重繼承是指多重的介面繼承。一個類別可以實作很多的介面，但只能繼承一個類別。類別 G 繼承類別 C 並實作介面 E 與 F 是被允許的。
+Java 所謂的多重繼承是指多重的**介面**繼承。一個類別可以實作很多的介面，但只能繼承一個類別。類別 G 繼承類別 C 並實作介面 E 與 F 是被允許的。
+
+#### **為什麼 Java 不允許類別的多重繼承？**
+主要原因是為了避免**菱形繼承問題 (The Diamond Problem)**。
+假設類別 A 有一個 `move()` 方法，類別 B 與 C 都繼承 A 並分別覆寫了 `move()`。如果類別 D 同時繼承 B 與 C，當 D 呼叫 `move()` 時，編譯器將無法判斷該執行 B 還是 C 的版本。這會造成嚴重的邏輯混淆。
+
+```mermaid
+graph TD
+    A[Class A: move] --> B[Class B: move]
+    A --> C[Class C: move]
+    B --> D[Class D: ???]
+    C --> D
+```
+
+#### **介面如何解決這個問題？**
+1. **傳統介面**：因為方法都是抽象的（沒有實作），即使類別 G 實作了兩個擁有相同方法簽署的介面 E 和 F，G 最終也只能提供**一份實作**，衝突自然消失。
+2. **預設方法 (Default Methods)**：如果 E 和 F 都有同名的 `default` 方法，Java 會強制類別 G **必須覆寫**該方法，手動決定要使用哪一個（或是提供全新的實作）。
 
 ```java=
 public class G extends C implements E, F {
-  public void op1() {
-     ...
-  }
+  @Override
   public void op2() {
-     ...
+     E.super.op2(); // 明確指定使用 E 介面的預設實作
   }
-  public void op4() {
-     ...
-  }
+
+  public void op1() { ... }
+  public void op4() { ... }
 }
 ```
-
-請注意 C, E, F 中同時都定義了方法 op2()，但這並不會造成任何的混淆，因為 op2() 都是抽象的，並沒有任何的實作。如果讓 G 同時繼承 C 與 A 則會編譯失敗，因為Java並不允許同時繼承兩個類別。
-
 ```java=
   interface Vehicle {
      // 右轉最大角度常數
@@ -1208,6 +1239,11 @@ String s = super.nextToken();
 * 透過委託 `SuperStringTokenizer` 將 **包含** `StringTokenizer`。你一樣要宣告一個 `nextToken()` 來傳回每一個大寫字元的 token。	
 
 
+<<<<<<< HEAD
+=======
+#### 📌 練習 2.3.2：星座速配幸運號碼
+
+>>>>>>> 9447d45 (Refine modern interface and multiple inheritance explanations in ch02_oop.md)
 > [!TIP]
 > ##### EX-lucky-number
 > 請參考  NNEntity 的例子，製作一個星座速配幸運號碼表，例如 巨蟹座X雙子座 => 06220522 % 144 => 10 是此搭配的幸運號碼，其中0622是巨蟹的起始日，0522是雙子的起始日，% 表示取餘數。
@@ -1244,6 +1280,7 @@ classDiagram
 </details>
 
 
+<<<<<<< HEAD
 ## 2.3 Python 物件導向
 
 ### 2.3.1 繼承
@@ -1428,6 +1465,8 @@ classDiagram
 
 
 
+=======
+>>>>>>> 9447d45 (Refine modern interface and multiple inheritance explanations in ch02_oop.md)
 ### 2.3.lab 小節練習
 
 > [!TIP]
@@ -1439,6 +1478,7 @@ classDiagram
 
 ### ✍ 練習 2.4.1：圖形介面實作
 > [!TIP]
+<<<<<<< HEAD
 > :basketball: EX-share-area
 > * 建立一個 `Shape` 的介面，裡面有 `getArea()` 來回傳面積
 > * 建立圓形 (`Circle`)、正方形(`Square`)、矩形(`Rectangle`)、三角形(`Triangle`)等圖形的類別，實作Shape
@@ -1447,6 +1487,14 @@ classDiagram
 ### ✍ 練習 2.4.2：學生排序
 > [!TIP]
 > :basketball: EX-compare-student
+=======
+> * 建立一個 `Shape` 的介面，裡面有 `getArea()` 來回傳面積
+> * 建立圓形 (`Circle`)、正方形(`Square`)、矩形(`Rectangle`)、三角形(`Triangle`)等圖形的類別，實作Shape
+> * 請以 Java 完成此練習
+
+### ✍ 練習 2.4.2：學生排序
+> [!TIP]
+>>>>>>> 9447d45 (Refine modern interface and multiple inheritance explanations in ch02_oop.md)
 > * 應用 `Comparable（內有 int compareTo(Comparable) 方法)` 介面來寫一個排序的程式，並且用來排序以下的物件。
 > 	* 一個類別 Student, 裡面的屬性包含身高、體重、成績，如果 「身高+成績-體重」 比較較高，則較好。
 > 	* 請以 selection sort 來完成此作業

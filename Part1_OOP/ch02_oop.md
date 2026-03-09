@@ -1239,11 +1239,6 @@ String s = super.nextToken();
 * 透過委託 `SuperStringTokenizer` 將 **包含** `StringTokenizer`。你一樣要宣告一個 `nextToken()` 來傳回每一個大寫字元的 token。	
 
 
-<<<<<<< HEAD
-=======
-#### 📌 練習 2.3.2：星座速配幸運號碼
-
->>>>>>> 9447d45 (Refine modern interface and multiple inheritance explanations in ch02_oop.md)
 > [!TIP]
 > ##### EX-lucky-number
 > 請參考  NNEntity 的例子，製作一個星座速配幸運號碼表，例如 巨蟹座X雙子座 => 06220522 % 144 => 10 是此搭配的幸運號碼，其中0622是巨蟹的起始日，0522是雙子的起始日，% 表示取餘數。
@@ -1280,193 +1275,6 @@ classDiagram
 </details>
 
 
-<<<<<<< HEAD
-## 2.3 Python 物件導向
-
-### 2.3.1 繼承
-
-* `class Engineer(Person)` 表示 Engineer 繼承了 Person
-* `super().__init__()` 來呼叫父類別的建構子
-* `@abstractmethod` 來表示抽象類別，要 import `abstractmethod`; 程式碼內為 `pass`
-* 繼承 `ABC` 表示設計一個介面。ABC 為 `Abstract Base Class`
-
-#### **Python 特性：多重繼承 (Multiple Inheritance)**
-與 Java 不同，Python 允許一個類別同時繼承多個父類別。這提供了極大的靈活性，但也需要注意 **MRO (Method Resolution Order)** 順序。
-
-```python
-class Swimmer:
-    def swim(self):
-        print("Swimming...")
-
-class Runner:
-    def run(self):
-        print("Running...")
-
-class Athlete(Swimmer, Runner): # 同時繼承兩個父類別
-    pass
-
-a = Athlete()
-a.swim()
-a.run()
-```
-
-以 `Person` 為例，製作一個抽象類別，其下有 `Engineer` 及 `Manager` 兩個子類別，來說明繼承：
-
-
-```python=
-class Person:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
-
-    def display(self):
-        print(f"{self.name} is {self.age} years old.")
-
-class Engineer(Person):
-    def __init__(self, name, age, expertise):
-        super().__init__(name, age)
-        self.expertise = expertise
-        self.projects = []
-
-    def display(self):
-        print(f"{self.name} is an engineer with expertise in {self.expertise} and is currently working on {len(self.projects)} projects.")
-        super().display()
-
-    def add_project(self, project):
-        self.projects.append(project)
-
-class Manager(Person):
-    def __init__(self, name, age, department):
-        super().__init__(name, age)
-        self.department = department
-        self.subordinates = []
-
-    def display(self):
-        print(f"{self.name} is a manager of the {self.department} department and has {len(self.subordinates)} subordinates.")
-        super().display()
-
-    def add_subordinate(self, subordinate):
-        self.subordinates.append(subordinate)
-```
-
-用圖片更容易看得出關係：
-```mermaid
-classDiagram
-    class Person {
-        name: String
-        age: int
-        +__init__()
-        +display()
-    }
-
-    class Engineer {
-        expertise: String
-        +display()
-        +add_project()
-    }
-
-    class Manager {
-        department: String
-        +display()
-        +add_subordinate()
-    }
-
-    Person <|-- Engineer
-    Person <|-- Manager
-```
-
-以下為呼叫端：
-```python=
-# 建立 Engineer 和 Manager 物件
-engineer = Engineer("Alice", 30, "software development")
-manager = Manager("Bob", 40, "marketing")
-
-# 添加 Engineer 的專案
-engineer.add_project("Project A")
-engineer.add_project("Project B")
-
-# 添加 Manager 的下屬
-manager.add_subordinate("Tom")
-manager.add_subordinate("Jerry")
-
-# 呼叫 display 方法
-engineer.display()  # Alice is an engineer with expertise in software development and is currently working on 2 projects. Alice is 30 years old.
-manager.display()   # Bob is a manager of the marketing department and has 2 subordinates. Bob is 40 years old.
-```
-
-
-在這個範例中，我們將 Engineer 和 Manager 類別中新增了一些屬性和方法。在 Engineer 類別中，我們新增了一個 projects 屬性，它是一個列表，用於儲存工程師正在參與的專案。我們也新增了一個 `add_project()` 方法，用於向工程師的專案列表中添加新專案。在 Manager 類別中，我們新增了一個 subordinates 屬性，它是一個列表，用於儲存該經理的下屬。我們也新增了一個 `add_subordinate()` 方法，用於向經理的下屬列表中添加新下屬。
-
-
-### 2.3.2 介面
-
-Python 有介面（Interface）的概念，不過與 Java 不同，Python 的介面是一種純抽象的基礎類別（Abstract Base Class; `ABC`），並且不需要使用特定的關鍵字定義介面。
-
-在 Python 中，您可以使用 abc 模組定義抽象基礎類別，並使用 @abstractmethod 裝飾器來標記抽象方法。以下是一個範例：
-
-```python=
-from abc import ABC, abstractmethod
-
-class MyInterface(ABC):
-
-    @abstractmethod
-    def method1(self):
-        pass
-
-    @abstractmethod
-    def method2(self, arg):
-        pass
-```
-
-這裡定義了一個名為 MyInterface 的抽象基礎類別，並包含兩個抽象方法 method1 和 method2。請注意，這些方法沒有實際的實作，而是使用 pass 關鍵字表示這是一個空方法。
-
-在您需要實現這個介面的類別中，需要繼承 MyInterface 並實現所有的抽象方法。如果某個類別沒有實現所有抽象方法，那麼它也會被視為抽象類別。
-
-```python=
-class MyClass(MyInterface):
-
-    def method1(self):
-        # 實現 method1 的程式碼
-
-    def method2(self, arg):
-        # 實現 method2 的程式碼
-```
-
-這裡定義了一個名為 MyClass 的類別，它繼承自 MyInterface，並實現了所有抽象方法。這樣 MyClass 就可以被視為一個實現了 MyInterface 的類別了。
-
-
-以上面 Person 的例子來說，如果我們
-
-```python=
-from abc import ABC, abstractmethod
-
-class Vehicle(ABC):
-    @abstractmethod
-    def turnRight(self):
-        pass
-    
-    @abstractmethod
-    def turnLeft(self):
-        pass
-    
-```
-
-```mermaid
-classDiagram
-    class Vehicle {
-        <<interface>>
-        +turnRight()
-        +turnLeft()
-    }
-
-    class Bike
-    Vehicle <|-- Bike
-```
-
-
-
-=======
->>>>>>> 9447d45 (Refine modern interface and multiple inheritance explanations in ch02_oop.md)
 ### 2.3.lab 小節練習
 
 > [!TIP]
@@ -1478,23 +1286,13 @@ classDiagram
 
 ### ✍ 練習 2.4.1：圖形介面實作
 > [!TIP]
-<<<<<<< HEAD
 > :basketball: EX-share-area
 > * 建立一個 `Shape` 的介面，裡面有 `getArea()` 來回傳面積
 > * 建立圓形 (`Circle`)、正方形(`Square`)、矩形(`Rectangle`)、三角形(`Triangle`)等圖形的類別，實作Shape
-> * 請以 Java 及 Python 完成此練習
 
 ### ✍ 練習 2.4.2：學生排序
 > [!TIP]
 > :basketball: EX-compare-student
-=======
-> * 建立一個 `Shape` 的介面，裡面有 `getArea()` 來回傳面積
-> * 建立圓形 (`Circle`)、正方形(`Square`)、矩形(`Rectangle`)、三角形(`Triangle`)等圖形的類別，實作Shape
-> * 請以 Java 完成此練習
-
-### ✍ 練習 2.4.2：學生排序
-> [!TIP]
->>>>>>> 9447d45 (Refine modern interface and multiple inheritance explanations in ch02_oop.md)
 > * 應用 `Comparable（內有 int compareTo(Comparable) 方法)` 介面來寫一個排序的程式，並且用來排序以下的物件。
 > 	* 一個類別 Student, 裡面的屬性包含身高、體重、成績，如果 「身高+成績-體重」 比較較高，則較好。
 > 	* 請以 selection sort 來完成此作業

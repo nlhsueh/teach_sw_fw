@@ -1097,7 +1097,8 @@ class TableDisplayer {
 }
 ```
 #### 主程式
-```java=
+
+```java
 package basic;
 /*
  * This is an ERROR code, for students to fix
@@ -1224,7 +1225,7 @@ class B {
 
 下述程式為某系統的部分程式碼，是否會發生編譯錯誤？執行錯誤？
 
-```java=
+```java
 interface IA {
   void m1();
 }

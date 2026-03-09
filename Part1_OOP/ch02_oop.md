@@ -200,6 +200,33 @@ class Main {
 }
 ```
 
+```mermaid
+classDiagram
+    direction BT
+    class StringTokenizer {
+        +StringTokenizer(String str)
+        +nextToken() String
+        +hasMoreTokens() boolean
+        +countTokens() int
+    }
+    
+    class EnhancedStringTokenizer {
+        -String[] a
+        -int count
+        +EnhancedStringTokenizer(String theString)
+        +nextToken() String
+        +tokensSoFar() String[]
+    }
+    
+    class Main {
+        +main(String[] args)
+        +printSoFar(String[] ss)$
+    }
+
+    StringTokenizer <|-- EnhancedStringTokenizer : extends
+    Main ..> EnhancedStringTokenizer : uses
+```
+
 ### 2.1.5 抽象方法與類別
 
 抽象類別無法產生物件，但可被繼承，例如交通工具 Vehicle 可分為 Bike 和 Car, 是一種完全分類，不會有物件從 Vehicle 產生出來。
@@ -236,6 +263,28 @@ class Car extends Vehicle {
        ... //汽車倒車的方法
    }
 }
+```
+
+```mermaid
+classDiagram
+    class Vehicle {
+        <<abstract>>
+        -String ID
+        +turnLeft()* void
+        +turnRight()* void
+        +getID() String
+    }
+    class Bike {
+        +turnLeft() void
+        +turnRight() void
+    }
+    class Car {
+        +turnLeft() void
+        +turnRight() void
+        +backward() void
+    }
+    Vehicle <|-- Bike
+    Vehicle <|-- Car
 ```
 
 > [!NOTE]
@@ -495,9 +544,21 @@ class VehicleController {
 }
 ``` 
 
+```mermaid
+classDiagram
+    class VehicleController {
+        +manage(Vehicle v)
+    }
+    class Vehicle {
+        <<abstract>>
+        +turnLeft()*
+    }
+    VehicleController ..> Vehicle : uses
+```
+
 ---
 
-### **2.2.4 進階觀念：編譯時型態 vs. 執行時型態**
+### **2.2.4 編譯時型態 vs. 執行時型態**
 理解多型的關鍵在於區分「變數的型態」與「物件的型態」。
 
 - **編譯時型態 (Compile-time Type)**：變數宣告時的型態（例如 `Vehicle v`）。編譯器以此決定變數能呼叫哪些方法。
@@ -615,35 +676,6 @@ interface E {
 ```
 
 m1() m2() 預設都是 `public abstract` 的抽象方法，不需要顯式宣告。
-
-> [!NOTE]
-> **現代 Java 補充**：自 Java 8 起，介面可以使用 `default` 關鍵字提供預設實作，並支援 `static` 方法；Java 9 起更支援 `private` 方法供內部共用邏輯。
-> 
-> ```java
-> interface SmartDevice {
->     void operate(); // 抽象方法
-> 
->     default void powerOn() { // 預設實作 (Java 8+)
->         log("Powering on...");
->         System.out.println("Device is now ON.");
->     }
-> 
->     static void basicCheck() { // 靜態方法 (Java 8+)
->         System.out.println("System integrity check: OK.");
->     }
-> 
->     private void log(String msg) { // 私有方法 (Java 9+)
->         System.out.println("[LOG]: " + msg);
->     }
-> }
-> ```
-> 
-> **為什麼要這樣改？** 主要原因在於 **向後相容性 (Backward Compatibility)**。
-> 考慮 Java 的 `Iterable` 介面：在 Java 1.5 引入時，它只有 `iterator()` 方法。到了 Java 8，開發者想增加 `forEach()` 方法來支援 Lambda。
-> 
-> 如果直接新增一個抽象方法 `void forEach(...)`，全世界所有實作了 `Iterable` 的自定義類別（例如某個舊系統s的 `MyList`）都會**編譯失敗**，因為它們沒有實作新加的方法。
-> 
-> 透過 `default` 關鍵字，Java 官方可以直接在介面中提供 `forEach()` 的預設邏輯。舊的類別不需要修改任何程式碼就能直接升級到 Java 8 並繼續執行，甚至能自動「繼承」到這個新功能。
 
 當一個類別實踐一個介面，表示它必須實踐這個規格。D 必定要實作 m1() 與 m2()，因為這兩個方法都宣告在介面 E 中。
 
@@ -1099,6 +1131,37 @@ public class NNMultiplication {
 
 
 也試著說明 NNEntity 如何實踐物件特性：封裝、繼承、介面、多型。
+
+### 2.3.7 現代 Java 特性：介面進階
+
+> [!NOTE]
+> **現代 Java 補充**：自 Java 8 起，介面可以使用 `default` 關鍵字提供預設實作，並支援 `static` 方法；Java 9 起更支援 `private` 方法供內部共用邏輯。
+> 
+> ```java
+> interface SmartDevice {
+>     void operate(); // 抽象方法
+> 
+>     default void powerOn() { // 預設實作 (Java 8+)
+>         log("Powering on...");
+>         System.out.println("Device is now ON.");
+>     }
+> 
+>     static void basicCheck() { // 靜態方法 (Java 8+)
+>         System.out.println("System integrity check: OK.");
+>     }
+> 
+>     private void log(String msg) { // 私有方法 (Java 9+)
+>         System.out.println("[LOG]: " + msg);
+>     }
+> }
+> ```
+> 
+> **為什麼要這樣改？** 主要原因在於 **向後相容性 (Backward Compatibility)**。
+> 考慮 Java 的 `Iterable` 介面：在 Java 1.5 引入時，它只有 `iterator()` 方法。到了 Java 8，開發者想增加 `forEach()` 方法來支援 Lambda。
+> 
+> 如果直接新增一個抽象方法 `void forEach(...)`，全世界所有實作了 `Iterable` 的自定義類別（例如某個舊系統s的 `MyList`）都會**編譯失敗**，因為它們沒有實作新加的方法。
+> 
+> 透過 `default` 關鍵字，Java 官方可以直接在介面中提供 `forEach()` 的預設邏輯。舊的類別不需要修改任何程式碼就能直接升級到 Java 8 並繼續執行，甚至能自動「繼承」到這個新功能。
 
 ### 🔍 觀念測驗 2.3
 

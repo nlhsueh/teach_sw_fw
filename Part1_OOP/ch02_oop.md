@@ -657,7 +657,7 @@ People 內部宣告一個 `boolean overWeight()` 的抽象方法。People 的建
 
 ---
 
-#### 📌 練習 2.2.2：薪資系統 (Payroll System)
+#### 📌 練習 2.2.2：薪資系統
 請建立一個抽象類別 `Employee`，包含一個抽象方法 `double calculateSalary()`。建立兩個子類別：
 1. `FullTimeEmployee`：擁有固定月薪。
 2. `PartTimeEmployee`：根據時薪 (`hourlyRate`) 與工作時數 (`hoursWorked`) 計算。
@@ -768,7 +768,7 @@ classDiagram
 
 Java 所謂的多重繼承是指多重的**介面**繼承。一個類別可以實作很多的介面，但只能繼承一個類別。類別 G 繼承類別 C 並實作介面 E 與 F 是被允許的。
 
-#### **為什麼 Java 不允許類別的多重繼承？**
+**為什麼 Java 不允許類別的多重繼承？**
 主要原因是為了避免**菱形繼承問題 (The Diamond Problem)**。
 假設類別 A 有一個 `move()` 方法，類別 B 與 C 都繼承 A 並分別覆寫了 `move()`。如果類別 D 同時繼承 B 與 C，當 D 呼叫 `move()` 時，編譯器將無法判斷該執行 B 還是 C 的版本。這會造成嚴重的邏輯混淆。
 
@@ -780,7 +780,7 @@ graph TD
     C --> D
 ```
 
-#### **介面如何解決這個問題？**
+**介面如何解決這個問題？**
 1. **傳統介面**：因為方法都是抽象的（沒有實作），即使類別 G 實作了兩個擁有相同方法簽署的介面 E 和 F，G 最終也只能提供**一份實作**，衝突自然消失。
 2. **預設方法 (Default Methods)**：如果 E 和 F 都有同名的 `default` 方法，Java 會強制類別 G **必須覆寫**該方法，手動決定要使用哪一個（或是提供全新的實作）。
 
@@ -828,7 +828,7 @@ public class G extends C implements E, F {
 > [!NOTE]
 > 一般化：整數比較 $\Longrightarrow$ 物件比較
 
-#### Comparable 介面
+**Comparable 介面**
 
 任何物品只要符合 `Comparable` 的介面都是可以比較的。針對 Comparable 我們設計一個 `best(x, y, z)` 的方法來比較三個物品，該方法將回傳最「好」的物件。
 
@@ -997,14 +997,16 @@ pq  pqab   pqxy   pqpq
 ```
 
 
-#### 一個抽象的 NNEntity，都會「乘」
+**一個抽象的 NNEntity，都會「乘」**
+
 ```java
 abstract class NNEntity {
     public abstract NNEntity multiply(NNEntity otherone);
 }
 ```
 
-#### 整數的「乘」
+**整數的「乘」**
+
 ```java
 class NNInteger extends NNEntity {
 	private int number;
@@ -1035,7 +1037,7 @@ class NNInteger extends NNEntity {
 }
 ```
 
-#### 字串的「乘」
+**字串的「乘」**
 
 ```java
 class NNString extends NNEntity {
@@ -1067,7 +1069,7 @@ class NNString extends NNEntity {
 }
 ```
 
-#### 不論是哪一種型態，TableDisplayer 都一樣
+**不論是哪一種型態，TableDisplayer 都一樣**
 
 ```java=
 class TableDisplayer {
@@ -1096,7 +1098,7 @@ class TableDisplayer {
     }
 }
 ```
-#### 主程式
+**主程式**
 
 ```java
 package basic;
@@ -1303,10 +1305,9 @@ String s = super.nextToken();
 * 透過委託 `SuperStringTokenizer` 將 **包含** `StringTokenizer`。你一樣要宣告一個 `nextToken()` 來傳回每一個大寫字元的 token。	
 
 
-> [!TIP]
-> ##### EX-lucky-number
-> 請參考  NNEntity 的例子，製作一個星座速配幸運號碼表，例如 巨蟹座X雙子座 => 06220522 % 144 => 10 是此搭配的幸運號碼，其中0622是巨蟹的起始日，0522是雙子的起始日，% 表示取餘數。
-> * TableDisplay 可以用 System.out.print 來輸出此幸運號碼表; 但以 HTML table 的方式輸出更好。
+#### 📌 練習 2.3.2：星座速配幸運號碼表
+* 請參考  NNEntity 的例子，製作一個星座速配幸運號碼表，例如 巨蟹座X雙子座 => 06220522 % 144 => 10 是此搭配的幸運號碼，其中0622是巨蟹的起始日，0522是雙子的起始日，% 表示取餘數。
+* TableDisplay 可以用 System.out.print 來輸出此幸運號碼表; 但以 HTML table 的方式輸出更好。
 
 <details>
 <summary>Hint</summary>
@@ -1339,12 +1340,10 @@ classDiagram
 </details>
 
 
-### 2.3.lab 小節練習
+#### 📌 練習 2.3.3 小節練習
 
-> [!TIP]
-> :basketball: EX-male-female
-> * Person 有身高體重等資訊，有兩個子類別：Male and Female，其 BMI 計算方式都一樣，但高低標不同。請設計一個類別架構來檢查 Person 的健康狀況。
-> * 同上，設計一個 list 存放一群人的資訊，依據 BMI 由高至低進行排序，並且給予呈現出給予的健康建議。
+* Person 有身高體重等資訊，有兩個子類別：Male and Female，其 BMI 計算方式都一樣，但高低標不同。請設計一個類別架構來檢查 Person 的健康狀況。
+* 同上，設計一個 list 存放一群人的資訊，依據 BMI 由高至低進行排序，並且給予呈現出給予的健康建議。
 
 ## 2.4 綜合練習
 

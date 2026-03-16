@@ -427,6 +427,7 @@ public class FruitParser extends StringTokenizer {
         String[] fruits = f.getFruits();		
     }
 }
+```
 
 <details>
 <summary>參考解答</summary>
@@ -1366,21 +1367,15 @@ classDiagram
 ## 2.4 綜合練習
 
 ### ✍ 練習 2.4.1：圖形介面實作
-> [!TIP]
-> :basketball: EX-share-area
 > * 建立一個 `Shape` 的介面，裡面有 `getArea()` 來回傳面積
 > * 建立圓形 (`Circle`)、正方形(`Square`)、矩形(`Rectangle`)、三角形(`Triangle`)等圖形的類別，實作Shape
 
 ### ✍ 練習 2.4.2：學生排序
-> [!TIP]
-> :basketball: EX-compare-student
 > * 應用 `Comparable（內有 int compareTo(Comparable) 方法)` 介面來寫一個排序的程式，並且用來排序以下的物件。
 > 	* 一個類別 Student, 裡面的屬性包含身高、體重、成績，如果 「身高+成績-體重」 比較較高，則較好。
 > 	* 請以 selection sort 來完成此作業
 
 ### ✍ 練習 2.4.3：象棋翻棋遊戲
-> [!TIP]
-> :basketball: :basketball: :basketball: EX-abstract-chess
 > * 考慮一個象棋翻棋遊戲，32 個棋子會隨機的落在 4*8的棋盤上。透過 Chess 的建構子產生這些棋子並隨機編排位置，再印出這些棋子的名字、位置
 > 	* ChessGame
 > 	    * void showAllChess(); 

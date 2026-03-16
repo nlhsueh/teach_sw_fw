@@ -1,10 +1,10 @@
-package swfw.ch02.ex2_1;
+package swfw.ch02.labs;
 
-public class Person {
+public class Lab2_1_2 {
     String name;
     int age;
 
-    public Person(String name, int age) {
+    public Lab2_1_2(String name, int age) {
         this.name = name;
         this.age = age;
     }
@@ -15,7 +15,7 @@ public class Person {
     }
 
     public static void main(String[] args) {
-        Person p = new Person("Alice", 25);
+        Lab2_1_2 p = new Lab2_1_2("Alice", 25);
         System.out.println(p);  
     }
 }

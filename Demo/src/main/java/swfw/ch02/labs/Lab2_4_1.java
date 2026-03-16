@@ -1,4 +1,4 @@
-package swfw.ch02.ex2_4;
+package swfw.ch02.labs;
 
 interface Shape {
     double getArea();
@@ -28,7 +28,7 @@ class Triangle implements Shape {
     public double getArea() { return 0.5 * base * height; }
 }
 
-public class Exercise2_4_1 {
+public class Lab2_4_1 {
     public static void main(String[] args) {
         Shape[] shapes = {
             new Circle(5),

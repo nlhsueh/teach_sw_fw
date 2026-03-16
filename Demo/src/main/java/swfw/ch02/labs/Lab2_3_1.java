@@ -1,8 +1,8 @@
-package swfw.ch02.ex2_3;
+package swfw.ch02.labs;
 
 import java.util.StringTokenizer;
 
-public class Exercise2_3_1 {
+public class Lab2_3_1 {
 
     // 1. Inheritance approach
     static class SuperStringTokenizer extends StringTokenizer {

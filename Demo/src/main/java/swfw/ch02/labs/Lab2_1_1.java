@@ -1,4 +1,4 @@
-package swfw.ch02.ex2_1;
+package swfw.ch02.labs;
 
 class Animal {
     public void speak() {
@@ -20,7 +20,7 @@ class Cat extends Animal {
     }
 }
 
-public class Exercise2_1_1 {
+public class Lab2_1_1 {
     public static void testAnimal(Animal a) {
         if (a instanceof Dog) {
             Dog d = (Dog) a;

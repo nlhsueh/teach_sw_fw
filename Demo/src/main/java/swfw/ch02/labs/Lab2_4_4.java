@@ -1,7 +1,7 @@
 package swfw.ch02.labs;
 
 /**
- * 練習 2.2.1：繼承、多型與介面進階練習 (RPG)
+ * 練習 2.4.4：繼承、多型與介面進階練習 (RPG)
  * 
  * 任務：
  * 1. 閱讀 Character 抽象類別與其抽象方法 skill()。
@@ -10,10 +10,10 @@ package swfw.ch02.labs;
  * 4. 在主程式中使用多型 (Polymorphism) 陣列，讓不同職業輪流施放技能。
  */
 
-abstract class Character {
+abstract class CharacterRPG {
     protected String name;
 
-    public Character(String name) {
+    public CharacterRPG(String name) {
         this.name = name;
     }
 
@@ -25,8 +25,8 @@ abstract class Character {
     public abstract String skill();
 }
 
-class Warrior extends Character {
-    public Warrior(String name) {
+class WarriorRPG extends CharacterRPG {
+    public WarriorRPG(String name) {
         super(name);
     }
 
@@ -38,8 +38,8 @@ class Warrior extends Character {
 }
 
 // TODO: 3. 實作 Mage 類別承 Character
-class Mage extends Character {
-    public Mage(String name) {
+class MageRPG extends CharacterRPG {
+    public MageRPG(String name) {
         super(name);
     }
 
@@ -50,15 +50,15 @@ class Mage extends Character {
     }
 }
 
-public class RPGGameLab {
+public class Lab2_4_4 {
     public static void main(String[] args) {
-        System.out.println("--- Lab 02: RPG 技能演示 ---");
+        System.out.println("--- Lab 2.4.4: RPG 技能演示 ---");
 
         // TODO: 4. 利用多型建立角色陣列 (包含一戰士、一法師)
-        // Character[] party = { ... };
+        // CharacterRPG[] party = { ... };
 
         /*
-         * for (Character c : party) {
+         * for (CharacterRPG c : party) {
          * System.out.println(c.getName() + " 使用了 " + c.skill() + "!");
          * }
          */

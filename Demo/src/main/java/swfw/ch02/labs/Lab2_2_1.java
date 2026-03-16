@@ -1,4 +1,4 @@
-package swfw.ch02.ex2_2;
+package swfw.ch02.labs;
 
 abstract class People {
     protected double height; // meters
@@ -38,7 +38,7 @@ class Athlete extends People {
     }
 }
 
-public class Exercise2_2_1 {
+public class Lab2_2_1 {
     public static void main(String[] args) {
         People student = new Student(1.75, 75); // BMI = 75 / (1.75^2) = 24.48 > 24 => true
         People athlete = new Athlete(1.80, 70); // BMI = 70 / (1.8^2) = 21.60 < 22 => false

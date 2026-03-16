@@ -1,4 +1,4 @@
-package swfw.ch02.ex2_2;
+package swfw.ch02.labs;
 
 import java.util.ArrayList;
 
@@ -42,7 +42,7 @@ class PartTimeEmployee extends Employee {
     }
 }
 
-public class Exercise2_2_2 {
+public class Lab2_2_2 {
     public static void main(String[] args) {
         ArrayList<Employee> employees = new ArrayList<>();
         employees.add(new FullTimeEmployee("Alice", 50000));

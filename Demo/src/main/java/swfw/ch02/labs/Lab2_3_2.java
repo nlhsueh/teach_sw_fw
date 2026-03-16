@@ -1,4 +1,4 @@
-package swfw.ch02.ex2_3;
+package swfw.ch02.labs;
 
 abstract class NNEntity {
     public abstract NNEntity multiply(NNEntity other);
@@ -79,7 +79,7 @@ class TableDisplayer {
     }
 }
 
-public class Exercise2_3_2 {
+public class Lab2_3_2 {
     public static void main(String[] args) {
         NNEntity[] signsX = { new Sign("牡羊", 321), new Sign("金牛", 420), new Sign("雙子", 521), new Sign("巨蟹", 622) };
         NNEntity[] signsY = { new Sign("牡羊", 321), new Sign("金牛", 420), new Sign("雙子", 521), new Sign("巨蟹", 622) };

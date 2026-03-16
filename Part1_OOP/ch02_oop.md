@@ -15,7 +15,7 @@
 
 當類別 B 繼承  類別 A 時，表示 B 具備 A 的特性，不用再重複的寫一次，並且可以擴充自己的特性。
 
-```java=
+```java
 class A {
   public void m1() {...}
 }
@@ -37,7 +37,7 @@ A 稱為父類別，B 稱為子類別
 > 子類別的物件生成時，其建構子會呼叫父類別建構子。
 
 
-```java=
+```java
 class Vehicle {
   int speed;
   public Vehicle(int speed) {
@@ -76,7 +76,7 @@ class Bike extends Vehicle {
 
 ### 2.1.2 方法覆蓋
 
-```java=
+```java
 class A {
   public void m1() { print A }
 }
@@ -92,7 +92,7 @@ class B extends A {
 ```
 
 執行：
-```java=
+```java
 A a = new A();
 a.m1(); // => print A
 
@@ -130,7 +130,7 @@ Engineer 繼承 Person 後具備 Person 的特性，所以 Engineer 可以做 Pe
 
 例子：
 
-```java=
+```java
 Cat mao = new Cat();
 Animal mimi = mao; //upcasting (把一個比較低階的物件給比較高階的類別）
 //給 mao 多取一個名字 mimi, 並告訴大家 mimi 是一個動物
@@ -154,7 +154,7 @@ Cat jaja = (Cat) mimi; //downcasting
 
 * 進階字串處理器 `EnhancedStringTokenizer`。除了可以做字串的解析以外，還可以回傳目前解析的字串集（以陣列的方式回傳）。
 
-```java=
+```java
 import java.util.StringTokenizer;
 
 public class EnhancedStringTokenizer extends StringTokenizer {
@@ -233,7 +233,7 @@ classDiagram
 
 抽象方法 宣告方法的的介面（參數及回傳型態），但不具備實作（implementation）。例如所有的交通工具都會向左轉，向右轉，但怎麼做則由子類別自己定義。
 
-```java=
+```java
 abstract class Vehicle { //抽象類別
    private String ID;
    public abstract void turnLeft(); //抽象方法
@@ -458,7 +458,7 @@ public class FruitParser extends StringTokenizer {
 2.  **方法覆蓋 (Method Overriding)**：父類別定義介面，子類別提供不同的實作。
 3.  **動態綁定 (Dynamic Binding)**：JVM 在執行時期才決定呼叫哪一個類別的方法。
 
-```java=
+```java
 class A {
   void m1() {
       System.out.println("執行 A 的 m1");
@@ -482,7 +482,7 @@ class Client {
 
 對 `Client` 的 `op1` 而言，`a` 可能是一個 `A` 的物件或是 `B` 的物件，取決於 runtime 時帶進的物件。**不要以為 a 的型態宣告為 A，就認為它執行的是 A 的邏輯。** runtime 時才做 binding, 稱之為 **dynamic binding**。
 
-```java=
+```java
 Client c = new Client();
 c.op1(new A()); // 輸出：執行 A 的 m1
 c.op1(new B()); // 輸出：執行 B 的 m1 (這就是多型！)
@@ -499,7 +499,7 @@ c.op1(new B()); // 輸出：執行 B 的 m1 (這就是多型！)
 **有了多型後：**
 我們定義一個父類別 `Shape`，並讓所有形狀繼承它。
 
-```java=
+```java
 abstract class Shape {
     abstract void draw();
 }
@@ -545,7 +545,7 @@ for (Shape s : shapes) {
 ```
 
 汽車的例子：
-```java=
+```java
 class VehicleController {
   void manage(Vehicle v) {
      v.turnLeft();
@@ -579,7 +579,7 @@ classDiagram
 ### 🔍 觀念測驗 2.2
 
 1️⃣ **以下會印出什麼**   
-```java= 
+```java 
 public class Game {
   public static void main(String[] args) {
     ChessBoard cb = new LongChessBoard();
@@ -595,7 +595,7 @@ class LongChessBoard extends ChessBoard{
 ```
 
 2️⃣ **以下會出現什麼訊息？**
-```java=
+```java
 class A {
    public A() {
       System.out.println("hi");
@@ -684,7 +684,7 @@ People 內部宣告一個 `boolean overWeight()` 的抽象方法。People 的建
 
 介面定義一個規格，一個多個物件之間彼此溝通的規格，但他僅定義規格，並不描述其實作方法。Java 中介面的宣告如下：
 
-```java=
+```java
 interface E {
    public void m1();
    public void m2();
@@ -695,7 +695,7 @@ m1() m2() 預設都是 `public abstract` 的抽象方法，不需要顯式宣告
 
 當一個類別實踐一個介面，表示它必須實踐這個規格。D 必定要實作 m1() 與 m2()，因為這兩個方法都宣告在介面 E 中。
 
-```java=
+```java
 public class D implements E {
   public void m1() {
     ... //實作
@@ -800,7 +800,7 @@ graph TD
 1. **傳統介面**：因為方法都是抽象的（沒有實作），即使類別 G 實作了兩個擁有相同方法簽署的介面 E 和 F，G 最終也只能提供**一份實作**，衝突自然消失。
 2. **預設方法 (Default Methods)**：如果 E 和 F 都有同名的 `default` 方法，Java 會強制類別 G **必須覆寫**該方法，手動決定要使用哪一個（或是提供全新的實作）。
 
-```java=
+```java
 public class G extends C implements E, F {
   @Override
   public void op2() {
@@ -811,7 +811,7 @@ public class G extends C implements E, F {
   public void op4() { ... }
 }
 ```
-```java=
+```java
   interface Vehicle {
      // 右轉最大角度常數
      public final static int MAX_TURN_ANGLE = 60;
@@ -827,7 +827,7 @@ public class G extends C implements E, F {
 
 假設我們要寫一個副程式來找到三個整數中最大的一個，相信這很簡單：
 
-```java=
+```java
    public int best(int x, int y, int z) {
       if (x > y) {
           if (x > z) ? return x: return z;
@@ -848,7 +848,7 @@ public class G extends C implements E, F {
 
 任何物品只要符合 `Comparable` 的介面都是可以比較的。針對 Comparable 我們設計一個 `best(x, y, z)` 的方法來比較三個物品，該方法將回傳最「好」的物件。
 
-```java=
+```java
 interface Comparable {
     public boolean betterThan(Comparable x);
 }
@@ -934,7 +934,7 @@ classDiagram
 ### 2.3.5 介面內的常數
 
 Interface 可以宣告常數
-```java=
+```java
 interface Vehicle {
     //右轉最大角度
      public final static int MAX_TURN_ANGLE = 60;
@@ -965,7 +965,7 @@ interface Vehicle {
 
 我們現在把這個程式「一般化」（generalization）-- 變成 NN 乘法表。這很很簡單，參數變化就可以做到。
 
-```java=
+```java
 public void multiply(int x, int y) {
    ...
 }   
@@ -1087,7 +1087,7 @@ class NNString extends NNEntity {
 
 **不論是哪一種型態，TableDisplayer 都一樣**
 
-```java=
+```java
 class TableDisplayer {
     public static void multiplyAndShow(NNEntity[] xList, NNEntity[] yList) {
         /* Multiply */
@@ -1309,7 +1309,7 @@ class D {
 ```
 
 **Hint:**
-```java=
+```java
 String s = super.nextToken();	
 ```    
 

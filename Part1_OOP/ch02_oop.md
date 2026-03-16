@@ -105,7 +105,7 @@ b.m1(); // => print B
 
 不要讓 compiler 不開心。假設 Engineer 是 Person 的子類別:
 
-```java=
+```java
 class Person {}
 class Engineer extends Person {}
 
@@ -387,24 +387,12 @@ public final class Square extends Shape { /* ... */ }
 
 #### 📌 練習 2.1.1：型態轉換與物件識別
 **問題描述：**
-設計一個簡單的動物體系來練習轉型：
-1. **類別設計**：建立 `Animal` 父類別（含 `speak()` 方法），以及 `Dog` 和 `Cat` 子類別（分別覆寫 `speak()` 輸出 "Dog barks" 與 "Cat meows"）。
-2. **向上轉型 (Upcasting)**：宣告一個 `Animal` 變數並指向 `Dog` 物件，嘗試執行 `speak()` 並觀察結果。
-3. **安全轉型 (Downcasting)**：撰寫一個方法 `performAnimalAction(Animal a)`，在方法內部：
-   - 使用 `instanceof` 判斷 `a` 是否為 `Dog`。
-   - 若是，將其向下轉型為 `Dog` 並呼叫其方法。
-   - 觀察若將 `Cat` 物件帶入此方法時，如何避免 `ClassCastException`。
-
-**範例代碼結構：**
-```java
-Animal a = new Dog();
-a.speak();  // 輸出: "Dog barks"
-
-if (a instanceof Dog) {
-    Dog d = (Dog) a;
-    d.speak();  // 成功轉型並呼叫
-}
-```
+請依以下步驟，練習物件的轉型與型態判斷：
+1. **建立類別**：設計 `Animal` 父類別（含 `speak()` 方法），以及繼承它的 `Dog` 與 `Cat` 子類別，並分別讓 `speak()` 方法輸出 `"Dog barks"` 與 `"Cat meows"`。
+2. **向上轉型**：在主程式中，宣告一個 `Animal` 型態的變數並指向 `Dog` 物件（`Animal a = new Dog();`）。呼叫 `a.speak()`，觀察會執行哪一個類別的方法？
+3. **安全向下轉型**：撰寫一個測試方法 `void testAnimal(Animal a)`。在方法內，請使用 `instanceof` 檢查傳入的參數 `a` 是否為 `Dog`：
+   - 如果是，請將其向下轉型（強制轉型）為 `Dog` 並呼叫 `speak()`。
+   - 如果不是，則印出 `"Not a Dog"`。這可以避免當傳入 `Cat` 物件時發生 `ClassCastException` 錯誤。最後請分別傳入 `Dog` 與 `Cat` 物件來測試此方法。
 
 ---
 
@@ -418,6 +406,8 @@ Person p = new Person("Alice", 25);
 System.out.println(p);  
 // 輸出: "Name: Alice, Age: 25"
 ```
+
+Hint: `String.format(format, args)`
 
 #### 📌 練習 2.1.3：Fruit parser
 擴充 StringTokenizer 為 FruitParser，字串中若有水果名稱，可以透過固定的介面取得水果的名稱。請應用 StringTokenizer 既有的方法 (hasMoreToken(), nextToken() 等方法)。
@@ -437,7 +427,25 @@ public class FruitParser extends StringTokenizer {
         String[] fruits = f.getFruits();		
     }
 }
-```
+
+<details>
+<summary>參考解答</summary>
+
+* [練習 2.1.1：型態轉換與物件識別](../Demo/src/main/java/swfw/ch02/ex2_1/Exercise2_1_1.java)
+* [練習 2.1.2：覆寫 `toString()`](../Demo/src/main/java/swfw/ch02/ex2_1/Person.java)
+* [練習 2.1.3：Fruit parser](../Demo/src/main/java/swfw/ch02/ex2_1/FruitParser.java)
+
+</details>
+
+<details>
+<summary>💡 提示</summary>
+
+1. 在 `getFruits()` 中，使用 `while(hasMoreTokens())` 迴圈與 `nextToken()` 逐一取得字串中的每個單字。
+2. 檢查該單字是否存在於 `fruit_set` 陣列中。可以利用 `Arrays.asList(fruit_set).contains(單字)` 來檢查，或者是自己寫一個 `for` 迴圈跑過 `fruit_set` 去比對 `.equals()`。可以將找到的水果暫存到 `ArrayList<String>` 中，最後再轉換為 `String[]` 回傳（例如利用 `arrayList.toArray(new String[0])`）。
+3. 為了避免逗號與句號等標點符號干擾比對（例如 `"apple,"`），建議在建構子中呼叫 `super(s, " ,.");`，將空格與標點符號都設定為分隔符號 (Delimiters)。
+
+</details>
+
 
 ## 2.2 一法多形：多型 
 
@@ -663,6 +671,13 @@ People 內部宣告一個 `boolean overWeight()` 的抽象方法。People 的建
 2. `PartTimeEmployee`：根據時薪 (`hourlyRate`) 與工作時數 (`hoursWorked`) 計算。
 練習建立一個 `ArrayList<Employee>`，存入不同類型的員工，並計算出總薪資支出。
 
+<details>
+<summary>參考解答</summary>
+
+* [練習 2.2.1：不同族群的健康檢查](../Demo/src/main/java/swfw/ch02/ex2_2/Exercise2_2_1.java)
+* [練習 2.2.2：薪資系統](../Demo/src/main/java/swfw/ch02/ex2_2/Exercise2_2_2.java)
+
+</details>
 
 ## 2.3 無色無相：介面
 
@@ -1340,10 +1355,13 @@ classDiagram
 </details>
 
 
-#### 📌 練習 2.3.3 小節練習
+<details>
+<summary>參考解答</summary>
 
-* Person 有身高體重等資訊，有兩個子類別：Male and Female，其 BMI 計算方式都一樣，但高低標不同。請設計一個類別架構來檢查 Person 的健康狀況。
-* 同上，設計一個 list 存放一群人的資訊，依據 BMI 由高至低進行排序，並且給予呈現出給予的健康建議。
+* [練習 2.3.1：SuperStringTokenizer](../Demo/src/main/java/swfw/ch02/ex2_3/Exercise2_3_1.java)
+* [練習 2.3.2：星座速配幸運號碼表](../Demo/src/main/java/swfw/ch02/ex2_3/Exercise2_3_2.java)
+
+</details>
 
 ## 2.4 綜合練習
 
@@ -1385,3 +1403,11 @@ classDiagram
 > C  象  兵  Ｘ  車  馬  ＿  ＿  將 
 > D  Ｘ  包  ＿  士  兵  Ｘ  ＿  Ｘ  
 > ```
+
+<details>
+<summary>參考解答</summary>
+
+* [練習 2.4.1：圖形介面實作](../Demo/src/main/java/swfw/ch02/ex2_4/Exercise2_4_1.java)
+* [練習 2.4.2：學生排序](../Demo/src/main/java/swfw/ch02/ex2_4/Exercise2_4_2.java)
+
+</details>

@@ -31,6 +31,8 @@ b.m1(); // => ok
 b.m2(); // => ok
 ```
 
+* [範例程式：InheritanceDemo.java](../Demo/src/main/java/swfw/ch02/inheritance/InheritanceDemo.java)
+
 A 稱為父類別，B 稱為子類別
 
 > [!NOTE]
@@ -58,6 +60,8 @@ class Bike extends Vehicle {
   }
 }
 ```
+
+* [範例程式：VehicleDemo.java](../Demo/src/main/java/swfw/ch02/inheritance/VehicleDemo.java)
 
 :question: 上述程式會產生編譯錯誤，為什麼？
 
@@ -153,6 +157,8 @@ Cat jaja = (Cat) mimi; //downcasting
 > Extend StringTokenizer to EnhancedStringTokenizer
 
 * 進階字串處理器 `EnhancedStringTokenizer`。除了可以做字串的解析以外，還可以回傳目前解析的字串集（以陣列的方式回傳）。
+
+* [範例程式：EnhancedStringTokenizer.java](../Demo/src/main/java/swfw/ch02/inheritance/EnhancedStringTokenizer.java)
 
 ```java
 import java.util.StringTokenizer;
@@ -432,9 +438,9 @@ public class FruitParser extends StringTokenizer {
 <details>
 <summary>參考解答</summary>
 
-* [練習 2.1.1：型態轉換與物件識別](../Demo/src/main/java/swfw/ch02/ex2_1/Exercise2_1_1.java)
-* [練習 2.1.2：覆寫 `toString()`](../Demo/src/main/java/swfw/ch02/ex2_1/Person.java)
-* [練習 2.1.3：Fruit parser](../Demo/src/main/java/swfw/ch02/ex2_1/FruitParser.java)
+* [練習 2.1.1：型態轉換與物件識別](../Demo/src/main/java/swfw/ch02/labs/Lab2_1_1.java)
+* [練習 2.1.2：覆寫 `toString()`](../Demo/src/main/java/swfw/ch02/labs/Lab2_1_2.java)
+* [練習 2.1.3：Fruit parser](../Demo/src/main/java/swfw/ch02/labs/Lab2_1_3.java)
 
 </details>
 
@@ -487,6 +493,8 @@ Client c = new Client();
 c.op1(new A()); // 輸出：執行 A 的 m1
 c.op1(new B()); // 輸出：執行 B 的 m1 (這就是多型！)
 ```
+
+* [範例程式：PolyDemo.java](../Demo/src/main/java/swfw/ch02/poly/PolyDemo.java)
 
 ### 2.2.2 為什麼需要多型？
 
@@ -675,8 +683,8 @@ People 內部宣告一個 `boolean overWeight()` 的抽象方法。People 的建
 <details>
 <summary>參考解答</summary>
 
-* [練習 2.2.1：不同族群的健康檢查](../Demo/src/main/java/swfw/ch02/ex2_2/Exercise2_2_1.java)
-* [練習 2.2.2：薪資系統](../Demo/src/main/java/swfw/ch02/ex2_2/Exercise2_2_2.java)
+* [練習 2.2.1：不同族群的健康檢查](../Demo/src/main/java/swfw/ch02/labs/Lab2_2_1.java)
+* [練習 2.2.2：薪資系統](../Demo/src/main/java/swfw/ch02/labs/Lab2_2_2.java)
 
 </details>
 
@@ -705,12 +713,13 @@ public class D implements E {
   }
 }
 
-class Client { //Client 是介面的使用者   
    void m (E e} {
        e.m1();
    }   
 }
 ```
+
+* [範例程式：InterfaceDemo.java](../Demo/src/main/java/swfw/ch02/interfaces/InterfaceDemo.java)
 
 
 > [!NOTE]
@@ -1015,9 +1024,11 @@ pq  pqab   pqxy   pqpq
 
 **一個抽象的 NNEntity，都會「乘」**
 
+* [範例程式：NNEntity 完整實作目錄](../Demo/src/main/java/swfw/ch02/interfaces/)
+
 ```java
-abstract class NNEntity {
-    public abstract NNEntity multiply(NNEntity otherone);
+interface NNEntity {
+    public NNEntity multiply(NNEntity otherone);
 }
 ```
 
@@ -1359,8 +1370,8 @@ classDiagram
 <details>
 <summary>參考解答</summary>
 
-* [練習 2.3.1：SuperStringTokenizer](../Demo/src/main/java/swfw/ch02/ex2_3/Exercise2_3_1.java)
-* [練習 2.3.2：星座速配幸運號碼表](../Demo/src/main/java/swfw/ch02/ex2_3/Exercise2_3_2.java)
+* [練習 2.3.1：SuperStringTokenizer](../Demo/src/main/java/swfw/ch02/labs/Lab2_3_1.java)
+* [練習 2.3.2：星座速配幸運號碼表](../Demo/src/main/java/swfw/ch02/labs/Lab2_3_2.java)
 
 </details>
 
@@ -1396,13 +1407,20 @@ classDiagram
 > A  ＿  兵  ＿  車  Ｘ  ＿  象  Ｘ
 > B  Ｘ  ＿  包  Ｘ  士  ＿  馬  Ｘ   
 > C  象  兵  Ｘ  車  馬  ＿  ＿  將 
-> D  Ｘ  包  ＿  士  兵  Ｘ  ＿  Ｘ  
 > ```
+
+### ✍ 練習 2.4.4：RPG 技能演示
+> * 建立一個 `Character` 抽象類別，包含屬性 `name` 與抽象方法 `String skill()`。
+> * 建立 `Warrior` (戰士) 與 `Mage` (法師) 子類別：
+>   * `Warrior` 實作 `skill()` 回傳 "斬擊"。
+>   * `Mage` 實作 `skill()` 回傳 "火球術"。
+> * 在 `main` 方法中利用多型建立角色陣列，並透過迴圈呼叫每位角色的技能。
 
 <details>
 <summary>參考解答</summary>
 
-* [練習 2.4.1：圖形介面實作](../Demo/src/main/java/swfw/ch02/ex2_4/Exercise2_4_1.java)
-* [練習 2.4.2：學生排序](../Demo/src/main/java/swfw/ch02/ex2_4/Exercise2_4_2.java)
+* [練習 2.4.1：圖形介面實作](../Demo/src/main/java/swfw/ch02/labs/Lab2_4_1.java)
+* [練習 2.4.2：學生排序](../Demo/src/main/java/swfw/ch02/labs/Lab2_4_2.java)
+* [練習 2.4.4：RPG 技能演示](../Demo/src/main/java/swfw/ch02/labs/Lab2_4_4.java)
 
 </details>

@@ -169,10 +169,10 @@ Fig_類別的宣告
 可視性描述屬性是否能被其它的類別「看」的到(這是一個比較生動的字眼，真正的意義是其他類別使否能夠參考或修改此一屬性的值)。UML定義了四個可視性：
 
 
-- **私有**(private)：只有該類別本身可以使用此一屬性。UML用「-」來表示。
-- **保護**(protected)：只有該屬性的後代類別(descendant of classes)可以使用此一屬性。UML用「\#」來表示。
-- **公開**(public)：其他類別都可以使用此屬性。UML用「+」來表示。
-- **套件**(package)：同一個套件的類別可以使用此屬性。UML用「$\sim$」來表示。
+- **私有**(private)：只有該類別本身可以使用此一屬性。UML用 `-`來表示。
+- **保護**(protected)：只有該屬性的後代類別(descendant of classes)可以使用此一屬性。UML用`#`來表示。
+- **公開**(public)：其他類別都可以使用此屬性。UML用`+`來表示。
+- **套件**(package)：同一個套件的類別可以使用此屬性。UML用`~`來表示。
 
 
 <!-- <img src=https://i.imgur.com/9NZfeib.png width=350> -->
@@ -261,16 +261,16 @@ class TestVisibility {
 ### 🔍 觀念測驗 4.1
 
 1. 類別圖不能表現一個物件類別的：
-	A. 屬性
-	B. 功能
-	C. 責任
-	D. 演算法
+    - A. 屬性
+    - B. 功能
+    - C. 責任
+    - D. 演算法
 
-2. 下列何者不是一個屬性的可視性? 
-	A. public
-	B. private
-	C. protected
-	D. transparent
+2. 下列何者不是一個屬性的可視性?
+    - A. public
+    - B. private
+    - C. protected
+    - D. transparent
 
 3. `+`, `-`, `#`, `~` 分別代表何種可視性？
 
@@ -918,40 +918,52 @@ classDiagram
 
 </details>
 
-## 4.4 PlainUML 介紹
-PlainUML 是一種簡單的純文字格式，可用於繪製 UML 圖，例如類圖、時序圖、活動圖等。它類似於 PlantUML，但語法更加精簡，適合快速編寫 UML 圖。以下是 PlainUML 常用的語法介紹：
+## 4.4 UML 繪圖工具比較
+
+繪製 UML 圖的工具有很多種，主要可以分為兩類：**文字驅動（Text-based）** 與 **圖形介面（GUI-based）**。文字驅動工具讓工程師用純文字描述圖形，再自動渲染成 UML 圖，適合嵌入文件或版本控制；圖形介面工具則以拖拉方式繪製，直覺易用。
+
+常見的工具有三種：**PlantUML**、**Mermaid**、**StarUML**。
 
 ---
 
-### 類別圖
-```plaintext
-class Person {
-  - name: String
-  - age: int
-  + getName(): String
-  + getAge(): int
-}
+### 4.4.1 工具特色比較
 
-class Student extends Person {
-  + studentID: String
-  + enrollCourse(course: Course)
-}
+| 工具 | 類型 | 語法難度 | 渲染方式 | 適合情境 |
+|------|------|----------|----------|----------|
+| **PlantUML** | 純文字 | ★★☆ | 需 Java + Graphviz | 完整 UML、HackMD、IntelliJ |
+| **Mermaid** | 純文字 | ★☆☆ | 原生網頁 JS 渲染 | Markdown 文件、GitHub、HackMD |
+| **StarUML** | 圖形介面 | ★☆☆ | GUI 操作 | 視覺化設計、匯出圖片 |
 
-class Course {
-  + courseName: String
-  + courseCode: String
-}
+---
 
-Person "1" -- "*" Course: enrolls
+### 4.4.2 Mermaid
+
+Mermaid 是目前最廣泛嵌入 Markdown 的 UML 工具，**GitHub、HackMD、Notion、VS Code** 都原生支援，無需安裝任何外掛或執行環境。
+
+**類別圖語法：**
+
+```
+classDiagram
+    class Person {
+        -name: String
+        -age: int
+        +getName(): String
+        +getAge(): int
+    }
+    class Student {
+        -studentID: String
+        +enrollCourse(course)
+    }
+    class Course {
+        -courseName: String
+        -credits: int
+    }
+    Person <|-- Student
+    Student "0..*" --> "0..*" Course : enrolls
 ```
 
-- `class` 定義類別
-- `+` 表示 `public`，`-` 表示 `private`，`#` 表示 `protected`
-- `extends` 用於繼承
-- `--` 或 `-->` 表示關聯
-- `"1"` `"*"` 表示多重性（1 對多）
+**渲染結果：**
 
-呈現出的結果：
 ```mermaid
 classDiagram
     class Person {
@@ -961,75 +973,219 @@ classDiagram
         +getAge(): int
     }
     class Student {
-        +studentID: String
-        +enrollCourse(course: Course)
+        -studentID: String
+        +enrollCourse(course)
+    }
+    class Course {
+        -courseName: String
+        -credits: int
     }
     Person <|-- Student
-    class Course {
-        +courseName: String
-        +courseCode: String
-    }
-    Person "1" -- "*" Course: enrolls
+    Student "0..*" --> "0..*" Course : enrolls
 ```
 
-在使用 hackmd 呈現 plainuml 時，需使用 ````plantuml` 來開頭，並且第一行寫上 `@startuml`
+**Mermaid 常用語法整理：**
+
+| 語法 | 意義 |
+|------|------|
+| `class Foo { }` | 宣告類別 |
+| `-attr: Type` | 私有屬性 |
+| `+method(): Type` | 公開方法 |
+| `$attr` | 靜態屬性/方法 |
+| `*method()` | 抽象方法 |
+| `A <\|-- B` | B 繼承 A |
+| `A <\|.. B` | B 實作介面 A |
+| `A --> B` | A 瀏覽（關聯）B |
+| `A o-- B` | 複合（Aggregation） |
+| `A *-- B` | 包含（Composition） |
+| `A ..> B` | 依靠（Dependency） |
 
 ---
 
-### PlantUML 繪製環境
-PlantUML 可在多個環境下執行
-* Hackmd
-* Intellij
-  * plugin: PlantUML parser, PlantUML integration
-  * 需有 Java, Graphviz 環境
-* Visual Studio Code
-  * plugin: search PlantUML
-  * 需有 Java, Graphviz 環境
+### 4.4.3 PlantUML
+
+PlantUML 是功能最完整的文字驅動工具，幾乎支援所有 UML 圖類型（類別圖、循序圖、活動圖、狀態圖等）。語法比 Mermaid 稍複雜，但表達能力更強。
+
+**執行環境需求：**
+- Java（JRE）
+- Graphviz（用於佈局計算）
+- IntelliJ Plugin：`PlantUML Integration`
+- VS Code Plugin：`PlantUML`
+- HackMD：直接支援（使用 ````plantuml` 區塊）
+
+**相同的類別圖，PlantUML 語法：**
+
+````
+```plantuml
+@startuml
+class Person {
+  - name: String
+  - age: int
+  + getName(): String
+  + getAge(): int
+}
+
+class Student {
+  - studentID: String
+  + enrollCourse(course: Course)
+}
+
+class Course {
+  - courseName: String
+  - credits: int
+}
+
+Person <|-- Student
+Student "0..*" --> "0..*" Course : enrolls
+@enduml
+```
+````
+
+> [!NOTE]
+> PlantUML 在 HackMD 上需使用 ` ```plantuml ` 區塊，並且開頭要加 `@startuml`，結尾加 `@enduml`。
+
+**PlantUML vs Mermaid 語法對照：**
+
+| 功能 | PlantUML | Mermaid |
+|------|----------|---------|
+| 繼承 | `A <\|-- B` | `A <\|-- B` |
+| 介面實作 | `A <\|.. B` | `A <\|.. B` |
+| 關聯 | `A --> B` | `A --> B` |
+| 抽象方法 | `{abstract} method()` | `*method()` |
+| 靜態成員 | `{static} attr` | `$attr` |
+| 多重性 | `A "1" -- "*" B` | `A "1" --> "*" B` |
+| 抽象類別 | `abstract class A` | `class A { <<abstract>> }` |
+| 介面 | `interface A` | `class A { <<interface>> }` |
+
+---
+
+### 4.4.4 StarUML（圖形介面）
+
+StarUML 是一套圖形化的 UML 建模工具，以拖拉方式操作，適合初學者與需要精確排版的場合。
+
+**安裝與使用：**
+- 至 [https://staruml.io/](https://staruml.io/) 下載
+- 支援 Windows / macOS / Linux
+- 可匯出為 PNG、SVG、PDF
+
+**與文字驅動工具的差異：**
+
+```mermaid
+classDiagram
+    class 繪圖工具 {
+        <<abstract>>
+        +drawDiagram()
+    }
+    class 文字驅動工具 {
+        +語法: String
+        +渲染()
+    }
+    class 圖形介面工具 {
+        +拖曳操作()
+        +匯出圖片()
+    }
+    class PlantUML {
+        +支援全部UML圖型
+    }
+    class Mermaid {
+        +嵌入Markdown
+        +原生網頁渲染
+    }
+    class StarUML {
+        +GUI操作
+        +匯出多種格式
+    }
+    繪圖工具 <|-- 文字驅動工具
+    繪圖工具 <|-- 圖形介面工具
+    文字驅動工具 <|-- PlantUML
+    文字驅動工具 <|-- Mermaid
+    圖形介面工具 <|-- StarUML
+```
+
+**使用時機建議：**
+
+| 情況 | 建議工具 |
+|------|----------|
+| 撰寫 Markdown 文件（GitHub/HackMD） | **Mermaid** |
+| 需要完整 UML 圖形（循序圖、狀態圖等） | **PlantUML** |
+| 初學者、需要美觀版面配置 | **StarUML** |
+| 與程式碼一起版本控制 | **Mermaid 或 PlantUML** |
+
+---
 
 ### 🔍 觀念測驗 4.4
 
-1. **在 PlainUML 或 PlantUML 中，要如何表示一個類別的「私有 (private)」與「公開 (public)」屬性？**
-   A. `private` 與 `public`
-   B. `-` 與 `+`
-   C. `~` 與 `#`
-   D. `_` 與 `*`
+1. **PlantUML 和 Mermaid 最大的差異是什麼？**
+    - A. PlantUML 只能畫類別圖，Mermaid 可以畫所有 UML 圖
+    - B. Mermaid 可以直接在 Markdown 中渲染，PlantUML 需要 Java 環境
+    - C. StarUML 是文字驅動工具
+    - D. Mermaid 需要 Graphviz 才能渲染
 
-2. **在以下 UML 語法中，`A <|-- B` 代表什麼意思？**
-   A. B 擁有 A (Composition)
-   B. A 是一個介面，B 實作 A
-   C. B 繼承自 A (Generalization)
-   D. A 依賴 B (Dependency)
+2. **在 Mermaid 中，`A <|-- B` 代表什麼意思？**
+    - A. B 擁有 A（Composition）
+    - B. A 是一個介面，B 實作 A
+    - C. B 繼承自 A（Generalization）
+    - D. A 依賴 B（Dependency）
+
+3. **在 Mermaid classDiagram 中，要表示靜態方法應使用什麼前綴？**
+    - A. `@`
+    - B. `*`
+    - C. `$`
+    - D. `&`
 
 <details>
 <summary>參考解答</summary>
 
-1. **B. `-` 與 `+`**
+1. **B. Mermaid 可以直接在 Markdown 中渲染，PlantUML 需要 Java 環境**
 2. **C. B 繼承自 A (Generalization)**
+3. **C. `$`** （`*` 是抽象方法，`$` 是靜態成員）
 
 </details>
 
 
 ### ✍ 練習 4.4
 
-**4.4.lab01: 寫一段簡單的 PlainUML**
+**4.4.lab01: 用 Mermaid 繪製類別圖**
 一個「汽車 (`Car`)」類別，包含私有屬性「廠牌 (`brand`)」、「速度 (`speed`)」，以及公開方法「加速 (`accelerate()`)」與「煞車 (`brake()`)」。
-請寫出代表該類別的 PlainUML 語法。
+請用 **Mermaid** 語法寫出此類別圖。
 
 <details>
 <summary>參考解答</summary>
 
-```plaintext
-class Car {
-  - brand: String
-  - speed: int
-  + accelerate()
-  + brake()
-}
+```mermaid
+classDiagram
+    class Car {
+        -brand: String
+        -speed: int
+        +accelerate(): void
+        +brake(): void
+    }
 ```
 
 </details>
 
----
+**4.4.lab02: 用 PlantUML 撰寫相同的類別圖**
+承上題，改用 **PlantUML** 語法撰寫相同的 `Car` 類別圖。
+
+<details>
+<summary>參考解答</summary>
+
+````
+```plantuml
+@startuml
+class Car {
+  - brand: String
+  - speed: int
+  + accelerate(): void
+  + brake(): void
+}
+@enduml
+```
+````
+
+</details>
+
+
 
 ## 4.綜合練習
 
@@ -1077,6 +1233,88 @@ class Car {
 
 請根據上述描述，使用 UML Class Diagram 表示類別之間的關係。
 
+<details>
+<summary>參考解答</summary>
+
+#### 圖一：核心類別（Library、Member、Book）
+
+先建立三個核心類別，確認屬性與方法，再描繪關係。
+
+```mermaid
+classDiagram
+    class Library {
+        -name: String
+        -address: String
+        +addBook(book: Book): void
+        +removeBook(isbn: String): void
+        +registerMember(m: Member): void
+        +listAllMembers(): List
+    }
+    class Member {
+        -memberId: String
+        -name: String
+        -contact: String
+        +borrowBook(book: Book): Loan
+        +returnBook(loan: Loan): void
+        +listLoans(): List
+    }
+    class Book {
+        -isbn: String
+        -title: String
+        -publishYear: int
+        -copiesAvailable: int
+        +getInfo(): String
+        +isAvailable(): boolean
+    }
+    Library "1" o-- "0..*" Book : manages
+    Library "1" --> "0..*" Member : has
+```
+
+> `Library` ◇—— `Book`：空心菱形（**Aggregation**），圖書館管理書籍，但書籍可獨立存在於圖書館之外。  
+> `Library` ——> `Member`：**關聯**，圖書館持有會員清單。
+
+---
+
+#### 圖二：借閱紀錄與作者
+
+```mermaid
+classDiagram
+    class Book {
+        -isbn: String
+        -title: String
+        -copiesAvailable: int
+    }
+    class Loan {
+        -loanId: String
+        -borrowDate: Date
+        -dueDate: Date
+        -returned: boolean
+        +markReturned(): void
+        +isOverdue(): boolean
+    }
+    class Author {
+        -authorId: String
+        -name: String
+        -nationality: String
+        +getBooks(): List
+    }
+    class Member {
+        -memberId: String
+        -name: String
+    }
+    Book "1" *-- "0..*" Loan : generates
+    Member "1" --> "0..5" Loan : borrows
+    Book "0..*" --> "1..*" Author : writtenBy
+```
+
+> `Book` ◆—— `Loan`：實心菱形（**Composition**），借閱紀錄依附於書籍副本，書籍消失則紀錄無意義。  
+> `Member` ——> `Loan`：多重性標示 `0..5`，反映「最多借閱 5 本」的業務規則。  
+> `Book` ——> `Author`：**多對多**，一本書可有多位作者，一位作者也可寫多本書。
+
+</details>
+
+---
+
 ### 練習 4.2 校園成績
 > [!TIP]
 > :basketball: University Gradebook
@@ -1100,6 +1338,176 @@ class Car {
 > * (v05) 將 Student 與 Teacher 進行泛化 (Generalize)，建立父類別 Member
 >     * 將共同屬性如 name, email 提取至 Member，並建立相應的繼承關係。
 
+<details>
+<summary>v01 — 建立基本類別</summary>
+
+建立三個獨立類別，先定義各自的屬性，尚無關係。
+
+```mermaid
+classDiagram
+    class Student {
+        -name: String
+        -email: String
+    }
+    class Teacher {
+        -name: String
+        -email: String
+    }
+    class Course {
+        -courseName: String
+        -credit: int
+    }
+```
+
+</details>
+
+<details>
+<summary>v02 — 老師開課（Association）</summary>
+
+老師可以「開設」多門課程，是單向關聯（`Teacher` → `Course`）。一位老師可開設多門課（`1..*`），一門課由一位老師開設（`1`）。
+
+```mermaid
+classDiagram
+    class Teacher {
+        -name: String
+        -email: String
+        +offer(course: Course): void
+        +showCourse(): void
+    }
+    class Course {
+        -courseName: String
+        -credit: int
+    }
+    Teacher "1" --> "1..*" Course : offers
+```
+
+</details>
+
+<details>
+<summary>v03 — 學生選課（Many-to-Many）</summary>
+
+學生與課程是多對多關係：一位學生可選多門課，一門課也有多位學生修。
+
+```mermaid
+classDiagram
+    class Student {
+        -name: String
+        -email: String
+        +takeCourse(course: Course): void
+        +showCourseInfo(): void
+    }
+    class Teacher {
+        -name: String
+        -email: String
+        +offer(course: Course): void
+        +showCourse(): void
+    }
+    class Course {
+        -courseName: String
+        -credit: int
+    }
+    Teacher "1" --> "1..*" Course : offers
+    Student "0..*" --> "0..*" Course : takes
+```
+
+</details>
+
+<details>
+<summary>v04 — 老師打分數（Dependency）</summary>
+
+老師的 `score()` 方法需要 `Course` 和 `Student` 作為參數，表示 Teacher **依賴（use）** 這兩個類別。依賴以虛線箭頭（`..>`）表示。
+
+```mermaid
+classDiagram
+    class Teacher {
+        -name: String
+        -email: String
+        +offer(course: Course): void
+        +showCourse(): void
+        +score(course: Course, student: Student, score: int): void
+    }
+    class Student {
+        -name: String
+        -email: String
+        +takeCourse(course: Course): void
+        +showCourseInfo(): void
+    }
+    class Course {
+        -courseName: String
+        -credit: int
+    }
+    class GradeBook {
+        -records: Map
+        +addRecord(student: Student, course: Course, score: int): void
+        +getTopStudent(course: Course): Student
+        +getFailList(course: Course): List
+    }
+    Teacher "1" --> "1..*" Course : offers
+    Student "0..*" --> "0..*" Course : takes
+    Teacher ..> Course : use
+    Teacher ..> Student : use
+    GradeBook *-- Course : contains
+```
+
+> `Teacher ..> Course` 與 `Teacher ..> Student`：依賴（Dependency），因為 `score()` 方法的參數型態為這兩個類別。
+
+</details>
+
+<details>
+<summary>v05 — 泛化（Generalization）建立 Member 父類別</summary>
+
+將 `Student` 和 `Teacher` 共同的屬性（`name`, `email`）提取至父類別 `Member`，並加入 `University` 整合全局。
+
+```mermaid
+classDiagram
+    class Member {
+        -name: String
+        -email: String
+        +showCourse(): void
+    }
+    class Student {
+        +takeCourse(course: Course): void
+        +showCourseInfo(): void
+    }
+    class Teacher {
+        +offer(course: Course): void
+        +score(course: Course, student: Student, score: int): void
+    }
+    class Course {
+        -courseName: String
+        -credit: int
+    }
+    class GradeBook {
+        -records: Map
+        +addRecord(student: Student, course: Course, score: int): void
+        +getTopStudent(course: Course): Student
+        +getFailList(course: Course): List
+    }
+    class University {
+        -name: String
+        +hire(teacher: Teacher): void
+        +enroll(student: Student): void
+        +listCourses(): List
+        +listAllGrades(): void
+    }
+    Member <|-- Student
+    Member <|-- Teacher
+    Teacher "1" --> "1..*" Course : offers
+    Student "0..*" --> "0..*" Course : takes
+    Teacher ..> Course : use
+    Teacher ..> Student : use
+    GradeBook *-- Course : contains
+    University "1" o-- "0..*" Member : includes
+    University "1" o-- "0..*" Course : manages
+```
+
+> `Member <|-- Student` / `Member <|-- Teacher`：繼承，子類別繼承共同屬性，避免重複定義。  
+> `University` ◇—— `Member`：聚合，學校包含師生，但成員可獨立存在。
+
+</details>
+
+---
+
 ### 練習 4.3 故事導向物件設計
 Story and Object Model
 
@@ -1107,13 +1515,177 @@ Story and Object Model
 
 * [參考：從超重到卓越](https://hackmd.io/@nlhsueh/SyPpLWXJ3)
 
+<details>
+<summary>參考解答（範例）</summary>
+
+以「英雄 vs 反派」短故事為例：「俠客李俠，師從崑崙派，掌握劍法與輕功，持有青龍劍，與反派魔王展開對決。」
+
+**步驟一：從名詞找類別**—— 李俠（人物）、崑崙派（師門）、劍法/輕功（武功）、青龍劍（武器）、魔王（反派）。  
+**步驟二：從動詞找方法**—— 攻擊、防禦、開招、修煉。  
+**步驟三：從「所有格/組成」找關係**—— 「掌握」武功（多對多）、「擁有」武器（聚合）、「師從」門派（關聯）。
+
+```mermaid
+classDiagram
+    class Character {
+        -name: String
+        -health: int
+        +attack(target: Character): void
+        +defend(): void
+        +isAlive(): boolean
+    }
+    class Hero {
+        +learnSkill(skill: Skill): void
+    }
+    class Villain {
+        -evilPower: int
+        +scheme(): void
+    }
+    class Sect {
+        -sectName: String
+        +recruit(hero: Hero): void
+    }
+    class Skill {
+        -skillName: String
+        -damage: int
+        +perform(): void
+    }
+    class Weapon {
+        -weaponName: String
+        -attackBonus: int
+    }
+    Character <|-- Hero
+    Character <|-- Villain
+    Hero --> Sect : belongsTo
+    Hero "0..*" --> "0..*" Skill : masters
+    Hero "1" o-- "0..*" Weapon : carries
+```
+
+</details>
+
+---
+
 ### 練習 4.4 武俠世界
 - 在武俠的世界中，有一些重要的「要素」，例如「人物」、「武功」、「武器」等。請以線上遊戲的角度來思考此問題（例如人物會有「生命力」的屬性）。	
 	- 我們把這些要素封裝成類別，除了上述的類別以外，還有哪些類別？請至少找出五個。
 	- 哪些類別是抽象類別？會有哪些抽象方法？哪些可以設計成介面？為什麼？
 	- 這些類別各自會有哪些屬性？
 	- 類別之間會有關係，例如「喬峰具備降龍十八掌」的「具備」關係、「黃蓉擁有打狗棒等」的「擁有」關係。請定義類別之間的關係，以及關係的多樣性 (multiplicity)。
-	- 請繪製其 UML class diagram。	
+	- 請繪製其 UML class diagram.	
+
+<details>
+<summary>參考解答</summary>
+
+#### 類別識別整理
+
+| 類別 | 性質 | 說明 |
+|------|------|------|
+| `Character` | 抽象類別 | 所有人物的父類別，有抽象方法 `attack()` |
+| `Hero` | 具體類別 | 正派人物 |
+| `Villain` | 具體類別 | 反派人物 |
+| `Skill` | 抽象類別 | 武功，有抽象方法 `perform()` |
+| `InternalSkill` | 具體類別 | 內功，如九陽神功 |
+| `ExternalSkill` | 具體類別 | 外功，如降龍十八掌 |
+| `Weapon` | 介面 | 可攜帶武器的規格 |
+| `Sword` | 具體類別 | 劍（實作 Weapon 介面） |
+| `Sect` | 具體類別 | 門派，如少林、武當 |
+
+#### 圖一：人物繼承結構
+
+```mermaid
+classDiagram
+    class Character {
+        <<abstract>>
+        -name: String
+        -health: int
+        -internalPower: int
+        +attack(target: Character)*
+        +defend()*
+        +isAlive(): boolean
+    }
+    class Hero {
+        +joinSect(sect: Sect): void
+        +learnSkill(skill: Skill): void
+    }
+    class Villain {
+        -evilLevel: int
+        +scheme(): void
+    }
+    Character <|-- Hero
+    Character <|-- Villain
+```
+
+#### 圖二：武功與武器
+
+```mermaid
+classDiagram
+    class Skill {
+        <<abstract>>
+        -skillName: String
+        -damage: int
+        -level: int
+        +perform()*
+        +upgrade(): void
+    }
+    class InternalSkill {
+        -energyBoost: int
+        +perform()
+    }
+    class ExternalSkill {
+        -range: int
+        +perform()
+    }
+    class Weapon {
+        <<interface>>
+        +getAttackBonus(): int
+        +use(): void
+    }
+    class Sword {
+        -name: String
+        -sharpness: int
+        +getAttackBonus(): int
+        +use(): void
+    }
+    Skill <|-- InternalSkill
+    Skill <|-- ExternalSkill
+    Weapon <|.. Sword
+```
+
+#### 圖三：人物、武功、武器與門派的關係
+
+```mermaid
+classDiagram
+    class Character {
+        <<abstract>>
+        -name: String
+        -health: int
+    }
+    class Hero
+    class Skill {
+        <<abstract>>
+    }
+    class Sect {
+        -sectName: String
+        +recruit(c: Character): void
+        +teachSkill(skill: Skill): void
+    }
+    class Weapon {
+        <<interface>>
+    }
+    Character <|-- Hero
+    Hero "0..*" --> "0..*" Skill : masters
+    Hero "1" o-- "0..*" Weapon : carries
+    Hero "0..*" --> "0..1" Sect : belongsTo
+    Sect "1" --> "0..*" Skill : teaches
+```
+
+> - `Skill` 為**抽象類別**：`perform()` 因武功類型不同實作各異，強制子類別覆寫。  
+> - `Weapon` 為**介面**：劍、刀、暗器等實作方式不同，但都符合「武器」的規格。  
+> - `masters`（掌握）多對多：一人多武功，一武功多人會。  
+> - `carries`（攜帶）聚合：武器可獨立存在，不隨人物消滅。
+
+</details>
+
+---
 
 ### 練習 4.5 `GUIChessGame`
 
@@ -1121,6 +1693,82 @@ Story and Object Model
 * 具備 Java Swing 視窗化操作
 * 儘量做到原本的領域物件（例如 Chess) 不變動，只是換掉操作介面。如果無法，則回頭修改前次做法，思考哪些物件可以同時給兩個系統使用？
 * 繪製 UML 的圖 (`GUIChessGame` and `ConsoleChessGame`)
+
+<details>
+<summary>參考解答</summary>
+
+核心設計原則：將**領域物件**（棋子、棋盤）與**介面呈現**（Console/GUI）分離，達到「換介面不換邏輯」。
+
+#### 圖一：共用的領域物件
+
+```mermaid
+classDiagram
+    class Chess {
+        -name: String
+        -position: Loc
+        -side: String
+        +move(loc: Loc): void
+        +eat(target: Chess): void
+        +isValidMove(loc: Loc): boolean
+    }
+    class ChessBoard {
+        -size: int
+        -chesses: List
+        +getChessAt(loc: Loc): Chess
+        +move(chess: Chess, loc: Loc): void
+    }
+    class Loc {
+        -x: int
+        -y: int
+    }
+    class Player {
+        -name: String
+        -side: String
+        +selectChess(loc: Loc): Chess
+    }
+    ChessBoard o-- Chess
+    Chess --> Loc
+```
+
+#### 圖二：兩個系統共用同一套領域物件
+
+```mermaid
+classDiagram
+    class ChessGame {
+        <<abstract>>
+        -board: ChessBoard
+        -players: Player[]
+        +start()*
+        +nextTurn()*
+        +checkWin(): boolean
+    }
+    class ConsoleChessGame {
+        +start()
+        +nextTurn()
+        +printBoard(): void
+    }
+    class GUIChessGame {
+        -frame: JFrame
+        -panel: ChessBoardPanel
+        +start()
+        +nextTurn()
+        +render(): void
+    }
+    class ChessBoard
+    class Player
+    ChessGame <|-- ConsoleChessGame
+    ChessGame <|-- GUIChessGame
+    ChessGame o-- ChessBoard
+    ChessGame o-- Player
+```
+
+> - `ChessGame` 為**抽象類別**：定義遊戲流程模板，兩個系統共用邏輯骨架（Template Method 設計樣式）。  
+> - `ChessBoard`、`Chess`、`Player`、`Loc` 屬於**領域物件**，不含任何 UI 程式碼，可被兩個系統共享。  
+> - `GUIChessGame` 依賴 `JFrame`、`ChessBoardPanel` 等 Swing 元件，只存在於 GUI 版本中。
+
+</details>
+
+---
 
 ### 練習 4.6 其他
 選擇以下系統，繪製其類別圖
@@ -1130,3 +1778,58 @@ Story and Object Model
 * 喀嚓 相機租借系統
 * ShowShow 電影訂位系統
 * 逢大 選課系統
+
+<details>
+<summary>參考解答（ShowShow 電影訂位系統範例）</summary>
+
+以 **ShowShow 電影訂位系統**為例：
+
+**識別的類別：** `Movie`（電影）、`Schedule`（場次）、`Theater`（影廳）、`Booking`（訂位）、`Customer`（顧客）。
+
+```mermaid
+classDiagram
+    class Movie {
+        -movieId: String
+        -title: String
+        -duration: int
+        -rating: String
+        +getSchedules(): List
+    }
+    class Schedule {
+        -showTime: DateTime
+        -availableSeats: int
+        +book(seats: int): Booking
+        +isAvailable(): boolean
+    }
+    class Theater {
+        -theaterId: String
+        -name: String
+        -totalSeats: int
+    }
+    class Booking {
+        -bookingId: String
+        -seats: int
+        -totalPrice: float
+        -status: String
+        +cancel(): void
+        +confirm(): void
+    }
+    class Customer {
+        -customerId: String
+        -name: String
+        -email: String
+        +makeBooking(schedule: Schedule, seats: int): Booking
+        +cancelBooking(booking: Booking): void
+        +listBookings(): List
+    }
+    Movie "1" --> "1..*" Schedule : hasSchedule
+    Schedule "1" --> "1" Theater : heldAt
+    Customer "1" --> "0..*" Booking : makes
+    Schedule "1" *-- "0..*" Booking : generates
+```
+
+> - `Schedule` ◆—— `Booking`：**Composition**，場次取消後訂位記錄無意義。  
+> - `Movie` ——> `Schedule`：一部電影可有多個場次（不同時間 / 廳）。  
+> - `Customer` ——> `Booking`：**關聯**，一位顧客可有多筆訂位記錄。
+
+</details>

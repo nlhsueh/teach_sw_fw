@@ -959,7 +959,7 @@ classDiagram
         -credits: int
     }
     Person <|-- Student
-    Student "0..*" --> "0..*" Course : enrolls
+    Student "0..*" -> "0..*" Course : enrolls
 ```
 
 **渲染結果：**
@@ -984,10 +984,21 @@ classDiagram
     Student "0..*" --> "0..*" Course : enrolls
 ```
 
+> [!TIP]
+> **箭頭方向與版面配置：**
+> Mermaid 類別圖預設由上而下（Top-Bottom, `TB`）排列。若想讓箭頭橫向呈現（由左至右），可以在 `classDiagram` 下方加上 `direction LR`。
+> 例如：
+> ```mermaid
+> classDiagram
+>     direction LR
+>     Student "0..*" --> "0..*" Course : enrolls
+> ```
+
 **Mermaid 常用語法整理：**
 
 | 語法 | 意義 |
 |------|------|
+| `direction LR` | 從左到右排列（預設為 TB） |
 | `class Foo { }` | 宣告類別 |
 | `-attr: Type` | 私有屬性 |
 | `+method(): Type` | 公開方法 |

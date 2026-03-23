@@ -26,7 +26,6 @@
 概念模組後所產生的規格稱為概念圖(conceptual model)，主要由概念與關聯所構成。「概念」是問題領域中所涵蓋的想法、事件、關係、動作或真實的事物，只要它對這個問題領域而言是特別且具意義的，都有可能被模組在概念圖中。分析師可以從使用案例中去尋找概念，通常是文中的名詞。下圖是一個象棋系統的概念模組，Game有一個 ChessBoard 和 Players，一個ChessBoard 有 Chesses，Player 可以 `select` 或 `move` 或 `eat` Chesses，Game和Player之間有 win/lose 的關係，ChessBoard有大小、背景顏色的屬性，Chess則有吃、移動、跳的行為。
  
 
-<!-- <img src="https://i.imgur.com/lxW4T37.png" width="350" /> -->
 
 ```mermaid
 classDiagram
@@ -1196,9 +1195,7 @@ class Car {
 
 </details>
 
-
-
-## 4.綜合練習
+## 4. 綜合練習
 
 ### 練習 4.1 圖書管理
 
@@ -1244,542 +1241,60 @@ class Car {
 
 請根據上述描述，使用 UML Class Diagram 表示類別之間的關係。
 
-<details>
-<summary>參考解答</summary>
-
-#### 圖一：核心類別（Library、Member、Book）
-
-先建立三個核心類別，確認屬性與方法，再描繪關係。
-
-```mermaid
-classDiagram
-    class Library {
-        -name: String
-        -address: String
-        +addBook(book: Book): void
-        +removeBook(isbn: String): void
-        +registerMember(m: Member): void
-        +listAllMembers(): List
-    }
-    class Member {
-        -memberId: String
-        -name: String
-        -contact: String
-        +borrowBook(book: Book): Loan
-        +returnBook(loan: Loan): void
-        +listLoans(): List
-    }
-    class Book {
-        -isbn: String
-        -title: String
-        -publishYear: int
-        -copiesAvailable: int
-        +getInfo(): String
-        +isAvailable(): boolean
-    }
-    Library "1" o-- "0..*" Book : manages
-    Library "1" --> "0..*" Member : has
-```
-
-> `Library` ◇—— `Book`：空心菱形（**Aggregation**），圖書館管理書籍，但書籍可獨立存在於圖書館之外。  
-> `Library` ——> `Member`：**關聯**，圖書館持有會員清單。
 
 ---
 
-#### 圖二：借閱紀錄與作者
+### 練習 4.2 ♟️ 西洋棋系統 (Chess Game System)
 
-```mermaid
-classDiagram
-    class Book {
-        -isbn: String
-        -title: String
-        -copiesAvailable: int
-    }
-    class Loan {
-        -loanId: String
-        -borrowDate: Date
-        -dueDate: Date
-        -returned: boolean
-        +markReturned(): void
-        +isOverdue(): boolean
-    }
-    class Author {
-        -authorId: String
-        -name: String
-        -nationality: String
-        +getBooks(): List
-    }
-    class Member {
-        -memberId: String
-        -name: String
-    }
-    Book "1" *-- "0..*" Loan : generates
-    Member "1" --> "0..5" Loan : borrows
-    Book "0..*" --> "1..*" Author : writtenBy
-```
+**需求描述**
+1. **棋盤與棋子**：棋盤 (Board) 由 8x8 的格子 (Square) 組成。棋盤上放有不同類型的棋子 (Piece)。
+2. **棋子種類**：包含國王 (King)、皇后 (Queen)、城堡 (Rook)、主教 (Bishop)、騎士 (Knight) 與兵 (Pawn)。每種棋子有不同的移動邏輯。
+3. **規則校驗**：每種棋子都應具備檢查移動是否合法 (isValidMove) 的能力。
+4. **遊戲流程**：系統需記錄玩家 (Player) 的每一手移動 (Move)，並能判斷目前的棋盤狀態。
 
-> `Book` ◆—— `Loan`：實心菱形（**Composition**），借閱紀錄依附於書籍副本，書籍消失則紀錄無意義。  
-> `Member` ——> `Loan`：多重性標示 `0..5`，反映「最多借閱 5 本」的業務規則。  
-> `Book` ——> `Author`：**多對多**，一本書可有多位作者，一位作者也可寫多本書。
+**思考與討論**
 
-</details>
+1. **誰該負責驗證移動？** 目前是由 `Piece` 負責 `isValidMove`。但某些規則（如「王車易位 Castling」或「吃過路兵 En Passant」）涉及到多個棋子的位置，這時候邏輯應該放在 `Piece` 還是 `Board` 比較合適？
+2. **座標的設計 (Square)** 為什麼要建立 `Square` 類別，而不是直接在 `Board` 用一個二維陣列 `Piece[][]` 存就好？建立 `Square` 物件對「擴充格子屬性」（如格子的顏色、是否被威脅）有什麼幫助？
+3. **單一職責原則 (SRP)** `ChessGame` 應該負責判斷「勝負」嗎？還是應該有一個獨立的 `RulesEngine` 類別來執行複雜的裁判邏輯？
+4. **不可變性 (Immutability)** 如果我們把 `Move` 設計成不可變物件 (Immutable Object)，對記錄棋局歷史與防止錯誤修改有什麼好處？
+5. **多重性的精確度** 圖中 `Board` 包含 `64` 個 `Square`。如果我們要設計其他棋類（如 19x19 的圍棋），我們的類別圖該如何調整以增加重用性？
 
 ---
 
-### 練習 4.2 校園成績
-> [!TIP]
-> :basketball: University Gradebook
-> 
-> * 一個成績系統，內有類別 Member, Teacher, Student, GradeBook, Course, University 等類別。
-> * 學校可以聘僱老師，老師可以開課，學生可以進入學校、選課，老師可以改分數成績將之紀錄於成績單，學校可以列出所有成績，找出所有班級不及格的學生及第一名的學生，學校成員包含老師與學生，都會有姓名與帳號，同時可以查看學校有開哪些課。
-> * 請依據以上敘述設計出適當的物件導向類別模型，並繪製 UML 靜態結構圖。
-> 
-> 逐步開發（請以 UML 繪製）：
-> * (v01) 建立類別 Student, Teacher 及 Course 
->     * 包含屬性 *names*, *emails*, *course_name*, 以及 *credit*。
-> * (v02) 老師 (Teacher) 可以開設多門課程 (Courses)
->     * 描繪兩者間的 **關聯 (Association)** 關係。
->     * 加入方法 `offer(Course)` 與 `showCourse()`。
-> * (v03) 學生 (Student) 可以修多門課 (Courses)
->     * 描繪學生與課程之間的 **多對多 (many-to-many)** 關係。
->     * 加入方法 `takeCourse(Course)` 與 `showCourseInfo()`。
-> * (v04) 老師可以打分數 (score) 
->     * 加入方法 `Teacher.score(Course, Student, int)`。
->     * 描述 Teacher 對 Course 與 Student 的使用 (**use** / 依存) 關係。
-> * (v05) 將 Student 與 Teacher 進行泛化 (Generalize)，建立父類別 Member
->     * 將共同屬性如 name, email 提取至 Member，並建立相應的繼承關係。
+### 練習 4.3 🏫 校園管理系統 (School Management System)
 
-<details>
-<summary>v01 — 建立基本類別</summary>
+**需求描述**
+1. **學校組成**：學校包含多個系所，系所下有老師與課程。
+2. **成員管理**：所有成員（學生、老師）都有 ID、姓名與加入日期，且能以統一的介面顯示資訊。
+3. **授課與選課**：老師可以開設多門課程，學生可以選修多門課程。
+4. **成績系統**：老師負責為學生打分數，成績物件記錄了分數及其所屬的課程。
 
-建立三個獨立類別，先定義各自的屬性，尚無關係。
+**思考與討論**
 
-```mermaid
-classDiagram
-    class Student {
-        -name: String
-        -email: String
-    }
-    class Teacher {
-        -name: String
-        -email: String
-    }
-    class Course {
-        -courseName: String
-        -credit: int
-    }
-```
-
-</details>
-
-<details>
-<summary>v02 — 老師開課（Association）</summary>
-
-老師可以「開設」多門課程，是單向關聯（`Teacher` → `Course`）。一位老師可開設多門課（`1..*`），一門課由一位老師開設（`1`）。
-
-```mermaid
-classDiagram
-    class Teacher {
-        -name: String
-        -email: String
-        +offer(course: Course): void
-        +showCourse(): void
-    }
-    class Course {
-        -courseName: String
-        -credit: int
-    }
-    Teacher "1" --> "1..*" Course : offers
-```
-
-</details>
-
-<details>
-<summary>v03 — 學生選課（Many-to-Many）</summary>
-
-學生與課程是多對多關係：一位學生可選多門課，一門課也有多位學生修。
-
-```mermaid
-classDiagram
-    class Student {
-        -name: String
-        -email: String
-        +takeCourse(course: Course): void
-        +showCourseInfo(): void
-    }
-    class Teacher {
-        -name: String
-        -email: String
-        +offer(course: Course): void
-        +showCourse(): void
-    }
-    class Course {
-        -courseName: String
-        -credit: int
-    }
-    Teacher "1" --> "1..*" Course : offers
-    Student "0..*" --> "0..*" Course : takes
-```
-
-</details>
-
-<details>
-<summary>v04 — 老師打分數（Dependency）</summary>
-
-老師的 `score()` 方法需要 `Course` 和 `Student` 作為參數，表示 Teacher **依賴（use）** 這兩個類別。依賴以虛線箭頭（`..>`）表示。
-
-```mermaid
-classDiagram
-    class Teacher {
-        -name: String
-        -email: String
-        +offer(course: Course): void
-        +showCourse(): void
-        +score(course: Course, student: Student, score: int): void
-    }
-    class Student {
-        -name: String
-        -email: String
-        +takeCourse(course: Course): void
-        +showCourseInfo(): void
-    }
-    class Course {
-        -courseName: String
-        -credit: int
-    }
-    class GradeBook {
-        -records: Map
-        +addRecord(student: Student, course: Course, score: int): void
-        +getTopStudent(course: Course): Student
-        +getFailList(course: Course): List
-    }
-    Teacher "1" --> "1..*" Course : offers
-    Student "0..*" --> "0..*" Course : takes
-    Teacher ..> Course : use
-    Teacher ..> Student : use
-    GradeBook *-- Course : contains
-```
-
-> `Teacher ..> Course` 與 `Teacher ..> Student`：依賴（Dependency），因為 `score()` 方法的參數型態為這兩個類別。
-
-</details>
-
-<details>
-<summary>v05 — 泛化（Generalization）建立 Member 父類別</summary>
-
-將 `Student` 和 `Teacher` 共同的屬性（`name`, `email`）提取至父類別 `Member`，並加入 `University` 整合全局。
-
-```mermaid
-classDiagram
-    class Member {
-        -name: String
-        -email: String
-        +showCourse(): void
-    }
-    class Student {
-        +takeCourse(course: Course): void
-        +showCourseInfo(): void
-    }
-    class Teacher {
-        +offer(course: Course): void
-        +score(course: Course, student: Student, score: int): void
-    }
-    class Course {
-        -courseName: String
-        -credit: int
-    }
-    class GradeBook {
-        -records: Map
-        +addRecord(student: Student, course: Course, score: int): void
-        +getTopStudent(course: Course): Student
-        +getFailList(course: Course): List
-    }
-    class University {
-        -name: String
-        +hire(teacher: Teacher): void
-        +enroll(student: Student): void
-        +listCourses(): List
-        +listAllGrades(): void
-    }
-    Member <|-- Student
-    Member <|-- Teacher
-    Teacher "1" --> "1..*" Course : offers
-    Student "0..*" --> "0..*" Course : takes
-    Teacher ..> Course : use
-    Teacher ..> Student : use
-    GradeBook *-- Course : contains
-    University "1" o-- "0..*" Member : includes
-    University "1" o-- "0..*" Course : manages
-```
-
-> `Member <|-- Student` / `Member <|-- Teacher`：繼承，子類別繼承共同屬性，避免重複定義。  
-> `University` ◇—— `Member`：聚合，學校包含師生，但成員可獨立存在。
-
-</details>
+1. **關聯 vs. 屬性 (Association vs. Attribute)** 為什麼 `Teacher` 不直接把 `department` 當成一個 `String` 屬性，而要建立跟 `Department` 類別的關聯？這對系統的靈活性（例如統計系上老師人數）有什麼影響？
+2. **多重性 (Multiplicity) 的抉擇** 在圖中，一個課程可以有多少學生？如果我們想規定「每門課最少 5 人，最多 50 人」，UML 該如何標示？
+3. **介面的擴充性 (Interface)** 如果未來我們加入「校園設備 (Equipment)」（如投影機、冷氣），它們也需要被管列並顯示資訊，我們該如何運用現有的 `Displayable` 介面？
+4. **生命週期的考量 (Lifecycle)** 為什麼 `School` 與 `Department` 之間適合用 **組合 (Composition)**，而 `Department` 與 `Course` 之間用 **聚合 (Aggregation)** 可能更好？這與真實世界的運作邏輯有什麼關聯？
+5. **繼承與其副作用** 雖然 `Student` 繼承自 `SchoolMember` 很直觀，但如果一個學生同時也是兼職助教 (TA)，既是學生又是老師，現有的繼承架構會遇到什麼問題？（提示：單一繼承與角色切換的困境）
 
 ---
 
-### 練習 4.3 故事導向物件設計
-Story and Object Model
+### 練習 4.4 🎮 遊戲戰鬥系統 (Game Combat System)
 
-透過 ChatGPT 產生一個簡短的故事，將該故事透過 UML 的方式描繪故事中的人物、特性、動作。
+**需求描述**
+1. **角色管理**：系統中有英雄 (Hero) 與怪物 (Monster)。兩者皆具備生命值 (HP) 與等級 (Level)。
+2. **戰鬥能力**：所有能參與戰鬥的單位都必須具備「攻擊 (attack)」與「受傷 (takeDamage)」的行為。
+3. **武器系統**：英雄可以裝備一種武器 (Weapon)。武器有多種類型（如 Sword, Bow），不同的武器會影響攻擊的方式與傷害。
+4. **坐騎與獎勵**：英雄可以選擇帶領一個坐騎 (Mount)，如馬 (Horse) 或巨狼 (Wolf)；當怪物被擊敗時，會掉落獎勵 (Reward)，內含金幣 (Gold) 與掉落物 (Loot)。
 
-* [參考：從超重到卓越](https://hackmd.io/@nlhsueh/SyPpLWXJ3)
+**思考與討論**
 
-<details>
-<summary>參考解答（範例）</summary>
-
-以「英雄 vs 反派」短故事為例：「俠客李俠，師從崑崙派，掌握劍法與輕功，持有青龍劍，與反派魔王展開對決。」
-
-**步驟一：從名詞找類別**—— 李俠（人物）、崑崙派（師門）、劍法/輕功（武功）、青龍劍（武器）、魔王（反派）。  
-**步驟二：從動詞找方法**—— 攻擊、防禦、開招、修煉。  
-**步驟三：從「所有格/組成」找關係**—— 「掌握」武功（多對多）、「擁有」武器（聚合）、「師從」門派（關聯）。
-
-```mermaid
-classDiagram
-    class Character {
-        -name: String
-        -health: int
-        +attack(target: Character): void
-        +defend(): void
-        +isAlive(): boolean
-    }
-    class Hero {
-        +learnSkill(skill: Skill): void
-    }
-    class Villain {
-        -evilPower: int
-        +scheme(): void
-    }
-    class Sect {
-        -sectName: String
-        +recruit(hero: Hero): void
-    }
-    class Skill {
-        -skillName: String
-        -damage: int
-        +perform(): void
-    }
-    class Weapon {
-        -weaponName: String
-        -attackBonus: int
-    }
-    Character <|-- Hero
-    Character <|-- Villain
-    Hero --> Sect : belongsTo
-    Hero "0..*" --> "0..*" Skill : masters
-    Hero "1" o-- "0..*" Weapon : carries
-```
-
-</details>
-
----
-
-### 練習 4.4 武俠世界
-- 在武俠的世界中，有一些重要的「要素」，例如「人物」、「武功」、「武器」等。請以線上遊戲的角度來思考此問題（例如人物會有「生命力」的屬性）。	
-	- 我們把這些要素封裝成類別，除了上述的類別以外，還有哪些類別？請至少找出五個。
-	- 哪些類別是抽象類別？會有哪些抽象方法？哪些可以設計成介面？為什麼？
-	- 這些類別各自會有哪些屬性？
-	- 類別之間會有關係，例如「喬峰具備降龍十八掌」的「具備」關係、「黃蓉擁有打狗棒等」的「擁有」關係。請定義類別之間的關係，以及關係的多樣性 (multiplicity)。
-	- 請繪製其 UML class diagram.	
-
-<details>
-<summary>參考解答</summary>
-
-#### 類別識別整理
-
-| 類別 | 性質 | 說明 |
-|------|------|------|
-| `Character` | 抽象類別 | 所有人物的父類別，有抽象方法 `attack()` |
-| `Hero` | 具體類別 | 正派人物 |
-| `Villain` | 具體類別 | 反派人物 |
-| `Skill` | 抽象類別 | 武功，有抽象方法 `perform()` |
-| `InternalSkill` | 具體類別 | 內功，如九陽神功 |
-| `ExternalSkill` | 具體類別 | 外功，如降龍十八掌 |
-| `Weapon` | 介面 | 可攜帶武器的規格 |
-| `Sword` | 具體類別 | 劍（實作 Weapon 介面） |
-| `Sect` | 具體類別 | 門派，如少林、武當 |
-
-#### 圖一：人物繼承結構
-
-```mermaid
-classDiagram
-    class Character {
-        <<abstract>>
-        -name: String
-        -health: int
-        -internalPower: int
-        +attack(target: Character)*
-        +defend()*
-        +isAlive(): boolean
-    }
-    class Hero {
-        +joinSect(sect: Sect): void
-        +learnSkill(skill: Skill): void
-    }
-    class Villain {
-        -evilLevel: int
-        +scheme(): void
-    }
-    Character <|-- Hero
-    Character <|-- Villain
-```
-
-#### 圖二：武功與武器
-
-```mermaid
-classDiagram
-    class Skill {
-        <<abstract>>
-        -skillName: String
-        -damage: int
-        -level: int
-        +perform()*
-        +upgrade(): void
-    }
-    class InternalSkill {
-        -energyBoost: int
-        +perform()
-    }
-    class ExternalSkill {
-        -range: int
-        +perform()
-    }
-    class Weapon {
-        <<interface>>
-        +getAttackBonus(): int
-        +use(): void
-    }
-    class Sword {
-        -name: String
-        -sharpness: int
-        +getAttackBonus(): int
-        +use(): void
-    }
-    Skill <|-- InternalSkill
-    Skill <|-- ExternalSkill
-    Weapon <|.. Sword
-```
-
-#### 圖三：人物、武功、武器與門派的關係
-
-```mermaid
-classDiagram
-    class Character {
-        <<abstract>>
-        -name: String
-        -health: int
-    }
-    class Hero
-    class Skill {
-        <<abstract>>
-    }
-    class Sect {
-        -sectName: String
-        +recruit(c: Character): void
-        +teachSkill(skill: Skill): void
-    }
-    class Weapon {
-        <<interface>>
-    }
-    Character <|-- Hero
-    Hero "0..*" --> "0..*" Skill : masters
-    Hero "1" o-- "0..*" Weapon : carries
-    Hero "0..*" --> "0..1" Sect : belongsTo
-    Sect "1" --> "0..*" Skill : teaches
-```
-
-> - `Skill` 為**抽象類別**：`perform()` 因武功類型不同實作各異，強制子類別覆寫。  
-> - `Weapon` 為**介面**：劍、刀、暗器等實作方式不同，但都符合「武器」的規格。  
-> - `masters`（掌握）多對多：一人多武功，一武功多人會。  
-> - `carries`（攜帶）聚合：武器可獨立存在，不隨人物消滅。
-
-</details>
-
----
-
-### 練習 4.5 `GUIChessGame`
-
-應用 Java Swing 視窗化框架改良 Ch02 象棋作業 (`ConsoleChessGame`)
-* 具備 Java Swing 視窗化操作
-* 儘量做到原本的領域物件（例如 Chess) 不變動，只是換掉操作介面。如果無法，則回頭修改前次做法，思考哪些物件可以同時給兩個系統使用？
-* 繪製 UML 的圖 (`GUIChessGame` and `ConsoleChessGame`)
-
-<details>
-<summary>參考解答</summary>
-
-核心設計原則：將**領域物件**（棋子、棋盤）與**介面呈現**（Console/GUI）分離，達到「換介面不換邏輯」。
-
-#### 圖一：共用的領域物件
-
-```mermaid
-classDiagram
-    class Chess {
-        -name: String
-        -position: Loc
-        -side: String
-        +move(loc: Loc): void
-        +eat(target: Chess): void
-        +isValidMove(loc: Loc): boolean
-    }
-    class ChessBoard {
-        -size: int
-        -chesses: List
-        +getChessAt(loc: Loc): Chess
-        +move(chess: Chess, loc: Loc): void
-    }
-    class Loc {
-        -x: int
-        -y: int
-    }
-    class Player {
-        -name: String
-        -side: String
-        +selectChess(loc: Loc): Chess
-    }
-    ChessBoard o-- Chess
-    Chess --> Loc
-```
-
-#### 圖二：兩個系統共用同一套領域物件
-
-```mermaid
-classDiagram
-    class ChessGame {
-        <<abstract>>
-        -board: ChessBoard
-        -players: Player[]
-        +start()*
-        +nextTurn()*
-        +checkWin(): boolean
-    }
-    class ConsoleChessGame {
-        +start()
-        +nextTurn()
-        +printBoard(): void
-    }
-    class GUIChessGame {
-        -frame: JFrame
-        -panel: ChessBoardPanel
-        +start()
-        +nextTurn()
-        +render(): void
-    }
-    class ChessBoard
-    class Player
-    ChessGame <|-- ConsoleChessGame
-    ChessGame <|-- GUIChessGame
-    ChessGame o-- ChessBoard
-    ChessGame o-- Player
-```
-
-> - `ChessGame` 為**抽象類別**：定義遊戲流程模板，兩個系統共用邏輯骨架（Template Method 設計樣式）。  
-> - `ChessBoard`、`Chess`、`Player`、`Loc` 屬於**領域物件**，不含任何 UI 程式碼，可被兩個系統共享。  
-> - `GUIChessGame` 依賴 `JFrame`、`ChessBoardPanel` 等 Swing 元件，只存在於 GUI 版本中。
-
-</details>
-
----
+1. **角色切換的困境** 如果遊戲中有一種「受感染的英雄」，他既有英雄的技能，又像怪物一樣會主動攻擊玩家。在現有的繼承架構下（`Hero` 與 `Monster` 為平級子類別），該如何處理這種「雙重身份」？
+2. **多重性的真實含義** 圖中 `Hero` 到 `Weapon` 的多重性是 `0..1`。這代表什麼？如果遊戲允許「雙劍流」，多重性該如何修改？這會對 `Hero.attack()` 的實作產生什麼衝擊？
+3. **裝備的相依性** 目前 `Weapon` 是獨立的。如果某些強大的武器只有「等級 > 50」的英雄才能使用，這種「限制」應該寫在 `Weapon` 裡，還是 `Hero` 的 `equip()` 方法裡？為什麼？
+4. **坐騎的行為** 現在的 `Mount` 只是英雄的一個屬性。如果坐騎也能升級、甚至能幫忙攻擊（具備 `Combatant` 特性），我們的類別圖該如何調整？
+5. **死亡邏輯的設計** 當 `takeDamage` 導致 `hp <= 0` 時，誰該負責觸發 `Reward` 的掉落？是 `Monster` 類別自己，還是外部的 `CombatSystem`？這牽涉到物件的「封裝」與「職責分配 (Responsibility Assignment)」。
 
 ### 練習 4.6 其他
 選擇以下系統，繪製其類別圖
@@ -1789,58 +1304,3 @@ classDiagram
 * 喀嚓 相機租借系統
 * ShowShow 電影訂位系統
 * 逢大 選課系統
-
-<details>
-<summary>參考解答（ShowShow 電影訂位系統範例）</summary>
-
-以 **ShowShow 電影訂位系統**為例：
-
-**識別的類別：** `Movie`（電影）、`Schedule`（場次）、`Theater`（影廳）、`Booking`（訂位）、`Customer`（顧客）。
-
-```mermaid
-classDiagram
-    class Movie {
-        -movieId: String
-        -title: String
-        -duration: int
-        -rating: String
-        +getSchedules(): List
-    }
-    class Schedule {
-        -showTime: DateTime
-        -availableSeats: int
-        +book(seats: int): Booking
-        +isAvailable(): boolean
-    }
-    class Theater {
-        -theaterId: String
-        -name: String
-        -totalSeats: int
-    }
-    class Booking {
-        -bookingId: String
-        -seats: int
-        -totalPrice: float
-        -status: String
-        +cancel(): void
-        +confirm(): void
-    }
-    class Customer {
-        -customerId: String
-        -name: String
-        -email: String
-        +makeBooking(schedule: Schedule, seats: int): Booking
-        +cancelBooking(booking: Booking): void
-        +listBookings(): List
-    }
-    Movie "1" --> "1..*" Schedule : hasSchedule
-    Schedule "1" --> "1" Theater : heldAt
-    Customer "1" --> "0..*" Booking : makes
-    Schedule "1" *-- "0..*" Booking : generates
-```
-
-> - `Schedule` ◆—— `Booking`：**Composition**，場次取消後訂位記錄無意義。  
-> - `Movie` ——> `Schedule`：一部電影可有多個場次（不同時間 / 廳）。  
-> - `Customer` ——> `Booking`：**關聯**，一位顧客可有多筆訂位記錄。
-
-</details>

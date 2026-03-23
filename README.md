@@ -10,11 +10,10 @@
 本章節建立穩固的物件開發基礎，介紹從基本物件到進階導向觀念。
 - [Ch01 物件基礎設計 (OBP)](./Part1-OOP/ch01_obp.md): 介紹物件的基本概念、封裝（Encapsulation）、自訂建構子以及現代 Java 的 Record 特案。
 - [Ch02 物件導向設計 (OOP)](./Part1-OOP/ch02_oop.md): 深入繼承（Inheritance）、介面（Interface）、多型（Polymorphism）以及密封類別（Sealed Classes）。
-- **[OOPDemo 範例專案](./Part1-OOP/OOPDemo/README.md)**: 整合式的實作程式碼，包含所有教材範例與練習題。
+- **[OOPDemo 範例專案](Demo/src/)**: 整合式的實作程式碼，包含所有教材範例與練習題。
 
 ### Part II: 圖模術 - 軟體塑模
 學習如何使用 UML 工具來視覺化軟體結構與行為。
-- [Ch03 圖模概論](./Part2-Model/ch04_bob.md): 軟體塑模的基本概念與重要性。
 - [Ch04 靜態圖模](./Part2-Model/ch04_static.md): 深入探討類別圖 (Class Diagram) 與物件圖的定義與應用。
 - [Ch05 動態圖模](./Part2-Model/ch05_dynamic.md): 學習使用循序圖 (Sequence Diagram) 與狀態圖 (State Diagram) 描述系統行為。
 

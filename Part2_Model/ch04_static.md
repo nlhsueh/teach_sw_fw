@@ -558,6 +558,7 @@ EncryptString(Encryption e) {
 
 ```mermaid
 classDiagram
+    direction LR
     class Sortable {
         <<interface>>
     }
@@ -590,9 +591,10 @@ classDiagram
 
 ```mermaid
 classDiagram
+    direction LR
     class Professor
     class Course
-    Course "1..*" --> "instructor 1" Professor : teach
+    Course "1..*" --> "1" Professor : teach
 ```
 
 **Multiplicity**

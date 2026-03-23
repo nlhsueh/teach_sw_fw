@@ -309,6 +309,148 @@ public class Course {
 > [!NOTE]  
 > ⚠️ **注意寫法**：以上的寫法利用了 `if (!contains(...))` 檢查，這是為了解決當 `s.enrollCourse` 呼叫 `c.addStudent` 後，`c.addStudent` 又會回頭呼叫 `s.enrollCourse` 所引發的**無限遞迴迴圈**問題。只有當對象還未被加入集合時，才進行遞迴的新增動作。
 
+### 打成績是誰的責任？
+
+在 `School.md` 的設計中，`Teacher` 擁有一個方法：
+
+```
++assignGrade(student, course, score) void
+```
+
+這個方法看起來很直覺——老師打分數嘛！但它背後藏著幾個值得深思的設計問題。
+
+#### 🤔 問題一：Teacher 與 Grade 該有關係嗎？
+
+先看一下 `Grade` 這個類別在模型中的定義：
+
+```mermaid
+classDiagram
+    direction LR
+    class Student {
+        -List~Grade~ grades
+        +assignGrade(student, course, score) void
+    }
+    class Grade {
+        -double score
+        +getLetterGrade() String
+    }
+    class Course
+    class Teacher {
+        +assignGrade(student, course, score) void
+    }
+
+    Student "1" *-- "*" Grade : Composition
+    Grade "*" -- "1" Course
+    Teacher ..> Student : use
+    Teacher ..> Course : use
+    Teacher ..> Grade : use (creates)
+```
+
+在現有設計中，`Grade` 是以**組合 (Composition)** 附屬在 `Student` 底下的。也就是說，**成績是屬於學生的資料**，而不是老師的。
+
+`Teacher` 與 `Grade` 之間的關係應該是**依賴 (Dependency / use)**，而不是擁有。理由如下：
+
+| 關係 | 意涵 | 適合嗎？ |
+|------|------|---------|
+| `Teacher` 擁有 `Grade`（關聯） | 成績屬於老師 | ❌ 不合理，老師離職後成績應仍存在 |
+| `Teacher` 依賴 `Grade`（use） | 老師「操作」了 Grade 物件，但不擁有它 | ✅ 正確 |
+
+因此在 UML 上，`Teacher ..> Grade` 以虛線箭頭表示「use 關係」，代表 `assignGrade()` 方法會在執行過程中**建立或操作** `Grade` 物件，但 `Teacher` 類別本身不保存 `Grade` 的參考。
+
+---
+
+#### 🛠️ 問題二：`assignGrade` 的實作方式
+
+`assignGrade(student, course, score)` 的執行邏輯應該是：
+
+1. 建立一個新的 `Grade` 物件（含分數與課程資訊）
+2. 把這個 `Grade` 物件加進**學生**的成績清單中
+
+因此，`Teacher` 的實作會委託給 `Student` 來完成真正的儲存動作：
+
+```java
+public class Grade {
+    private double score;
+    private Course course;
+
+    public Grade(Course course, double score) {
+        this.course = course;
+        this.score = score;
+    }
+
+    public String getLetterGrade() {
+        if (score >= 90) return "A";
+        if (score >= 80) return "B";
+        if (score >= 70) return "C";
+        return "F";
+    }
+}
+
+public class Teacher {
+    private String name;
+
+    // Teacher 依賴 Student, Course, Grade，但不「擁有」它們
+    public void assignGrade(Student student, Course course, double score) {
+        // 1. 建立 Grade 物件（Teacher 是觸發者，但不保存它）
+        Grade grade = new Grade(course, score);
+
+        // 2. 委託給 Student 自己管理成績（Composition 關係由 Student 負責）
+        student.addGrade(grade);
+    }
+}
+
+public class Student {
+    private String name;
+    private List<Grade> grades = new ArrayList<>();
+
+    // Student 才是 Grade 的真正擁有者（Composition）
+    public void addGrade(Grade grade) {
+        this.grades.add(grade);
+    }
+}
+```
+
+---
+
+#### 📦 問題三：Student 的 grades 該用 `List` 還是 `HashMap`？
+
+`Student` 需要存放多筆 `Grade`，選用哪種資料結構取決於**查詢方式**：
+
+| 資料結構 | 查詢方式 | 範例 |
+|----------|----------|------|
+| `List<Grade>` | 依序遍歷，全部掃描 | 列出所有成績、計算 GPA |
+| `HashMap<Course, Grade>` | 以 Course 為 key 直接取得 Grade | 查詢「物件導向」這門課的成績 |
+
+**用 `List<Grade>` 的情況：**
+```java
+// 簡單，但每次查特定課程的成績都要 O(n) 遍歷
+private List<Grade> grades = new ArrayList<>();
+
+public double getGpaForCourse(Course c) {
+    for (Grade g : grades) {
+        if (g.getCourse().equals(c)) return g.getScore();
+    }
+    return -1; // 找不到
+}
+```
+
+**用 `HashMap<Course, Grade>` 的情況：**
+```java
+// 查詢 O(1)，且自動確保「每門課只有一筆成績」
+private Map<Course, Grade> grades = new HashMap<>();
+
+public void addGrade(Grade grade) {
+    grades.put(grade.getCourse(), grade); // 同一門課只保留最新分數
+}
+
+public Grade getGrade(Course c) {
+    return grades.get(c); // 直接取出，效率高
+}
+```
+
+> [!TIP]
+> **建議使用 `HashMap<Course, Grade>`**：一個學生在同一門課通常只會有一筆成績，`HashMap` 不但保證了這個唯一性約束，也讓「查詢某門課的成績」從 O(n) 降為 O(1)。若未來需要記錄補考成績等多筆紀錄，再考慮改回 `Map<Course, List<Grade>>`。
+
 ### 6.2.3 聚合關係 (Aggregation)
 
 聚合是「概念上的包含 (Whole-Part)」，但部分 (Part) 的生命週期與整體 (Whole) 不綁定。當包含者不在，被包含者也不需要被清除。UML 中以空心菱形表示 (`o--`)。

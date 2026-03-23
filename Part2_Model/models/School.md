@@ -67,18 +67,18 @@ classDiagram
     }
 
     %% --- 關係定義 ---
-    Displayable <|.. SchoolMember : Interface Realization
-    SchoolMember <|-- Student : Inheritance
-    SchoolMember <|-- Teacher : Inheritance
+    Displayable <|.. SchoolMember
+    SchoolMember <|-- Student
+    SchoolMember <|-- Teacher
 
-    School "1" *-- "*" Department : Composition (School 消失則 Dept 消失)
-    Department "1" -- "*" Teacher : Association
-    Department "1" -- "*" Course : Aggregation (課程屬於系，但系消失課不一定消失)
+    School "1" *-- "*" Department
+    Department "1" -- "*" Teacher : hire
+    Department "1" -- "*" Course : offer
     
-    Teacher "1" -- "*" Course : Association (授課關係)
-    Student "1" *-- "*" Grade : Composition (成績依附於學生)
-    Grade "*" -- "1" Course : Association
-    Course "*" -- "*" Student : Association (Many-to-Many)
+    Teacher "1" -- "*" Course : teach
+    Student "1" *-- "*" Grade
+    Grade "*" -- "1" Course
+    Course "*" -- "*" Student
 ```
 
 ## 🎓 物件導向設計觀念延伸

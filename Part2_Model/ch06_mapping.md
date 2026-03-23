@@ -222,7 +222,7 @@ classDiagram
         -courseName: String
     }
     
-    Student "1" --> "0..*" Course : enrolls >
+    Student "0..*" --> "0..*" Course : enrolls >
 ```
 
 #### 💻 Java 程式碼對應：
@@ -250,6 +250,64 @@ public class Course {
     // Course 類別內部並不包含對 Student 的參考 (Student 變數)。
 }
 ```
+
+#### 📌 UML 圖例：學生與課程 (多對多雙向關聯)
+
+如果在設計時，我們希望不但「學生能查自己修了哪些課」，而且「課程也要能查有哪些學生來修」，這時就會變成**雙向關聯 (Bidirectional Association)**。在圖上通常畫一條**沒有箭頭**的實線即可（代表兩端都可以互相看見與瀏覽）。
+
+```mermaid
+classDiagram
+    direction LR
+    class Student {
+        -name: String
+        +enrollCourse(Course c) void
+    }
+    class Course {
+        -courseName: String
+        +addStudent(Student s) void
+    }
+    
+    Student "0..*" -- "0..*" Course : enrolls
+```
+
+#### 💻 Java 程式碼對應 (雙向同步)：
+
+在實作雙向關聯時，最大的挑戰在於**保持兩邊資料的一致性 (Synchronization)**。當學生加入一門課時，這門課的修課清單也必須加上這位學生；否則就會出現 A 認識 B，但 B 卻沒有 A 的紀錄這種資料不一致。
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class Student {
+    private String name;
+    private List<Course> courses = new ArrayList<>();
+    
+    // 雙向同步：加入課程的同時，也把自己加進課程的學生名單中
+    public void enrollCourse(Course c) {
+        if (!courses.contains(c)) {
+            courses.add(c);
+            c.addStudent(this); // 將自己 this 傳給對方
+        }
+    }
+}
+
+public class Course {
+    private String courseName;
+    // 雙向關聯，Course 這裡也需要有一個 List 來記住修課學生
+    private List<Student> students = new ArrayList<>();
+    
+    // 雙向同步：加入學生的同時，也把課程加進學生的課表中
+    public void addStudent(Student s) {
+        if (!students.contains(s)) {
+            students.add(s);
+            s.enrollCourse(this); // 將自己 this 傳給對方
+        }
+    }
+}
+```
+
+> [!NOTE]  
+> ⚠️ **注意寫法**：以上的寫法利用了 `if (!contains(...))` 檢查，這是為了解決當 `s.enrollCourse` 呼叫 `c.addStudent` 後，`c.addStudent` 又會回頭呼叫 `s.enrollCourse` 所引發的**無限遞迴迴圈**問題。只有當對象還未被加入集合時，才進行遞迴的新增動作。
 
 ### 6.2.3 聚合關係 (Aggregation)
 
@@ -400,3 +458,45 @@ public class Board {
 
 *   **狀態圖 (State Diagram)**：若物件有明確的狀態流轉（例如遊戲角色的「停止」、「跑動」、「攻擊」），實作上常會運用 `enum` 配合 `switch-case` 呈現，或是進一步改寫應用 **State Pattern (狀態模式)**，讓每種狀態自動切換物件的行為。
 *   **活動圖 (Activity Diagram)**：可視為高階、跨物件的流程圖。上面的判斷節點（菱形）會成為程式碼內的 `if-else` 或 `switch`，而分叉與會合節點 (Fork/Join) 在 Java 中代表可能會開出多個 `Thread` (執行緒) 或是透過 `CompletableFuture` 來進行非同步的平行處理。
+
+## 6.4 綜合練習：從 UML 到 Java 程式碼
+
+本節練習延續第 4 章的綜合練習。請拿出您在第 4 章所繪製的 UML 類別圖，並將其轉換為具體的 Java 程式碼骨架。您不需要寫出所有方法的完整內部邏輯，但請務必精準實作**屬性、存取修飾子、關聯與集合、多載與多型機制**。
+
+### 練習 6.1 📚 圖書管理系統 (Library Management) 實作
+延續第 4 章的「圖書管理」練習，請將您的設計轉換為 Java 程式碼。
+- **實作要求**：
+  - 定義 `Library`, `Member`, `Book`, `Loan`, `Author` 類別，並加上適當的存取修飾子 (`private`, `public`)。
+  - 實作集合屬性，例如 `Library` 擁有 `Member` 清單，`Member` 擁有 `Loan` 紀錄（最多五本的限制如何在程式中控管？）。
+  - `Book` 與 `Author` 為多對多關聯，請實作其資料結構。
+- **💡 反思提醒**：
+  - `Book` 與 `Loan` 在設計上是**組合 (Composition)** 關係。在 Java 實作中，當一本書 (Book) 的副本從圖書館註銷遭到刪除時，你的程式碼是如何確保其對應的借閱歷史紀錄不會變成「失去參照的孤兒資料」或引發 `NullPointerException`？
+  - 多對多的雙向關聯（如互相記錄的 `Book` 與 `Author`）在實作雙向新增資料時，該怎麼寫才能避免產生無限遞迴呼叫 (StackOverflowError)？
+
+### 練習 6.2 ♟️ 西洋棋系統 (Chess Game System) 實作
+延續第 4 章西洋棋的架構設計。
+- **實作要求**：
+  - 將 `Piece` 設計為抽象類別 (Abstract Class)，並宣告抽象方法 `isValidMove()`。
+  - 實作 `King`, `Queen`, `Rook` 等子類別，並利用 `@Override` 覆寫 `isValidMove()` 方法。
+  - 實作 `Board` 包含 64 個 `Square` 的組合關係，請確保它們的生命週期綁定在 `Board` 的建構子中。
+- **💡 反思提醒**：
+  - 當系統或玩家需要檢查某一步是否合法，迴圈遍歷盤面上的所有 `Piece` 並呼叫 `isValidMove()` 時，Java 的**動態綁定 (Dynamic Binding)** 機制是如何自動幫你精準導向執行 `King` 還是 `Queen` 的移動邏輯？這對未來如果你要擴充新穎棋種有什麼幫助（開閉原則）？
+
+### 練習 6.3 🏫 校園管理系統 (School Management System) 實作
+延續第 4 章校園管理的設計。
+- **實作要求**：
+  - 實作「學生 (`Student`)」與「課程 (`Course`)」之間的多對多**雙向關聯**。
+  - 實作 `addStudent()` 與 `enrollCourse()`，並確保當一方加入另一方時，兩邊的集合 (Collection) 狀態能維持同步。
+  - 宣告共通的 `Displayable` 介面，並讓老師與學生實作之（印出自己的資訊）。
+- **💡 反思提醒**：
+  - 當你在 `Student` 內部宣告存放多門課程的集合時，你選擇了哪一種具體的集合類別（如 `ArrayList` 還是 `HashSet`）？在考慮「不能重複修同一門課」的商業邏輯時，選擇哪種資料結構最省力且適合？
+
+### 練習 6.4 🎮 遊戲戰鬥系統 (Game Combat System) 實作
+延續第 4 章的遊戲角色設計。
+- **實作要求**：
+  - 定義 `Hero` 與 `Monster` 類別，賦予血量屬性。
+  - 實作「武器 (`Weapon`)」與「英雄」之間的關係，讓英雄能夠裝備 (`equip`) 武器。
+  - 在英雄的 `attack()` 方法中，呼叫對手（以多型視為 `Combatant` 或單純為另一個角色）的 `takeDamage()` 方法。
+- **💡 反思提醒**：
+  - 英雄到武器之間的關聯多重性為 `0..1`。這意味著英雄可能並未裝備武器。你在 Java 實作 `hero.attack()` 時，是如何處理 `Weapon` 參考可能為 `null` 的狀況？如果不做任何防呆檢驗，會拋出什麼嚴重異常？
+```

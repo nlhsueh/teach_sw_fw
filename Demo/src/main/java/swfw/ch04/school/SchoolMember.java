@@ -1,4 +1,4 @@
-package ch04.school;
+package swfw.ch04.school;
 
 import java.time.LocalDate;
 

@@ -1,4 +1,4 @@
-package ch04.school;
+package swfw.ch04.school;
 
 /**
  * Course 類別：代表一門課程。

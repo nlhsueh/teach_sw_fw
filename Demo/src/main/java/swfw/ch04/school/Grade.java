@@ -1,4 +1,4 @@
-package ch04.school;
+package swfw.ch04.school;
 
 /**
  * Grade 類別：記錄一門課的成績。

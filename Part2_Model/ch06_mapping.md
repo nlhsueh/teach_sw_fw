@@ -58,9 +58,12 @@ public abstract class Teacher {
 
 ### 6.1.2 介面 (Interface)
 
-在 UML 中，介面通常以 `<<interface>>` 的標籤 (Stereotype) 來標示。
+在標準 UML 中，介面主要有兩種常見的畫法：**標籤法 (Stereotype)** 與 **棒棒糖法 (Lollipop Notation)**。
 
-#### 📌 UML 圖例：可顯示資訊的介面
+#### 1. 標籤法 (Stereotype / 類別框格法)
+這是最常見的畫法，使用與一般類別相同的方框，並在頂部加上 `<<interface>>` 標籤。這種畫法適合用來**詳細列舉介面所包含的方法**。
+
+**📌 UML 圖例：**
 ```mermaid
 classDiagram
     direction LR
@@ -68,13 +71,60 @@ classDiagram
         <<interface>>
         +displayInfo() void
     }
+    class Student {
+        +displayInfo() void
+    }
+    
+    Displayable <|.. Student : implements (realization)
+```
+
+#### 2. 棒棒糖法 (Lollipop / 插座與小圓圈法)
+當系統變大，我們只想強調類別或元件之間「提供 (Provided)」與「需要 (Required)」介面的依賴關係，而不在乎介面內部細節時，會改用棒棒糖畫法。
+*   **提供介面 (Provided Interface)**：以一條線連著一個小圓圈表示，看起來像棒棒糖。代表該類別實作了此介面。
+*   **需求介面 (Required Interface)**：以一個半圓形 (Socket/插座) 表示。代表該類別需要呼叫此介面。
+
+**📌 原生 UML 圖例 (以 [PlantUML](https://plantuml.com/) 呈現棒棒糖法)：**
+*(註：因 Mermaid 類別圖尚未原生支援棒棒糖符號，故此處以 PlantUML 呈現 UML 標準)*
+```plantuml
+@startuml
+left to right direction
+
+class Student
+interface Displayable
+
+' Student 提供了 Displayable 介面 (實作，對應棒棒糖)
+Displayable -- Student
+
+class SystemConsole
+' SystemConsole 需要 Displayable 介面 (依賴，對應半圓插座)
+SystemConsole ..> Displayable : requires
+
+@enduml
 ```
 
 #### 💻 Java 程式碼對應：
+無論 UML 使用哪種畫法，在 Java 中的對應關係與實作方式都是相同的：
+
 ```java
-// 介面所有方法預設為 public abstract
+// 定義介面
 public interface Displayable {
     void displayInfo();
+}
+
+// 1. 提供介面的一方 (對應棒棒糖 / 實作)
+public class Student implements Displayable {
+    @Override
+    public void displayInfo() {
+        System.out.println("Showing student info...");
+    }
+}
+
+// 2. 需求介面的一方 (對應半圓插座 / 依賴)
+public class SystemConsole {
+    // 依賴於 Displayable 介面，而不是具體的 Student
+    public void printConfig(Displayable d) {
+        d.displayInfo();
+    }
 }
 ```
 

@@ -35,14 +35,27 @@
 classDiagram
     direction TB
     
-    class Monster {
+    class LivingBeing {
         <<abstract>>
         #String name
+        #int speed
+        +LivingBeing(String name, int speed)
+        +getName() String
+        +getSpeed() int
+        +setSpeed(int speed)
+    }
+    
+    class Monster {
+        <<abstract>>
         #String type
         #int health
         #int attackPower
-        +Monster(String name, String type, int attackPower)
+        +Monster(String name, int speed, String type, int attackPower)
         +sleep()
+        +getType() String
+        +getHealth() int
+        +setHealth(int health)
+        +getAttackPower() int
     }
     
     class LandMonster {
@@ -57,12 +70,12 @@ classDiagram
         +AirMonster(String name)
     }
     
+    LivingBeing <|-- Monster
     Monster <|-- LandMonster
     Monster <|-- WaterMonster
     Monster <|-- AirMonster
     
     class Hunter {
-        -String name
         -int health
         -int baseAttack
         -Weapon weapon
@@ -74,11 +87,15 @@ classDiagram
         +attackRound(Monster target, int rounds)
     }
     
+    LivingBeing <|-- Hunter
+    
     class Mount {
-        -String name
         -int defense
-        +Mount(String name, int defense)
+        +Mount(String name, int speed, int defense)
+        +getDefense() int
     }
+    
+    LivingBeing <|-- Mount
     
     class Weapon {
         -String name
@@ -86,6 +103,7 @@ classDiagram
         -int attackBonus
         -int attackPenalty
         +Weapon(String name, String effectiveType)
+        +getName() String
         +getExtraDamage(Monster m) int
     }
     
@@ -98,20 +116,32 @@ classDiagram
 
 ```java
 // 核心戰鬥邏輯與實體類別
-abstract class Monster {
+abstract class LivingBeing {
     protected String name;
+    protected int speed;
+
+    public LivingBeing(String name, int speed) {
+        this.name = name;
+        this.speed = speed;
+    }
+
+    public String getName() { return name; }
+    public int getSpeed() { return speed; }
+    public void setSpeed(int speed) { this.speed = speed; }
+}
+
+abstract class Monster extends LivingBeing {
     protected String type;
     protected int health;
     protected int attackPower;
 
-    public Monster(String name, String type, int attackPower) {
-        this.name = name;
+    public Monster(String name, int speed, String type, int attackPower) {
+        super(name, speed);
         this.type = type;
         this.health = 100; // 初始血量
         this.attackPower = attackPower; // 依不同型態有不同攻擊力
     }
 
-    public String getName() { return name; }
     public String getType() { return type; }
     public int getHealth() { return health; }
     public void setHealth(int health) { this.health = health; }
@@ -125,19 +155,19 @@ abstract class Monster {
 
 class LandMonster extends Monster {
     public LandMonster(String name) {
-        super(name, "陸地", 80);
+        super(name, 10, "陸地", 80);
     }
 }
 
 class WaterMonster extends Monster {
     public WaterMonster(String name) {
-        super(name, "水上", 70); // 確保測試案例順利運行，維持攻擊力 70
+        super(name, 15, "水上", 70); // 確保測試案例順利運行，維持攻擊力 70
     }
 }
 
 class AirMonster extends Monster {
     public AirMonster(String name) {
-        super(name, "空中", 60);
+        super(name, 20, "空中", 60);
     }
 }
 
@@ -166,49 +196,47 @@ class Weapon {
     }
 }
 
-class Mount {
-    private String name;
+class Mount extends LivingBeing {
     private int defense;
 
-    public Mount(String name, int defense) {
-        this.name = name;
+    public Mount(String name, int speed, int defense) {
+        super(name, speed);
         this.defense = defense; // 增強不同的防禦力
     }
 
-    public String getName() { return name; }
     public int getDefense() { return defense; }
 }
 
-class Hunter {
-    private String name;
+class Hunter extends LivingBeing {
     private int health;
     private int baseAttack;
     private Weapon weapon;
     private Mount mount;
 
     public Hunter(String name) {
-        this.name = name;
+        super(name, 10); // 預設速度
         this.health = 100;
         this.baseAttack = 10; // 徒手攻擊力
     }
 
     public void equip(Weapon w) {
         this.weapon = w;
-        System.out.println(name + " 裝備了武器: " + w.getName());
+        System.out.println(this.getName() + " 裝備了武器: " + w.getName());
     }
 
     public void ride(Mount m) {
         this.mount = m;
-        System.out.println(name + " 騎上坐騎: " + m.getName());
+        this.speed = m.getSpeed(); // 坐騎取代速度
+        System.out.println(this.getName() + " 騎上坐騎: " + m.getName() + " (速度更新為 " + this.speed + ")");
     }
 
     public void takeElixirAndSleep(int newHealth) {
         this.health = newHealth;
-        System.out.println("  => " + name + " 吃了仙丹，睡了一覺，血量變成 " + this.health);
+        System.out.println("  => " + this.getName() + " 吃了仙丹，睡了一覺，血量變成 " + this.health);
     }
 
     public void attackRound(Monster target, int rounds) {
-        System.out.println(">>> " + name + " 對 " + target.getName() + " 發起了 " + rounds + " 回合戰鬥 <<<");
+        System.out.println(">>> " + this.getName() + " 對 " + target.getName() + " 發起了 " + rounds + " 回合戰鬥 <<<");
         for (int i = 1; i <= rounds; i++) {
             if (this.health <= 0 || target.getHealth() <= 0) break;
 
@@ -231,7 +259,7 @@ class Hunter {
                 this.health -= mDamage;
             }
         }
-        System.out.println("  -> 戰鬥結束: " + name + " 血量變成 " + this.health + "，" + target.getName() + " 血量變成 " + target.getHealth());
+        System.out.println("  -> 戰鬥結束: " + this.getName() + " 血量變成 " + this.health + "，" + target.getName() + " 血量變成 " + target.getHealth());
     }
 }
 
@@ -242,9 +270,9 @@ public class Main {
         Weapon sword = new Weapon("石中劍", "陸地"); // 對水怪不適當
         Weapon harpoon = new Weapon("海神魚叉", "水上"); // 對水怪適當
 
-        // 2. 建立兩個坐騎
-        Mount horse = new Mount("戰馬", 10);
-        Mount turtle = new Mount("裝甲海龜", 60);
+        // 2. 建立兩個坐騎 (初始化包含速度，例如戰馬 25、烏龜 5)
+        Mount horse = new Mount("戰馬", 25, 10);
+        Mount turtle = new Mount("裝甲海龜", 5, 60);
 
         // 3. 建立一個 Hunter
         Hunter hunter = new Hunter("傑洛特");

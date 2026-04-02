@@ -89,59 +89,35 @@ Actor 的幾種呈現方式
 - 使用案例通常是動詞。
 - 從「成功的情境」開始描述使用案例，在逐步的找出可能的例外。
 
-### PlantUML 使用案例圖 
+### Mermaid 使用案例圖 
 
-See [PlantUML use case diagram](https://plantuml.com/en/use-case-diagram)
+See [Mermaid flowchart](https://mermaid.js.org/syntax/flowchart.html) (Mermaid 並無原生獨立的 Use Case 圖，通常我們以 Flowchart 替代)
 
 ```plaintext
-actor User
-actor Admin
+flowchart LR
+    User([User])
+    Admin([Admin])
 
-usecase "Login" as UC1
-usecase "Manage Users" as UC2
+    UC1([Login])
+    UC2([Manage Users])
 
-User -> UC1
-Admin -> UC2
-
-legend left
-UC1:
-  1. User login to the system....
-  2. The system .... 
-  3. User press the button ...
-end legend
-
-note top of UC2
-  The user enters their credentials
-  and the system verifies them.
-end note
+    User --> UC1
+    Admin --> UC2
 ```
-- `actor` 定義角色
-- `usecase` 定義用例
+- `([])` 這個符號可用來定義圓角端點（類似角色或用例）
 - `-->` 表示關聯
 
 呈現：
-```plantuml
-@startuml
-actor User
-actor Admin
+```mermaid
+flowchart LR
+    User([User])
+    Admin([Admin])
 
-usecase "Login" as UC1
-usecase "Manage Users" as UC2
+    UC1([Login])
+    UC2([Manage Users])
 
-User -> UC1
-Admin -> UC2
-
-legend left
-UC1:
-  1. User login to the system....
-  2. The system .... 
-  3. User press the button ...
-end legend
-
-note top of UC2
-  The user enters their credentials
-  and the system verifies them.
-end note
+    User --> UC1
+    Admin --> UC2
 ```
 
 ### 小節練習
@@ -264,51 +240,43 @@ State transition diagram（完整表達法）
 
 <img src="https://i.imgur.com/CconyUk.png" width="400">
 
-```plantuml
-@startuml DiagramName
-[*] -> 預約確認中
-預約確認中 --> 預約完成 : [有空房]/dec count
-
-預約確認中 --> 等候補位 : [無空房]/put into list
-
-等候補位 -> 預約完成 : [有空房]/dec count
-
-等候補位 ---> 取消 : 顧客取消/remove from list
-
-預約完成 --> 使用中 : 入住
-
-使用中 -> 歸檔 : 離開付款/inc count
-
-取消 -> [*] : 取消
-歸檔 -> [*] : 退房
-@enduml
+```mermaid
+stateDiagram-v2
+    [*] --> 預約確認中
+    預約確認中 --> 預約完成 : [有空房]/dec count
+    預約確認中 --> 等候補位 : [無空房]/put into list
+    等候補位 --> 預約完成 : [有空房]/dec count
+    等候補位 --> 取消 : 顧客取消/remove from list
+    預約完成 --> 使用中 : 入住
+    使用中 --> 歸檔 : 離開付款/inc count
+    取消 --> [*] : 取消
+    歸檔 --> [*] : 退房
 ```
 
 飯店預約系統的狀態圖
 
-### PlantUML 狀態圖 
+### Mermaid 狀態圖 
 
-See [PlantUML state diagram](https://plantuml.com/en/state-diagram)
+See [Mermaid stateDiagram](https://mermaid.js.org/syntax/stateDiagram.html)
 
 ```plaintext
-[*] -> Idle
-Idle -> Processing: Start Task
-Processing -> Idle: Complete Task
-Processing -> [*]: Error
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Processing: Start Task
+    Processing --> Idle: Complete Task
+    Processing --> [*]: Error
 ```
 - `[*]` 表示初始或終止狀態
 - `-->` 表示狀態轉換
 - `:` 後面可以寫觸發條件
 
-
-
 呈現：
-```plantuml
-@startuml
-[*] -> Idle
-Idle -> Processing: Start Task
-Processing -> Idle: Complete Task
-Processing -> [*]: Error
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Processing: Start Task
+    Processing --> Idle: Complete Task
+    Processing --> [*]: Error
 ```
 
 
@@ -350,35 +318,36 @@ Processing -> [*]: Error
 
 
 
-### PlantUML 循序圖 
-See [PlantUML sequence diagram diagram](https://plantuml.com/en/sequence-diagram)
+### Mermaid 循序圖 
+See [Mermaid sequence diagram](https://mermaid.js.org/syntax/sequenceDiagram.html)
 
 ```plaintext
-participant User
-participant "Web Server" as Server
-participant Database
+sequenceDiagram
+    participant User
+    participant Server as Web Server
+    participant Database
 
-User -> Server: Request Login
-Server -> Database: Check Credentials
-Database --> Server: Return User Data
-Server --> User: Login Success
+    User->>Server: Request Login
+    Server->>Database: Check Credentials
+    Database-->>Server: Return User Data
+    Server-->>User: Login Success
 ```
 - `participant` 定義參與者
-- `->` 表示同步請求
-- `-->` 表示回應
+- `->>` 表示同步請求
+- `-->>` 表示回應 (虛線)
 - `as` 可用來給參與者取別名
 
 呈現：
-```plantuml
-@startuml
-participant User
-participant "Web Server" as Server
-participant Database
+```mermaid
+sequenceDiagram
+    participant User
+    participant Server as Web Server
+    participant Database
 
-User -> Server: Request Login
-Server -> Database: Check Credentials
-Database --> Server: Return User Data
-Server --> User: Login Success
+    User->>Server: Request Login
+    Server->>Database: Check Credentials
+    Database-->>Server: Return User Data
+    Server-->>User: Login Success
 ```
 ---
 
@@ -411,26 +380,32 @@ fcu.showTop();
 fcu.showNoPass();
 ```
 
-```plantuml
-@startuml
-activate Main
-Main -> fcu: hire(nick)
-Main -> nick: offer(java)
-Main -> albert: enter(fcu, "s01")
-Main -> jie: enter()
-Main -> fcu: showMembers()
-Main -> albert: takeCourse(java)
-activate albert
-albert -> albert: checkCourse()
-albert -> java: addStudent(albert)
-deactivate albert
+```mermaid
+sequenceDiagram
+    participant Main
+    participant fcu
+    participant nick
+    participant albert
+    participant jie
+    participant java
+    
+    activate Main
+    Main->>fcu: hire(nick)
+    Main->>nick: offer(java)
+    Main->>albert: enter(fcu, "s01")
+    Main->>jie: enter()
+    Main->>fcu: showMembers()
+    Main->>albert: takeCourse(java)
+    activate albert
+    albert->>albert: checkCourse()
+    albert->>java: addStudent(albert)
+    deactivate albert
 
-Main -> jie: takeCourse(java)
-Main -> nick: score (java, jie, 90)
-Main -> fcu: listGrade()
-Main -> fcu: showTop()
-deactivate Main
-@enduml
+    Main->>jie: takeCourse(java)
+    Main->>nick: score(java, jie, 90)
+    Main->>fcu: listGrade()
+    Main->>fcu: showTop()
+    deactivate Main
 ```
 
 - 考慮以下的程式，繪製其循序圖
@@ -486,37 +461,34 @@ public class Bill {
 
 <img src=https://i.imgur.com/LWN37ET.png width="300px">
 
-### PlantUML 活動圖 
+### Mermaid 流程圖 (對應活動圖) 
 
-See [PlantUML activity diagram](https://plantuml.com/en/activity-diagram-beta)
+See [Mermaid flowchart](https://mermaid.js.org/syntax/flowchart.html)
 
 ```plaintext
-start
-:User enters credentials;
-if (Valid credentials?) then (Yes)
-  :Show dashboard;
-else (No)
-  :Show error message;
-endif
-stop
+flowchart TD
+    Start([start]) --> Step1[User enters credentials]
+    Step1 --> Cond{Valid credentials?}
+    Cond -- Yes --> Step2[Show dashboard]
+    Cond -- No --> Step3[Show error message]
+    Step2 --> Stop([stop])
+    Step3 --> Stop
 ```
-- `start` / `stop` 表示開始與結束
-- `:` 定義動作
-- `if (條件) then (分支)` 表示條件判斷
-- `else (分支)` 定義另一條路徑
-- `endif` 結束條件判斷
+- `([標籤])` 表示圓角端點，當作 start / stop
+- `[標籤]` 定義一般的處理動作節點
+- `{標籤}` 定義條件判斷 (菱形)
+- `-->` 表示單向箭頭
+- `-- 文字 -->` 從判斷節點分支出去的條件路線
 
 呈現：
-```plantuml
-@startuml
-start
-:User enters credentials;
-if (Valid credentials?) then (Yes)
-  :Show dashboard;
-else (No)
-  :Show error message;
-endif
-stop
+```mermaid
+flowchart TD
+    Start([start]) --> Step1[User enters credentials]
+    Step1 --> Cond{Valid credentials?}
+    Cond -- Yes --> Step2[Show dashboard]
+    Cond -- No --> Step3[Show error message]
+    Step2 --> Stop([stop])
+    Step3 --> Stop
 ```
 
 ---

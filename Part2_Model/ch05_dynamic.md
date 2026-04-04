@@ -23,18 +23,8 @@
    要注意 Actor 扮演的是「角色」而非特定個體（例如 John 同時是學生也是職員，在選課時他扮演的是學生角色）。在選課系統中，主要與之互動的角色包含了「學生 (Student)」與「老師 (Teacher)」。
    
    <img src="img/actor_types.png" width="400">
-   *(圖解：Actor 的幾種常見呈現方式)*
+   (圖解：Actor 的幾種常見呈現方式)
 
-<!--
-@startuml
-left to right direction
-actor "使用者 (User)" as User
-actor "外部系統 (System)" <<System>> as Sys
-actor "定時任務 (Timer)" <<Timer>> as Time
-User -[hidden]-> Sys
-Sys -[hidden]-> Time
-@enduml
--->
 
 2. **使用案例 (Use Case)**
    描述一個角色使用系統所進行的一段「互動過程」或達成的目標。例如老師可以「開課 (Offer Course)」與「評分 (Score)」；學生可以「選課 (Take Course)」與「查詢成績 (List Grade)」。
@@ -47,35 +37,8 @@ Sys -[hidden]-> Time
 
 我們可以將上述觀念畫成以下的 PlantUML 使用案例概念圖（系統邊界為「大學選課系統」）：
 
-<img src="img/use_case_course.png" width="550">
+<img src="img/use_case_course.png" width="650">
 
-<!--
-@startuml
-left to right direction
-skinparam packageStyle rectangle
-
-actor "Teacher" as T
-actor "Student" as S
-
-rectangle 大學選課系統 {
-    usecase "開課 Offer Course" as UC1
-    usecase "選課 Take Course" as UC2
-    usecase "評分 Score" as UC3
-    usecase "查詢成績 List Grade" as UC4
-    usecase "判斷登入狀態 Check Login" as UC5
-    usecase "名額已滿處理 Handle Full Capacity" as UC6
-}
-
-T --> UC1
-T --> UC3
-S --> UC2
-S --> UC4
-
-UC2 ..> UC5 : <<include>>
-UC4 ..> UC5 : <<include>>
-UC6 ..> UC2 : <<extend>>\n(若名額已滿)
-@enduml
--->
 
 ### 5.1.2 使用案例描述 (Use Case Description)
 
@@ -115,9 +78,7 @@ UC6 ..> UC2 : <<extend>>\n(若名額已滿)
 > - 使用案例名稱通常是**動詞短語**。
 > - 從「成功的情境（Happy Path）」開始描述事件流，再逐步找出可能的例外。
 
-### 5.1.3 延伸範例
-
-#### 範例：自動售票機
+### 5.1.3 範例：自動售票機
 
 先描述正常順利的情境，再描述例外狀況。
 
@@ -138,37 +99,27 @@ UC6 ..> UC2 : <<extend>>\n(若名額已滿)
 - **例外**:
     - 沒有零錢：機器沒有零錢可找，請參考另一個延伸情境 UC201a。
 	- 超時：乘客超過一分鐘沒有動作，請參考另一延伸情境 UC201b。
+    - 票券卡紙：機器無法印票，提示維修人員。
+    - 信用卡授權失敗：付款失敗，取消交易並退回卡片。
+    - 零錢不足：投入金額不足以支付且乘客無後續動作。
 
 透過 <<extend>> 畫出例外狀況：
 <img src="img/use_case_ticket.png" width="400">
 
-<!--
-@startuml
-left to right direction
-skinparam packageStyle rectangle
-actor "乘客" as P
-rectangle "自動售票系統" {
-    usecase "買票 (UC201)" as UC1
-    usecase "沒有零錢處理 (UC201a)" as UC2
-    usecase "超時處理 (UC201b)" as UC3
-}
-P --> UC1
-UC1 <.. UC2 : <<extend>>
-UC1 <.. UC3 : <<extend>>
-@enduml
--->
-
 ### 5.1.4 隨堂測驗
 
 1. 在使用案例圖中，哪一項最適合用來代表外部系統或人類使用者？
+   (A) 使用案例 (B) 系統邊界 (C) 角色 (D) 關係
    <details><summary>解答與解析</summary>
    **(C) 角色 (Actor)**。Actor 代表與系統互動的實體，有時不一定是人類，也可能是硬體設備或其他系統。
    </details>
 2. 使用案例之間的 "include" 關係，主要目的是什麼？
+   (A) 降低重複的描述 (B) 表示例外狀況 (C) 定義前置條件 (D) 繪製流程圖
    <details><summary>解答與解析</summary>
    **(A) 降低重複的描述**。將共用的流程抽取出來，被多個使用案例「包含」，以達到流程重用的目的。
    </details>
 3. 關於使用案例描述的「例外 (Exception)」條件，下列何者正確？
+   (A) 描述基本成功流程 (B) 描述發生錯誤或無法滿足前置條件時的流程 (C) 描述包含關係的流程 (D) 描述系統效能需求
    <details><summary>解答與解析</summary>
    **(B) 描述發生錯誤或無法滿足前置條件時的流程**。例如選課時碰到名額已滿，系統提示並拒絕加入的操作。
    </details>
@@ -254,51 +205,17 @@ stateDiagram-v2
 <img src="img/state_car.png" width="400">
 *(圖解：變速器的循序子狀態圖)*
 
-<!--
-@startuml
-left to right direction
-[*] --> 空檔
-空檔 --> 前進檔 : pushF
-前進檔 --> 空檔 : pushN
-state 前進檔 {
-  [*] --> 一檔
-  一檔 --> 二擋 : speedUp
-  二擋 --> 三檔 : speedUp
-}
-@enduml
--->
 
 #### 其他系統的狀態圖範例 
 
 **A. 圖書館媒體租借系統**
 <img src="img/state_media.png" width="400">
 
-<!--
-@startuml
-[*] --> 館內
-館內 --> 被預約 : 預借
-被預約 --> 外借中 : 外借
-館內 --> 外借中 : 直接外借
-外借中 --> 館內 : 歸還
-@enduml
--->
 圖中的媒體狀態極度精簡，只列出「館內」、「被預約」與「外借中」，並排除了如「讀者閱覽中」、「館員貼條碼中」等不影響租借邏輯的無意義狀態。
 
 **B. 複雜狀態表示表示法 (Action & transitions)**
 <img src="img/state_complex.png" width="450">
 
-<!--
-@startuml
-state "行為狀態 (Action State)" as S1 {
-  entry / op1
-  exit / op2
-  do / op4
-  i / op3
-  --
-  [*] --> 子狀態
-}
-@enduml
--->
 圖中標示了進入 (`entry`)、離開 (`exit`) 與內部持續 (`do`) 等動作之寫法。
 
 **C. 飯店預約系統**
@@ -326,14 +243,17 @@ stateDiagram-v2
 ### 5.2.5 隨堂測驗
 
 1. 何者較不適合作為物件的一個「狀態」？
+   (A) 閒置中 (B) 授課中 (C) 按下按鈕 (D) 歸檔中
    <details><summary>解答與解析</summary>
    **(C) 按下按鈕（或輸入特定指令）**。這通常是一瞬間發生的「事件(Event)」，而不是會持續一段時間的「狀態(State)」。
    </details>
 2. 下列哪一項不是狀態圖中「狀態轉移(Transition)」的必備或常見元素？
+   (A) 驅使事件 (B) 轉移條件 (C) 行動 (D) 參與者
    <details><summary>解答與解析</summary>
    **(D) 參與者(Actor)**。狀態轉移通常由「驅使事件、轉移條件、行動、目的狀態」所構成，Actor 是使用案例圖的元素。
    </details>
 3. 所謂的「狀態的合成化 (Concurrent substate)」代表什麼意義？
+   (A) 物件同時處於多個子狀態 (B) 物件依序經過多個子狀態 (C) 物件只能處於一個子狀態 (D) 狀態之間沒有關係
    <details><summary>解答與解析</summary>
    **(A) 物件同時處於多個子狀態（且的關係）**。表示該狀態由多個並行的子狀態共同組合而成。
    </details>
@@ -426,59 +346,28 @@ sequenceDiagram
 
 <img src="img/sequence_chess.png" width="400">
 
-<!--
-@startuml
-actor Player
-participant ChessGame
-participant ChessBoard
-Player -> ChessGame : 建立遊戲
-Player -> ChessGame : 加入遊戲
-activate ChessGame
-ChessGame -> ChessBoard : Create
-deactivate ChessGame
-Player -> ChessBoard : 互動
-ChessBoard -> ChessGame : 指令
-activate ChessGame
-ChessGame -> ChessGame : checkWinner()
-ChessGame -> ChessBoard : 勝負揭曉
-deactivate ChessGame
-ChessBoard -> Player : 顯示訊息
-@enduml
--->
+<img src="img/sequence_chess.png" width="400">
 
 #### 泛用的物件產出與回傳表示法
 下圖是一個純概念示範圖，`msg1`, `msg2` 為訊息，其中 $object_4$ 被動態建立（透過 Create stereotype 標示），並展示了執行結束後的回傳值表達法（細虛線搭配回傳變數 $x$, $y$）。
 
 <img src="img/sequence_generic.png" width="450">
 
-<!--
-@startuml
-participant "object1" as O1
-participant "object2" as O2
-participant "object3" as O3
-participant "object4" as O4
-O1 -> O2 : msg1
-activate O2
-O2 -> O3 : msg2
-create O4
-O3 -> O4 : Create (stereotype)
-O3 -->> O2 : x (return)
-deactivate O2
-@enduml
--->
-
 
 ### 5.3.3 隨堂測驗
 
 1. 循序圖主要的目的是用來表達什麼？
+   (A) 物件靜態結構 (B) 物件間訊息傳遞先後順序 (C) 單一物件屬性變化 (D) 系統功能需求
    <details><summary>解答與解析</summary>
    **(B) 物件之間訊息傳遞的先後順序**。循序圖透過生命線與箭頭，強調系統的動態互動過程。
    </details>
 2. 循序圖中垂直的虛線代表什麼？
+   (A) 活化段 (B) 訊息傳遞 (C) 生命線 (D) 物件邊界
    <details><summary>解答與解析</summary>
    **(C) 生命線 (Lifeline)**。用來代表物件在一段時間內的生命週期或參與互動的範圍。
    </details>
 3. 若要呈現一個方法有「回傳值」，在 UML 循序圖中通常如何表示？
+   (A) 帶有箭頭的虛線 (B) 實線箭頭 (C) 粗實線 (D) 雙箭頭
    <details><summary>解答與解析</summary>
    **(A) 使用帶有箭頭的虛線 (Dashed line with arrow)**。向後帶有箭頭的虛線通常代表 return message。
    </details>
@@ -563,64 +452,35 @@ flowchart TD
 除了前面的選課，這裡還有一個以決定要搭計程車還是公車的簡單決策流程圖：
 <img src="img/activity_decision.png" width="400">
 
-<!--
-@startuml
-start
-if (有急事?) then (yes)
-  :搭計程車;
-else (no)
-  :搭公車;
-endif
-stop
-@enduml
--->
+<img src="img/activity_decision.png" width="400">
 
 #### B. 分支與合併 (Fork & Merge)
 `Fork` 可以將單一流程切分為多支平行的、同時發生的子流程；`Merge`（有時也稱為 Join）則會等待這些平行的流程「全都完成」後，才繼續往後執行。下圖示範了一組並行執行的流程：
 <img src="img/activity_fork_merge.png" width="400">
 
-<!--
-@startuml
-start
-fork
-  :活動 A;
-fork again
-  :活動 B;
-end fork
-:合併後活動;
-stop
-@enduml
--->
+<img src="img/activity_fork_merge.png" width="400">
 
 下圖則是結合了橫向與垂直泳道（Swimlanes）的進階活動圖表達方式。泳道可以用來區分不同處理單元或不同執行緒所負責的工作：
 <img src="img/activity_swimlane.png" width="300">
 
-<!--
-@startuml
-|角色A|
-start
-:任務1;
-|角色B|
-:任務2;
-|角色A|
-:任務3;
-stop
-@enduml
--->
+<img src="img/activity_swimlane.png" width="300">
 
 ---
 
 ### 5.4.3 隨堂測驗
 
 1. 活動圖（Activity Diagram）主要是用來表達下列何者？
+   (A) 物件靜態結構 (B) 流程邏輯 (C) 訊息傳遞順序 (D) 物件生命週期
    <details><summary>解答與解析</summary>
    **(B) 流程邏輯**。適合用來描述具有判斷邏輯（Decision）或並行處理（Fork/Merge）的運作順序。
    </details>
 2. 在 Mermaid 的活動圖（Flowchart）中，菱形 `{ }` 代表什麼意思？
+   (A) 起始點 (B) 處理動作 (C) 條件判斷 (D) 終止點
    <details><summary>解答與解析</summary>
    **(C) 條件判斷 (Decision)**。用來判斷不同路線的走向（例如：是否繼續、名額是否已滿）。
    </details>
 3. 關於 Fork 與 Merge，下列敘述何者最適當？
+   (A) Fork 將流程切分為多個並行活動，Merge 等待並行活動完成後再繼續 (B) Fork 是條件判斷，Merge 是結束點 (C) Fork 會終止流程，Merge 會重啟流程 (D) 兩者皆為循序處理
    <details><summary>解答與解析</summary>
    **(A) Fork 將流程切分為多個並行活動，Merge 等待並行活動完成後再繼續**。
    </details>

@@ -22,8 +22,19 @@
    系統的外部參與者，在 UML 稱為 Actor。Actor 不一定是「人」，它也可能是另一個系統或硬體設備。
    要注意 Actor 扮演的是「角色」而非特定個體（例如 John 同時是學生也是職員，在選課時他扮演的是學生角色）。在選課系統中，主要與之互動的角色包含了「學生 (Student)」與「老師 (Teacher)」。
    
-   <img src="https://i.imgur.com/wPB1W6z.png" width="400">
+   <img src="img/actor_types.png" width="400">
    *(圖解：Actor 的幾種常見呈現方式)*
+
+<!--
+@startuml
+left to right direction
+actor "使用者 (User)" as User
+actor "外部系統 (System)" <<System>> as Sys
+actor "定時任務 (Timer)" <<Timer>> as Time
+User -[hidden]-> Sys
+Sys -[hidden]-> Time
+@enduml
+-->
 
 2. **使用案例 (Use Case)**
    描述一個角色使用系統所進行的一段「互動過程」或達成的目標。例如老師可以「開課 (Offer Course)」與「評分 (Score)」；學生可以「選課 (Take Course)」與「查詢成績 (List Grade)」。
@@ -34,34 +45,37 @@
 4. **擴充關係 (Extension)**
    用來表示在特定條件下才會發生的「額外或例外處理」。例如：學生在「選課」時，如果名額已滿，就會觸發一個延伸的「名額已滿處理 (Handle Full Capacity)」，這樣的好處是不會讓基本的選課順序顯得過度複雜。
 
-我們可以將上述觀念畫成以下的 Mermaid 使用案例概念圖（系統邊界為「大學選課系統」）：
+我們可以將上述觀念畫成以下的 PlantUML 使用案例概念圖（系統邊界為「大學選課系統」）：
 
-```mermaid
-flowchart LR
-    Teacher([Teacher])
-    Student([Student])
+<img src="img/use_case_course.png" width="550">
 
-    System((大學選課系統))
-    
-    subgraph 系統邊界
-        UC1([開課 Offer Course])
-        UC2([選課 Take Course])
-        UC3([評分 Score])
-        UC4([查詢成績 List Grade])
-        
-        UC5([判斷登入狀態 Check Login])
-        UC6([名額已滿處理 Handle Full Capacity])
-    end
+<!--
+@startuml
+left to right direction
+skinparam packageStyle rectangle
 
-    Teacher --> UC1
-    Teacher --> UC3
-    Student --> UC2
-    Student --> UC4
-    
-    UC2 -. "<<include>>" .-> UC5
-    UC4 -. "<<include>>" .-> UC5
-    UC6 -. "<<extend>>\n(若名額已滿)" .-> UC2
-```
+actor "Teacher" as T
+actor "Student" as S
+
+rectangle 大學選課系統 {
+    usecase "開課 Offer Course" as UC1
+    usecase "選課 Take Course" as UC2
+    usecase "評分 Score" as UC3
+    usecase "查詢成績 List Grade" as UC4
+    usecase "判斷登入狀態 Check Login" as UC5
+    usecase "名額已滿處理 Handle Full Capacity" as UC6
+}
+
+T --> UC1
+T --> UC3
+S --> UC2
+S --> UC4
+
+UC2 ..> UC5 : <<include>>
+UC4 ..> UC5 : <<include>>
+UC6 ..> UC2 : <<extend>>\n(若名額已滿)
+@enduml
+-->
 
 ### 5.1.2 使用案例描述 (Use Case Description)
 
@@ -75,7 +89,7 @@ flowchart LR
 - **前置條件**: 
 	- 目前系統處於開放選課期間。
 - **後置條件**: 學生的選課清單中加入該門課程，該課程的選課人數增加。
-- **事件流** (註：事件流也可以使用兩欄式的方式表示):
+- **事件流**:
 	1. 學生要求系統列出所有開設的課程。
 	2. 系統顯示課程列表與目前的選課剩餘名額。
 	3. 學生選擇要加入的課程。
@@ -86,6 +100,15 @@ flowchart LR
 - **例外**:
     - **名額已滿**：觸發 `名額已滿處理` (Extension)，系統提示名額已滿，拒絕加入。
 
+
+事件流也可以使用兩欄式的方式表示：
+
+| 系統 (System) | 使用者 (User) |
+| :--- | :--- |
+| 1. 顯示課程列表與剩餘名額 | 1. 要求系統列出所有開設的課程 |
+| 2. 檢查名額是否已滿 | 2. 選擇要加入的課程 |
+| 3. 將課程加入選課清單 | 3. 收到選課成功訊息 |
+
 > **💡 規劃使用案例時注意：**
 > - 使用案例不是流程圖。許多人會把使用案例圖當成資料處理的先後順序，這是錯誤的。
 > - 使用案例不是單一功能，而是一個**具備完整目的的互動情境**。
@@ -94,20 +117,9 @@ flowchart LR
 
 ### 5.1.3 延伸範例
 
-為了涵蓋不同的撰寫格式與情境，以下我們補充「兩欄式表達」與其他系統的結構化描述範例。
+#### 範例：自動售票機
 
-#### 範例 A：媒體預借系統（兩欄式表達）
-兩欄式表達能清楚區分「使用者動作」與「系統動作」。從人機互動（HCI, Human-Computer Interaction）的角度來看，兩欄式表達能精準對應「使用者輸入」與「系統回饋」的來回節奏，有助於介面設計師與開發人員理解操作流程的 UX 脈絡。
-
-| **使用者動作**            | **系統動作**                                                                                    |
-| ------------------------- | ----------------------------------------------------------------------------------------------- |
-| 1. 點選「查詢並預借媒體」 | 2.	顯示可能的查詢方式，例如直接輸入媒體代號、輸入關鍵字、或要求列出所有媒體                     |
-| 3. 要求列出所有媒體       | 4.	系統列出所有媒體，包含名稱、數量、租借狀況。媒體旁有一個「預借」的控制鍵。 |
-| 5. 按下預借的控制鍵       | 6.	系統檢查使用者可否借此媒體，若可以，則顯示租借成功的訊息。                                   |
-
-#### 範例 B：自動售票機（結構化表達）
-
-每一個使用案例除了上述欄位，有時還會包含「不變條件」或「特殊需求」等欄位。
+先描述正常順利的情境，再描述例外狀況。
 
 - **ID**: UC201
 - **名稱**: 買票
@@ -126,42 +138,27 @@ flowchart LR
 - **例外**:
     - 沒有零錢：機器沒有零錢可找，請參考另一個延伸情境 UC201a。
 	- 超時：乘客超過一分鐘沒有動作，請參考另一延伸情境 UC201b。
-	
-<img src="https://i.imgur.com/YLDNgjE.png" width="400">
 
-### 5.1.4 Mermaid 使用案例圖教學
+透過 <<extend>> 畫出例外狀況：
+<img src="img/use_case_ticket.png" width="400">
 
-See [Mermaid flowchart](https://mermaid.js.org/syntax/flowchart.html) (Mermaid 並無原生獨立的 Use Case 圖，通常我們以 Flowchart 替代)
+<!--
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+actor "乘客" as P
+rectangle "自動售票系統" {
+    usecase "買票 (UC201)" as UC1
+    usecase "沒有零錢處理 (UC201a)" as UC2
+    usecase "超時處理 (UC201b)" as UC3
+}
+P --> UC1
+UC1 <.. UC2 : <<extend>>
+UC1 <.. UC3 : <<extend>>
+@enduml
+-->
 
-```plaintext
-flowchart LR
-    User([User])
-    Admin([Admin])
-
-    UC1([Login])
-    UC2([Manage Users])
-
-    User --> UC1
-    Admin --> UC2
-```
-- `([])` 這個符號可用來定義圓角端點（類似角色或用例）
-- `-->` 表示實線關聯
-- `-.->` 表示虛線關聯（可用來標示 include 或 extend）
-
-呈現結果：
-```mermaid
-flowchart LR
-    User([User])
-    Admin([Admin])
-
-    UC1([Login])
-    UC2([Manage Users])
-
-    User --> UC1
-    Admin --> UC2
-```
-
-### 5.1.5 隨堂測驗
+### 5.1.4 隨堂測驗
 
 1. 在使用案例圖中，哪一項最適合用來代表外部系統或人類使用者？
    <details><summary>解答與解析</summary>
@@ -176,7 +173,7 @@ flowchart LR
    **(B) 描述發生錯誤或無法滿足前置條件時的流程**。例如選課時碰到名額已滿，系統提示並拒絕加入的操作。
    </details>
 
-### 5.1.6 小節練習
+### 5.1.5 小節練習
 
 - 使用案例的目的是描述系統的 (1) 類別架構 (2) 系統架構 (3) 系統功能 (4) 操作的情境。
 - 關於 YouBike 的租借使用，(1) 找出 actor, 繪製使用案例圖; (2) 針對使用案例圖內的使用案例，應用兩欄式使用案例描述之。
@@ -254,17 +251,54 @@ stateDiagram-v2
 | 子狀態與父狀態關係     | 是一種 (is-a)、一般化 | 部分 (part-of)、合成化 |
 | 子狀態與子狀態間的關係 | 或                    | 且                     |
 
-<img src="https://i.imgur.com/gY9PSlT.png" width="400">
+<img src="img/state_car.png" width="400">
 *(圖解：變速器的循序子狀態圖)*
+
+<!--
+@startuml
+left to right direction
+[*] --> 空檔
+空檔 --> 前進檔 : pushF
+前進檔 --> 空檔 : pushN
+state 前進檔 {
+  [*] --> 一檔
+  一檔 --> 二擋 : speedUp
+  二擋 --> 三檔 : speedUp
+}
+@enduml
+-->
 
 #### 其他系統的狀態圖範例 
 
 **A. 圖書館媒體租借系統**
-<img src="https://i.imgur.com/oK2uCR0.png" width="400">
+<img src="img/state_media.png" width="400">
+
+<!--
+@startuml
+[*] --> 館內
+館內 --> 被預約 : 預借
+被預約 --> 外借中 : 外借
+館內 --> 外借中 : 直接外借
+外借中 --> 館內 : 歸還
+@enduml
+-->
 圖中的媒體狀態極度精簡，只列出「館內」、「被預約」與「外借中」，並排除了如「讀者閱覽中」、「館員貼條碼中」等不影響租借邏輯的無意義狀態。
 
 **B. 複雜狀態表示表示法 (Action & transitions)**
-<img src="https://i.imgur.com/JXTZFAm.png" width="450">
+<img src="img/state_complex.png" width="450">
+
+<!--
+@startuml
+state "行為狀態 (Action State)" as S1 {
+  entry / op1
+  exit / op2
+  do / op4
+  i / op3
+  --
+  [*] --> 子狀態
+}
+@enduml
+-->
 圖中標示了進入 (`entry`)、離開 (`exit`) 與內部持續 (`do`) 等動作之寫法。
 
 **C. 飯店預約系統**
@@ -289,31 +323,7 @@ stateDiagram-v2
     歸檔 --> [*] : 退房
 ```
 
-### 5.2.5 Mermaid 狀態圖教學
-
-See [Mermaid stateDiagram](https://mermaid.js.org/syntax/stateDiagram.html)
-
-```plaintext
-stateDiagram-v2
-    [*] --> Idle
-    Idle --> Processing: Start Task
-    Processing --> Idle: Complete Task
-    Processing --> [*]: Error
-```
-- `[*]` 表示初始或終止狀態
-- `-->` 表示狀態轉換
-- `:` 後面可以寫觸發條件
-
-呈現：
-```mermaid
-stateDiagram-v2
-    [*] --> Idle
-    Idle --> Processing: Start Task
-    Processing --> Idle: Complete Task
-    Processing --> [*]: Error
-```
-
-### 5.2.7 隨堂測驗
+### 5.2.5 隨堂測驗
 
 1. 何者較不適合作為物件的一個「狀態」？
    <details><summary>解答與解析</summary>
@@ -328,7 +338,7 @@ stateDiagram-v2
    **(A) 物件同時處於多個子狀態（且的關係）**。表示該狀態由多個並行的子狀態共同組合而成。
    </details>
 
-### 5.2.8 練習題
+### 5.2.6 練習題
 
 1. 狀態圖主要表現系統的 (1) 功能 (2) 操作情境 (3) 行為 (4) 物件結構。
 2. 考試系統中有以下的狀態：建立考試、設定考題、發佈、考試中、關閉。請畫出狀態圖，做必要的假設以添加狀態。
@@ -414,49 +424,51 @@ sequenceDiagram
 #### 象棋系統的物件狀態互動
 下圖是部分象棋系統的循序圖，描述一個玩家先建立一個棋局遊戲 ChessGame, 接著另一個玩家加入。加入後 ChessGame 會建立 ChessBoard 來呈現整個棋盤，玩家接著對棋盤做互動，互動的事件會由棋盤轉換為對 ChessGame 有意義的指令，ChessGame 每一次做動作都會進行 checkWinner 來檢查是否勝負已定，如果已定就會傳訊息給 ChessBoard, 接著由 ChessBoard 公布訊息給玩家。
 
-<img src="https://i.imgur.com/ucL42jL.png" width="400">
+<img src="img/sequence_chess.png" width="400">
+
+<!--
+@startuml
+actor Player
+participant ChessGame
+participant ChessBoard
+Player -> ChessGame : 建立遊戲
+Player -> ChessGame : 加入遊戲
+activate ChessGame
+ChessGame -> ChessBoard : Create
+deactivate ChessGame
+Player -> ChessBoard : 互動
+ChessBoard -> ChessGame : 指令
+activate ChessGame
+ChessGame -> ChessGame : checkWinner()
+ChessGame -> ChessBoard : 勝負揭曉
+deactivate ChessGame
+ChessBoard -> Player : 顯示訊息
+@enduml
+-->
 
 #### 泛用的物件產出與回傳表示法
 下圖是一個純概念示範圖，`msg1`, `msg2` 為訊息，其中 $object_4$ 被動態建立（透過 Create stereotype 標示），並展示了執行結束後的回傳值表達法（細虛線搭配回傳變數 $x$, $y$）。
 
-<img src="https://i.imgur.com/e6EF8NT.png" width="450">
+<img src="img/sequence_generic.png" width="450">
+
+<!--
+@startuml
+participant "object1" as O1
+participant "object2" as O2
+participant "object3" as O3
+participant "object4" as O4
+O1 -> O2 : msg1
+activate O2
+O2 -> O3 : msg2
+create O4
+O3 -> O4 : Create (stereotype)
+O3 -->> O2 : x (return)
+deactivate O2
+@enduml
+-->
 
 
-### 5.3.3 Mermaid 循序圖教學
-
-See [Mermaid sequence diagram](https://mermaid.js.org/syntax/sequenceDiagram.html)
-
-```plaintext
-sequenceDiagram
-    participant User
-    participant Server as Web Server
-    participant Database
-
-    User->>Server: Request Login
-    Server->>Database: Check Credentials
-    Database-->>Server: Return User Data
-    Server-->>User: Login Success
-```
-- `participant` 定義參與者
-- `->>` 表示同步請求
-- `-->>` 表示回應 (虛線)
-- `as` 可用來給參與者取別名
-- `activate 參與者` 與 `deactivate 參與者` 用來開啟與關閉活化段
-
-呈現：
-```mermaid
-sequenceDiagram
-    participant User
-    participant Server as Web Server
-    participant Database
-
-    User->>Server: Request Login
-    Server->>Database: Check Credentials
-    Database-->>Server: Return User Data
-    Server-->>User: Login Success
-```
-
-### 5.3.4 隨堂測驗
+### 5.3.3 隨堂測驗
 
 1. 循序圖主要的目的是用來表達什麼？
    <details><summary>解答與解析</summary>
@@ -471,7 +483,7 @@ sequenceDiagram
    **(A) 使用帶有箭頭的虛線 (Dashed line with arrow)**。向後帶有箭頭的虛線通常代表 return message。
    </details>
 
-### 5.3.5 小節練習
+### 5.3.4 小節練習
 
 - 繪製循序圖時，可能需要參考其他的圖型，但以下何者不太可能需要參考：(1) 使用案例 (2) 類別圖 (3) 系統配置圖 (4) 活動圖
 - 考慮以下的程式，繪製其循序圖
@@ -549,44 +561,52 @@ flowchart TD
 
 #### A. 條件判斷 (Decision) 
 除了前面的選課，這裡還有一個以決定要搭計程車還是公車的簡單決策流程圖：
-<img src="https://i.imgur.com/hq3CJrJ.png" width="400px">
+<img src="img/activity_decision.png" width="400">
+
+<!--
+@startuml
+start
+if (有急事?) then (yes)
+  :搭計程車;
+else (no)
+  :搭公車;
+endif
+stop
+@enduml
+-->
 
 #### B. 分支與合併 (Fork & Merge)
 `Fork` 可以將單一流程切分為多支平行的、同時發生的子流程；`Merge`（有時也稱為 Join）則會等待這些平行的流程「全都完成」後，才繼續往後執行。下圖示範了一組並行執行的流程：
-<img src="https://i.imgur.com/MpgGq3L.png" width="400px">
+<img src="img/activity_fork_merge.png" width="400">
+
+<!--
+@startuml
+start
+fork
+  :活動 A;
+fork again
+  :活動 B;
+end fork
+:合併後活動;
+stop
+@enduml
+-->
 
 下圖則是結合了橫向與垂直泳道（Swimlanes）的進階活動圖表達方式。泳道可以用來區分不同處理單元或不同執行緒所負責的工作：
-<img src=https://i.imgur.com/LWN37ET.png width="300px">
+<img src="img/activity_swimlane.png" width="300">
 
-### 5.4.3 Mermaid 流程圖教學 (對應活動圖) 
-
-See [Mermaid flowchart](https://mermaid.js.org/syntax/flowchart.html)
-
-```plaintext
-flowchart TD
-    Start([start]) --> Step1[User enters credentials]
-    Step1 --> Cond{Valid credentials?}
-    Cond -- Yes --> Step2[Show dashboard]
-    Cond -- No --> Step3[Show error message]
-    Step2 --> Stop([stop])
-    Step3 --> Stop
-```
-- `([標籤])` 表示圓角端點，當作 start / stop
-- `[標籤]` 定義一般的處理動作節點
-- `{標籤}` 定義條件判斷 (菱形)
-- `-->` 表示單向箭頭
-- `-- 文字 -->` 從判斷節點分支出去的條件路線
-
-呈現：
-```mermaid
-flowchart TD
-    Start([start]) --> Step1[User enters credentials]
-    Step1 --> Cond{Valid credentials?}
-    Cond -- Yes --> Step2[Show dashboard]
-    Cond -- No --> Step3[Show error message]
-    Step2 --> Stop([stop])
-    Step3 --> Stop
-```
+<!--
+@startuml
+|角色A|
+start
+:任務1;
+|角色B|
+:任務2;
+|角色A|
+:任務3;
+stop
+@enduml
+-->
 
 ---
 
@@ -615,4 +635,4 @@ flowchart TD
 
 ## 5.5 綜合
 
-<img src="https://i.imgur.com/nPaA6zH.png" width="400">
+<img src="img/ch05_summary.png" width="400">

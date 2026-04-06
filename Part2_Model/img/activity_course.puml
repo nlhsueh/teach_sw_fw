@@ -1,0 +1,19 @@
+@startuml
+skinparam defaultFontName Microsoft JhengHei
+
+start
+:瀏覽所有開放課程;
+:選擇欲加入的課程;
+if (課程名額已滿?) then (是)
+    :顯示名額已滿錯誤訊息;
+else (否)
+    :將課程加入選課清單;
+endif
+:詢問是否繼續選課;
+if (繼續選課?) then (是)
+    :瀏覽所有開放課程;
+    detach
+else (否)
+endif
+stop
+@enduml

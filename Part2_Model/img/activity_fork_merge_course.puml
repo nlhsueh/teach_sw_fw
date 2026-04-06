@@ -1,0 +1,18 @@
+@startuml
+start
+:開始畢業資格審查;
+fork
+    :審核必修學分狀態;
+fork again
+    :審核通識學分狀態;
+fork again
+    :檢查英語檢定證照;
+end fork
+:彙整審查結果;
+if (所有條件均滿足?) then (是)
+    :進入畢業待辦名單;
+else (否)
+    :發送延修通知;
+endif
+stop
+@enduml

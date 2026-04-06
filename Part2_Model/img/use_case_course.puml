@@ -1,0 +1,26 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Teacher" as T
+actor "Student" as S
+
+rectangle 大學選課系統 {
+    usecase "開課 Offer Course" as UC1
+    usecase "選課 Take Course" as UC2
+    usecase "評分 Score" as UC3
+    usecase "查詢成績 List Grade" as UC4
+    usecase "判斷登入狀態 Check Login" as UC5
+    usecase "名額已滿處理 Handle Full Capacity" as UC6
+}
+
+T --> UC1
+T --> UC3
+S --> UC2
+S --> UC4
+
+UC2 ..> UC5 : <<include>>
+UC4 ..> UC5 : <<include>>
+UC6 ..> UC2 : <<extend>>\n(若名額已滿)
+
+@enduml

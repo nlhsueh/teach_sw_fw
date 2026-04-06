@@ -1,0 +1,15 @@
+@startuml
+start
+:學生提交選課申請;
+if (是否為限修課程?) then (是)
+    :等待授課教師審核;
+    if (審核通過?) then (是)
+        :加入選課清單;
+    else (否)
+        :顯示審核不通過;
+    endif
+else (否)
+    :直接加入選課清單;
+endif
+stop
+@enduml

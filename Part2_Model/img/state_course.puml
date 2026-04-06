@@ -1,0 +1,14 @@
+@startuml
+left to right direction
+skinparam defaultFontName Microsoft JhengHei
+
+[*] --> 開放選課 : 建立課程\n/ 發佈課程大綱
+
+開放選課 --> 開放選課 : 學生申請加入\n/ [尚未滿額]
+開放選課 --> 授課中 : 開學\n/ 停止選課
+
+授課中 --> 評分中 : 期末\n/ 開放輸入成績
+
+評分中 --> 評分中 : 老師評分\n/ 登錄成績
+評分中 --> [*] : 計算總分\n/ [成績皆已確認]
+@enduml

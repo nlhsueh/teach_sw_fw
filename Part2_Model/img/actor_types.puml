@@ -1,0 +1,10 @@
+@startuml
+left to right direction
+
+actor "使用者 (User)" as User
+actor "外部系統 (System)" <<System>> as Sys
+actor "定時任務 (Timer)" <<Timer>> as Time
+
+User -[hidden]-> Sys
+Sys -[hidden]-> Time
+@enduml

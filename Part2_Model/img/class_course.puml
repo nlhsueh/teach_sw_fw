@@ -1,0 +1,37 @@
+@startuml
+skinparam defaultFontName Microsoft JhengHei
+
+
+class University {
+    -name: String
+    +hire(teacher, id)
+    +showMembers()
+    +showCourses()
+    +listGrade()
+    +showTop()
+    +showNoPass()
+}
+
+class Teacher {
+    -name: String
+    +offer(course)
+    +score(course, student, grade)
+}
+
+class Student {
+    -name: String
+    +enter(university, id)
+    +takeCourse(course)
+}
+
+class Course {
+    -name: String
+    +addStudent(student)
+}
+
+University "1" o-- "*" Teacher : hires
+University "1" o-- "*" Student : has
+University "1" o-- "*" Course : offers
+Teacher "1" --> "*" Course : offers
+Student "*" --> "*" Course : takes
+@enduml

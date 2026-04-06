@@ -22,8 +22,10 @@
    系統的外部參與者，在 UML 稱為 Actor。Actor 不一定是「人」，它也可能是另一個系統或硬體設備。
    要注意 Actor 扮演的是「角色」而非特定個體（例如 John 同時是學生也是職員，在選課時他扮演的是學生角色）。在選課系統中，主要與之互動的角色包含了「學生 (Student)」與「老師 (Teacher)」。
    
-   <img src="img/actor_types.png" width="400">
-   (圖解：Actor 的幾種常見呈現方式)
+   <img src="img/actor_types.png" width="300">
+   <br>(圖解：Actor 的幾種常見呈現方式)
+
+   [📄 PlantUML 原始碼](img/actor_types.puml)
 
 
 2. **使用案例 (Use Case)**
@@ -35,9 +37,10 @@
 4. **擴充關係 (Extension)**
    用來表示在特定條件下才會發生的「額外或例外處理」。例如：學生在「選課」時，如果名額已滿，就會觸發一個延伸的「名額已滿處理 (Handle Full Capacity)」，這樣的好處是不會讓基本的選課順序顯得過度複雜。
 
-我們可以將上述觀念畫成以下的 PlantUML 使用案例概念圖（系統邊界為「大學選課系統」）：
+<img src="img/use_case_course.png" width="700">
+<br>(圖解：大學選課系統使用案例圖)
 
-<img src="img/use_case_course.png" width="650">
+[📄 PlantUML 原始碼](img/use_case_course.puml)
 
 
 ### 5.1.2 使用案例描述 (Use Case Description)
@@ -104,7 +107,10 @@
     - 零錢不足：投入金額不足以支付且乘客無後續動作。
 
 透過 `<<extend>>` 畫出例外狀況：
-<img src="img/use_case_ticket.png" width="400">
+<img src="img/use_case_ticket.png" width="550">
+<br>(圖解：自動售票機之擴充關係範例)
+
+[📄 PlantUML 原始碼](img/use_case_ticket.puml)
 
 ### 5.1.4 隨堂測驗
 
@@ -126,10 +132,7 @@
 
 ### 5.1.5 小節練習
 
-- 使用案例的目的是描述系統的 (1) 類別架構 (2) 系統架構 (3) 系統功能 (4) 操作的情境。
 - 關於 YouBike 的租借使用，(1) 找出 actor, 繪製使用案例圖; (2) 針對使用案例圖內的使用案例，應用兩欄式使用案例描述之。
-- 關於一個網路連線版的象棋系統，規劃其使用案例圖及使用案例。
-- 關於 ATM 提款，應用結構式使用案例描述之。
 
 ## 5.2 動態行為：狀態圖
 
@@ -139,23 +142,10 @@
 
 延續大學選課的案例，我們把焦點放在**「課程 (Course)」**這個物件上。一門課程從無到有，通常會經歷幾個明顯的狀態變化：
 
-```mermaid
-stateDiagram-v2
-    [*] --> 規劃中 : 建立課程
+<img src="img/state_course.png" width="600">
+<br>(圖解：大學選課系統中「課程」物件的狀態圖)
 
-    規劃中 --> 開放選課 : 發佈課程大綱
-    
-    開放選課 --> 開放選課 : 學生申請加入/[尚未滿額]
-    開放選課 --> 授課中 : 開學/停止選課
-    
-    授課中 --> 評分中 : 期末/開放輸入成績
-    
-    評分中 --> 評分中 : 老師評分/登錄成績
-    評分中 --> 結業 : 計算總分/[成績皆已確認]
-    
-    結業 --> [*] : 歸檔
-```
-*(圖解：大學選課系統中「課程」物件的狀態圖)*
+[📄 PlantUML 原始碼](img/state_course.puml)
 
 ### 5.2.1 狀態 (State)
 
@@ -177,58 +167,7 @@ stateDiagram-v2
 - **行動 (Action)**：在 UML 用 `/` 區隔在事件之後，代表轉換當下執行的瞬間邏輯（例如：停止選課）。
 - **目的狀態 (Target State)**：轉移後進入的新狀態（例如：授課中）。
 
-### 5.2.3 複雜的狀態描述
-
-完整的狀態有時會包含更豐富的內部處理，主要分為：
-- **進入行動 (Entry action)**：物件進入該狀態時「馬上」進行的工作。
-- **離開行動 (Exit action)**：物件離開該狀態前「最後」進行的工作。
-- **狀態活動 (Activity)**：標示 `do/`，表示物件在該狀態下持續進行中的較長作業（例如：`do / 播放教學影片`）。
-- **內部轉移 (Internal transitions)**：與自我轉移不同，物件接收事件後在內部進行回應，但**並未離開該狀態**，因此不會觸發離開與進入行動。在先前的課程狀態圖中、「開放選課」收到「學生申請加入」時，如果名額未滿，就會更新名額，但它依然保持在開放選課的狀態。
-
-### 5.2.4 延伸範例與進階觀念
-
-除了單一物件的狀態轉換外，真實世界還有許多特殊的狀態圖設計與不同的系統運用情境，在此作為進階或輔助參考。
-
-#### 一般化與合成化 (以汽車變速器為例)
-
-與多型或繼承類似，狀態圖可以透過**一般化 (Generalization)** 簡化圖面；也可以透過**合成化 (Aggregation)** 描述物件內部有多個並行獨立運行的狀態。
-- **一般化（是一種，IS-A）**：表示狀態之間的親子關係，也帶有「或」的特性。如下圖的變速器，當排檔在「前進檔」時，它必定位於一檔、二檔或三檔「其中之一」（循序子狀態）。
-- **合成化（部分，PART-OF）**：也稱為並行子狀態（Concurrent substate）。代表一個物件必須「同時（且）」處於其內含的多個子狀態中。
-
-<img src="img/state_car.png" width="400">
-*(圖解：變速器的循序子狀態圖)*
-
-#### 其他系統的狀態圖範例 
-
-**A. 圖書館媒體租借系統**
-<img src="img/state_media.png" width="400">
-
-圖中的媒體狀態極度精簡，只列出「館內」、「被預約」與「外借中」，並排除了如「讀者閱覽中」等不影響邏輯的狀態。
-
-**B. 複雜狀態表示法 (Action & transitions)**
-<img src="img/state_complex.png" width="350">
-
-圖中標示了進入 (`entry`)、離開 (`exit`) 與內部持續 (`do`) 等動作之寫法。
-
-**C. 飯店預約系統**
-以下是一個飯店預約系統的狀態圖，展現了條件判斷與物件的回傳結束情境。
-
-<img src="img/state_hotel.png" width="500">
-<!--
-@startuml
-[*] --> 預約確認中
-預約確認中 --> 預約完成 : [有空房] / dec count
-預約確認中 --> 等候補位 : [無空房] / put into list
-等候補位 --> 預約完成 : [有空房] / dec count
-等候補位 --> 取消 : 顧客取消 / remove from list
-預約完成 --> 使用中 : 入住
-使用中 --> 歸檔 : 離開付款 / inc count
-取消 --> [*]
-歸檔 --> [*]
-@enduml
--->
- 
-### 5.2.5 隨堂測驗
+### 5.2.3 隨堂測驗
 
 1. 何者較不適合作為物件的一個「狀態」？
    (A) 閒置中 (B) 授課中 (C) 按下按鈕 (D) 歸檔中
@@ -240,18 +179,12 @@ stateDiagram-v2
    <details><summary>解答與解析</summary>
    **(D) 參與者(Actor)**。狀態轉移通常由「驅使事件、轉移條件、行動、目的狀態」所構成，Actor 是使用案例圖的元素。
    </details>
-3. 所謂的「狀態的合成化 (Concurrent substate)」代表什麼意義？
-   (A) 物件同時處於多個子狀態 (B) 物件依序經過多個子狀態 (C) 物件只能處於一個子狀態 (D) 狀態之間沒有關係
-   <details><summary>解答與解析</summary>
-   **(A) 物件同時處於多個子狀態（且的關係）**。表示該狀態由多個並行的子狀態共同組合而成。
-   </details>
 
-### 5.2.6 練習題
+### 5.2.4 練習題
 
 1. 狀態圖主要表現系統的 (1) 功能 (2) 操作情境 (3) 行為 (4) 物件結構。
 2. 考試系統中有以下的狀態：建立考試、設定考題、發佈、考試中、關閉。請畫出狀態圖，做必要的假設以添加狀態。
-3. 打電話的情境大概如下：拿起電話、撥打電話、接通、開始講話、掛電話。中間有些例外，例如拿起電話太久沒有撥號，就會出現出現錯誤訊息無法打了。以家中電話為例，繪製 完整表達法的狀態圖。
-4. 狀態的合成化與物件的合成有直接的關係。在車子的例子中，假設車子是由變速器、加速器與煞車所構成的，那們車子的狀態恰是由這三個子物件的狀態所構成的，請繪製汽車的合成狀態圖。
+3. 打電話的情境大概如下：拿起電話、撥打電話、接通、開始講話、掛電話。中間有些例外，例如拿起電話太久沒有撥號，就會出現錯誤訊息無法打了。以家中電話為例，繪製其狀態圖。
 
 
 ## 5.3 物件互動：循序圖
@@ -290,35 +223,17 @@ fcu.showNoPass();
 
 如果我們要將上述這段程式碼的執行順序進行視覺化拆解，我們可以畫出以下的循序圖：
 
-```mermaid
-sequenceDiagram
-    participant Main
-    participant fcu
-    participant nick
-    participant albert
-    participant jie
-    participant java
-    
-    activate Main
-    Main->>fcu: hire(nick)
-    Main->>nick: offer(java)
-    Main->>albert: enter(fcu, "s01")
-    Main->>jie: enter()
-    Main->>fcu: showMembers()
-    
-    Main->>albert: takeCourse(java)
-    activate albert
-    albert->>albert: checkCourse()
-    albert->>java: addStudent(albert)
-    deactivate albert
+以下先以類別圖呈現本範例的物件結構，再對應查看循序圖中各物件的互動關係：
 
-    Main->>jie: takeCourse(java)
-    Main->>nick: score(java, jie, 90)
-    
-    Main->>fcu: listGrade()
-    Main->>fcu: showTop()
-    deactivate Main
-```
+<img src="img/class_course.png" width="400">
+<br>(圖解：選課系統類別圖——對照循序圖中各物件的角色)
+
+[📄 PlantUML 原始碼](img/class_course.puml)
+
+<img src="img/sequence_course.png" width="500">
+<br>(圖解：選課系統物件互動循序圖)
+
+[📄 PlantUML 原始碼](img/sequence_course.puml)
 
 在這張圖中，我們可以看到循序圖的幾個核心元素：
 
@@ -327,18 +242,12 @@ sequenceDiagram
 - **訊息傳遞 (Message)**：水平的箭頭線段代表著物件間的方法呼叫。實線往往是「發送訊息 (呼叫函數)」，向後折返的虛線則通常代表「回傳值 (Return Data)」。
 - **活化段 (Activation)**：生命線上長方形的條塊。當 `Main` 呼叫 `albert.takeCourse(java)` 時，圖上畫出了一塊 `albert` 的活化段，這代表執行權移交給了 `albert`；直到 `albert` 處理完 `checkCourse()` 與對 `java` 發出 `addStudent` 後，活化段才結束，代表將控制權交還給 `Main`。請注意，活化段的長短僅代表執行權的轉移順序，並不代表真實執行所花耗的時間長短。
 
-### 5.3.2 延伸範例
+### 5.3.2 範例：象棋系統
 
-#### 象棋系統的物件狀態互動
 下圖是部分象棋系統的循序圖，描述一個玩家先建立一個棋局遊戲 ChessGame, 接著另一個玩家加入。加入後 ChessGame 會建立 ChessBoard 來呈現整個棋盤，玩家接著對棋盤做互動，互動的事件會由棋盤轉換為對 ChessGame 有意義的指令，ChessGame 每一次做動作都會進行 checkWinner 來檢查是否勝負已定，如果已定就會傳訊息給 ChessBoard, 接著由 ChessBoard 公布訊息給玩家。
 
-<img src="img/sequence_chess.png" width="400">
-
-#### 泛用的物件產出與回傳表示法
-下圖是一個純概念示範圖，`msg1`, `msg2` 為訊息，其中 $object_4$ 被動態建立（透過 Create stereotype 標示），並展示了執行結束後的回傳值表達法（細虛線搭配回傳變數 $x$, $y$）。
-
-<img src="img/sequence_generic.png" width="450">
-
+<img src="img/sequence_chess.png" width="350">
+<br>(圖解：象棋系統之物件互動循序圖)
 
 ### 5.3.3 隨堂測驗
 
@@ -360,7 +269,6 @@ sequenceDiagram
 
 ### 5.3.4 小節練習
 
-- 繪製循序圖時，可能需要參考其他的圖型，但以下何者不太可能需要參考：(1) 使用案例 (2) 類別圖 (3) 系統配置圖 (4) 活動圖
 - 考慮以下的程式，繪製其循序圖
 ```java
 public class BillingDialog {
@@ -396,10 +304,6 @@ public class Bill {
 }
 ```
 
-- 象棋系統中，Chess, ChessBoard, ChessGame 的循序圖為何？
-- 班級活動的籌劃，可能會牽涉班長、活動、旅行社等「物件」，繪製循序圖來完成相關的情境。
-
-
 ## 5.4 流程設計：活動圖
 
 活動圖 (Activity Diagram) 主要是用來表達**流程邏輯**。它與常見的流程圖（Flowchart）非常相似，常被用來描述包含循序執行、判斷條件（Decision）、以及並行處理（Fork/Merge）的運作順序。
@@ -408,22 +312,10 @@ public class Bill {
 
 針對學員選課的「流程」，我們可以使用活動圖來描繪。活動圖極度適合用來表達像「判斷名額是否已滿」這類的商業邏輯運作過程。
 
-```mermaid
-flowchart TD
-    Start([開始選課]) --> Step1[瀏覽所有開放課程]
-    Step1 --> Step2[選擇欲加入的課程]
-    Step2 --> Cond{課程名額已滿?}
-    
-    Cond -- 是 (Yes) --> Step3[顯示名額已滿錯誤訊息]
-    Cond -- 否 (No) --> Step4[將課程加入選課清單]
-    
-    Step3 --> Step5[詢問是否繼續選課]
-    Step4 --> Step5
-    
-    Step5 --> Cond2{繼續選課?}
-    Cond2 -- 是 (Yes) --> Step1
-    Cond2 -- 否 (No) --> Stop([結束選課])
-```
+<img src="img/activity_course.png" width="350">
+<br>(圖解：選課流程活動圖)
+
+[📄 PlantUML 原始碼](img/activity_course.puml)
 
 在上面的選課流程圖中，展示了活動圖的幾大元素：
 - **起始點與終點 (Start / Stop)**：圖中的圓角端點，標示著整個流程的進入點與離開點。
@@ -436,14 +328,24 @@ flowchart TD
 
 #### A. 條件判斷 (Decision) 
 除了前面的標準選課流程，這裡展示了一個「申請限修課程」的決策邏輯：學生提交申請後，系統會判斷是否為限修課程，若是則需經過人工審核。
-<img src="img/activity_decision_course.png" width="300">
+
+<img src="img/activity_decision_course.png" width="350">
+<br>(圖解：選課決策流程活動圖)
+
+[📄 PlantUML 原始碼](img/activity_decision_course.puml)
 
 #### B. 分支與合併 (Fork & Merge)
 `Fork` 可以將單一流程切分為多支平行的、同時發生的子流程；`Merge` 則會等待這些平行的流程「全都完成」後，才繼續往後執行。下圖展示了「畢業資格審查」的並行作業：
-<img src="img/activity_fork_merge_course.png" width="350">
+<img src="img/activity_fork_merge_course.png" width="400">
+<br>(圖解：並行處理之 Fork 與 Merge 範例)
+
+[📄 PlantUML 原始碼](img/activity_fork_merge_course.puml)
 
 下圖則是結合了泳道（Swimlanes）的「新開課程審核流程」。泳道清楚劃分了授課教師、系辦公室與教務處各自負責的工作，讓跨單元的流程協作一目了然：
-<img src="img/activity_swimlane_course.png" width="350">
+<img src="img/activity_swimlane_course.png" width="450">
+<br>(圖解：跨角色之泳道活動圖)
+
+[📄 PlantUML 原始碼](img/activity_swimlane_course.puml)
 
 ---
 
@@ -466,13 +368,7 @@ flowchart TD
    </details>
 
 
-## 5.EX 綜合練習
-
-- 一個成績系統，內有類別 `Member, Teacher, Student, GradeBook, Course, University`  等類別。學校可以聘僱老師，老師可以開課，學生可以進入學校、選課，老師可以改分數成績將之紀錄於成績單，學校可以列出所有成績，找出不及格的學生及第一名的學生，學校成員包含老師與學生，都會有姓名與帳號，同時可以查看學校有開哪些課。
-	- 繪製此系統的 use case diagram, use cases, class diagram 及 sequence diagram。
-	- 此系統中，課程 Course 具備較明顯的狀態變化，請繪製其狀態圖。
-	- 完成此系統，觀察程式碼與上述 model 之間的關係。
-
 ## 5.5 綜合
 
-<img src="img/ch05_summary.png" width="400">
+<img src="img/ch05_summary.png" width="600">
+<br>(圖解：動態圖模三劍客之關係總結)

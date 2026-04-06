@@ -1,0 +1,18 @@
+@startuml
+skinparam packageStyle rectangle
+actor "乘客" as P
+rectangle "自動售票系統" {
+    usecase "買票 (UC201)" as UC1
+    usecase "沒有零錢處理 (UC201a)" as UC2
+    usecase "超時處理 (UC201b)" as UC3
+    usecase "票券卡紙處理" as UC4
+    usecase "信用卡授權失敗處理" as UC5
+    usecase "零錢不足處理" as UC6
+}
+P --> UC1
+UC1 <.. UC2 : <<extend>>
+UC1 <.. UC3 : <<extend>>
+UC1 <.. UC4 : <<extend>>
+UC1 <.. UC5 : <<extend>>
+UC1 <.. UC6 : <<extend>>
+@enduml

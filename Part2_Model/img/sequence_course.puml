@@ -1,0 +1,31 @@
+@startuml
+skinparam defaultFontName Microsoft JhengHei
+
+
+participant Main
+participant fcu
+participant nick
+participant albert
+participant jie
+participant java
+
+activate Main
+Main -> fcu : hire(nick)
+Main -> nick : offer(java)
+Main -> albert : enter(fcu, "s01")
+Main -> jie : enter()
+Main -> fcu : showMembers()
+
+Main -> albert : takeCourse(java)
+activate albert
+albert -> albert : checkCourse()
+albert -> java : addStudent(albert)
+deactivate albert
+
+Main -> jie : takeCourse(java)
+Main -> nick : score(java, jie, 90)
+
+Main -> fcu : listGrade()
+Main -> fcu : showTop()
+deactivate Main
+@enduml

@@ -22,7 +22,7 @@
    系統的外部參與者，在 UML 稱為 Actor。Actor 不一定是「人」，它也可能是另一個系統或硬體設備。
    要注意 Actor 扮演的是「角色」而非特定個體（例如 John 同時是學生也是職員，在選課時他扮演的是學生角色）。在選課系統中，主要與之互動的角色包含了「學生 (Student)」與「老師 (Teacher)」。
    
-   <img src="img/actor_types.png" width="300">
+   <img src="img/actor_types.png" width="400">
    <br>(圖解：Actor 的幾種常見呈現方式)
 
    [📄 PlantUML 原始碼](img/actor_types.puml)
@@ -37,7 +37,7 @@
 4. **擴充關係 (Extension)**
    用來表示在特定條件下才會發生的「額外或例外處理」。例如：學生在「選課」時，如果名額已滿，就會觸發一個延伸的「名額已滿處理 (Handle Full Capacity)」，這樣的好處是不會讓基本的選課順序顯得過度複雜。
 
-<img src="img/use_case_course.png" width="700">
+<img src="img/use_case_course.png" width="800">
 <br>(圖解：大學選課系統使用案例圖)
 
 [📄 PlantUML 原始碼](img/use_case_course.puml)
@@ -107,7 +107,8 @@
     - 零錢不足：投入金額不足以支付且乘客無後續動作。
 
 透過 `<<extend>>` 畫出例外狀況：
-<img src="img/use_case_ticket.png" width="550">
+
+<img src="img/use_case_ticket.png" width="650">
 <br>(圖解：自動售票機之擴充關係範例)
 
 [📄 PlantUML 原始碼](img/use_case_ticket.puml)
@@ -142,7 +143,7 @@
 
 延續大學選課的案例，我們把焦點放在**「課程 (Course)」**這個物件上。一門課程從無到有，通常會經歷幾個明顯的狀態變化：
 
-<img src="img/state_course.png" width="600">
+<img src="img/state_course.png" width="650">
 <br>(圖解：大學選課系統中「課程」物件的狀態圖)
 
 [📄 PlantUML 原始碼](img/state_course.puml)
@@ -336,12 +337,14 @@ public class Bill {
 
 #### B. 分支與合併 (Fork & Merge)
 `Fork` 可以將單一流程切分為多支平行的、同時發生的子流程；`Merge` 則會等待這些平行的流程「全都完成」後，才繼續往後執行。下圖展示了「畢業資格審查」的並行作業：
+
 <img src="img/activity_fork_merge_course.png" width="400">
 <br>(圖解：並行處理之 Fork 與 Merge 範例)
 
 [📄 PlantUML 原始碼](img/activity_fork_merge_course.puml)
 
 下圖則是結合了泳道（Swimlanes）的「新開課程審核流程」。泳道清楚劃分了授課教師、系辦公室與教務處各自負責的工作，讓跨單元的流程協作一目了然：
+
 <img src="img/activity_swimlane_course.png" width="450">
 <br>(圖解：跨角色之泳道活動圖)
 

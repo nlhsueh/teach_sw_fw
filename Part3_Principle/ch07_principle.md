@@ -36,7 +36,6 @@
 <details>
 <summary>解答</summary>
 (C)。
-說明：模組化設計
 </details>
 
 ---
@@ -51,7 +50,6 @@
 <details>
 <summary>解答</summary>
 (D)。
-說明：隨機應變原則(ARP)
 </details>
 
 ## 7.2 低耦高聚原則
@@ -63,11 +61,25 @@
 耦合性可以是低耦合性（或稱為鬆散耦合），也可以是高耦合性（或稱為緊密耦合）。以下列出一些耦合性的分類，從高到低依序排列 ：
 
 
-- 內容耦合（content coupling，耦合度最高）也稱為病態耦合（pathological coupling）是指一個模組依賴另一個模組的「內部」作業（例如，存取另一個模組的局域變數），因此修改相依模組處理的資料也就影響了原來模組的行為。
-- 共用耦合（common coupling）也稱為全局耦合（global coupling）是指二個模組分享同一個「全局變數」，因此修改這個共享的資源也就要更動所有用到此資源的模組。
-- 控制耦合（control coupling）是指一個模組藉由傳遞「要做什麼（flag）」的資訊，控制另一個模組的流程。一個模組影響到另一個模組執行的流程的程度。
-- 資料耦合（data coupling）是指模組藉由資料參數傳遞來相互合作。和控制耦合不同的是資料耦合並不會影響到決策。
-- 無耦合：模組完全不和其他模組交換資訊。
+- **內容耦合（Content coupling，耦合度最高）**
+  - **說明：** 也稱為病態耦合（pathological coupling）。模組間直接修改或依賴彼此的「內部」實作細節與區域變數，導致牽一髮動全身的嚴重連鎖反應。
+  - **範例：** 模組 A 直接指定或修改了模組 B 裡面未受保護的核心變數（例如 `moduleB.internalCounter = 5`）。若模組 B 日後改變了此變數的結構，模組 A 就會跟著崩潰。
+
+- **共用耦合（Common coupling）**
+  - **說明：** 也稱為全局耦合（global coupling）。多個原本應該獨立的模組，共同依賴並分享同一個「全局變數（Global Variable）」或「全局狀態」。
+  - **範例：** 多個不同的模組同時讀取並修改同一個系統最外層的全域變數 `globalSettings`。若該變數發生預期外的狀態改變，將極難追蹤是哪一個模組把它改壞的。
+
+- **控制耦合（Control coupling）**
+  - **說明：** 一個模組透過傳遞「控制標記（flag、布林值等）」給另一個模組，藉此指揮或嚴重干預另一個模組內部的執行流程。
+  - **範例：** 在呼叫 `processOrder(order, true)` 時，第二個參數 `true` 代表「順便寄出通知信」。這迫使被呼叫的方法內部一定包含 `if(sendEmail) {...}` 的判斷決策，增加了模組間的牽絆。
+
+- **資料耦合（Data coupling，健康且低耦合的互動模式）**
+  - **說明：** 模組之間單純透過傳遞「資料參數（變數或物件）」來相互合作。這些資料僅被當作運算素材，不會去控制對方的內部決策。
+  - **範例：** 呼叫 `calculateTax(orderAmount)` 函式時，只單純傳入數值 `orderAmount` 並獲得回傳的稅金。該函式只需做好運算，不在乎資料從何而來。
+
+- **無耦合（No coupling）**
+  - **說明：** 兩模組完全獨立運作，完全不和其他模組交換任何資訊或發生任何依賴。
+  - **範例：** 同個專案裡「數學計算 Utils」與「資料庫連線設定」兩個完全不相干的程式碼，彼此從未互相呼叫。
 
 <img src=https://i.imgur.com/zZBFzgn.png width=500px>
 
@@ -142,7 +154,6 @@ Control Coupling
 <details>
 <summary>解答</summary>
 (B)。
-說明：低耦合力高內聚力。
 </details>
 
 ---
@@ -237,7 +248,6 @@ void setTheta(double theta) {
 <details>
 <summary>解答</summary>
 (D)。
-說明：不重複原則（DRY原則）
 </details>
 
 ---
@@ -253,7 +263,6 @@ void setTheta(double theta) {
 <details>
 <summary>解答</summary>
 (A)。
-說明：不重複原則。
 </details>
 
 ---
@@ -306,7 +315,6 @@ public class ReportGenerator {
 
 <details>
 <summary>解答</summary>
-說明：
 
 ```java
 public class ReportGenerator {
@@ -385,7 +393,6 @@ public void swap(int x; int y) {
 <details>
 <summary>解答</summary>
 (B)。
-說明：資料隱藏原則
 </details>
 
 ---
@@ -442,7 +449,6 @@ public class Main {
 
 <details>
 <summary>解答</summary>
-說明：
 
 ```java
 public class BankAccount {
@@ -582,7 +588,7 @@ public class Mechanic {
 
 <details>
 <summary>解答</summary>
-說明：
+
 **原因：**
 `Mechanic` 類別依賴傳入的 `Car` 參數，`Car` 是它的「朋友」。但是，`Mechanic` 在 `checkCar` 方法中透過 `car.getEngine()` 和 `car.getWheel()` 取得了 `Engine` 和 `Wheel` 物件，並直接呼叫了這兩個「陌生人」的內部方法。這增強了類別之間的耦合，違反了迪米特法則（不和陌生人交談）。
 
@@ -817,7 +823,6 @@ classDiagram
 <details>
 <summary>解答</summary>
 (C)。
-說明：系統設計儘量允許開放擴充，避免直接修改。
 </details>
 
 ---
@@ -832,7 +837,6 @@ classDiagram
 <details>
 <summary>解答</summary>
 (A)。
-說明：開閉原則
 </details>
 
 ---
@@ -877,7 +881,6 @@ public class ShapeDrawer {
 
 <details>
 <summary>解答</summary>
-說明：
 
 ```java
 interface Shape {

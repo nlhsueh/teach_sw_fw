@@ -1,12 +1,10 @@
-###### tags: `OOSE`
-
 # Ch07 軟體設計原則
    
 ## 7.1 涇渭分明：模組化原則
 
 > 把問題切割成若干適合管理的單元，再將之組合成需要的功能。
 
-所謂的模組化，就是一種「切割、解決」（==divide and conquer==）的基本想法，也就是說，將一個大問題拆解成若干個小問題之後，透過逐一解決這些小問題，來解決整個大問題。
+所謂的模組化，就是一種「切割、解決」（divide and conquer）的基本想法，也就是說，將一個大問題拆解成若干個小問題之後，透過逐一解決這些小問題，來解決整個大問題。
 
 但要注意也不是切的越小就越好，不斷地拆解下去，會使得系統中的模組數量大幅增加，而一旦數量增加到一定程度之後，其管理與理解的負擔和成本就會隨之升高。
 
@@ -26,12 +24,38 @@
 
 
 
+### 7.1.1 小節練習
+
+1️⃣ 哪個軟體設計原則強調將程式碼分解成獨立、可重複使用的部分？
+🇦 開閉原則
+🇧 資料隱藏原則
+🇨 模組化設計
+🇩 不重複原則
+
+<details>
+<summary>答案</summary>
+
+🇨 模組化設計
+</details>
+
+2️⃣ 以下哪個選項不是軟體設計原則?
+🇦 單一職責原則(SRP)
+🇧 里氏替換原則(LSP)
+🇨 介面隔離原則(ISP)
+🇩 隨機應變原則(ARP)
+
+<details>
+<summary>答案</summary>
+
+🇩 隨機應變原則(ARP)
+</details>
+
 ## 7.2 低耦高聚原則
 
 > [!TIP]
 > 不同模組之間的相依性（耦合性）應該要儘量的低; 同模組內成員相關性（內聚力）要儘量的高。
 
-#### 耦合性
+### 7.2.1 耦合性
 耦合性可以是低耦合性（或稱為鬆散耦合），也可以是高耦合性（或稱為緊密耦合）。以下列出一些耦合性的分類，從高到低依序排列 ：
 
 
@@ -52,7 +76,7 @@ Control Coupling
 - 由於一個模組有許多的相依模組，模組的可復用性低。
 
 
-#### 內聚性
+### 7.2.2 內聚性
 內聚性（Cohesion）也稱為內聚力，是一軟體度量，是指機能相關的程式組合成一模組的程度，或是各機能凝聚的狀態或程度。是結構化分析的重要概念之一。
 
 耦合性是一個和內聚性相對的概念。一般而言高內聚性代表低耦合性，反之亦然。內聚性在實務上可減少維護及修改的「好」軟體的特性為基礎。內聚性是指機能相關的程式組合成一模組的程度。應用在物件導向程式設計中，若服務特定型別的方法在許多方面都很類似，則此型別即有高內聚性。在一個高內聚性的系統中，代碼可讀性及復用的可能性都會提高，程式雖然複雜，但可被管理。
@@ -83,16 +107,35 @@ Control Coupling
 
 
 
-### 小節練習
+### 7.2.3 小節練習
 
+1️⃣ 模組化原則希望達到以下哪一點？
+🇦 高耦合力低內聚力。
+🇧 低耦合力高內聚力。
+🇨 高耦合力高內聚力。
+🇩 低耦合力低內聚力。
 
-- 模組化原則希望達到一下哪一點？
-	- 高耦合力低內聚力。
-	- 低耦合力高內聚力。
-	- 高耦合力高內聚力。
-	- 低耦合力低內聚力。
-- 為何使用「介面」可以降低耦合力？
-- 一個 Initialization 的模組中，會設定遊戲一開始需要執行的所有功能，他屬於哪一種內聚力
+<details>
+<summary>答案</summary>
+
+🇧 低耦合力高內聚力。
+</details>
+
+2️⃣ 為何使用「介面」可以降低耦合力？
+
+<details>
+<summary>答案</summary>
+
+介面只定義了模組應該提供的功能，而不包含具體的實作細節。這樣其他模組依賴的只是抽象的介面而不是具體實作，當具體實作改變時，只要介面不變，就不會影響到依賴它的模組，從而降低了模組之間的耦合力。
+</details>
+
+3️⃣ 一個 Initialization 的模組中，會設定遊戲一開始需要執行的所有功能，他屬於哪一種內聚力？
+
+<details>
+<summary>答案</summary>
+
+時間性內聚性 (Temporal cohesion)。因為這些功能只是剛好在初始化的同一個時間點需要被執行，功能本身的關聯性較弱。
+</details>
 
 
 ## 7.3 無雙無對：不重複原則
@@ -102,7 +145,7 @@ Control Coupling
 
 重複是邪惡的，很容易出錯。例如我們把一筆成績資料存在兩個不同的檔案 $a_1$ 及 $a_2$，分別給 $m_1$ 與 $m_2$ 兩個模組來讀取，當資料修改成績時時必須同時修改 $a_1$ 及 $a_2$ 兩個檔案- 一開始工程師可能還會記得這件事，但時間一久或交接沒有確實，就很容易忘了同步，造成程式的錯誤。不重複原則（==Don't Repeat Yourself Principle; DRY==） 的原則就是不要描述再軟體設計時，不論是資料或是計算，都應該儘量的避免重複。
 
-#### Copy-Paste 程式開發
+### 7.3.1 Copy-Paste 程式開發
 工程師常有過這樣的經驗：需要某一段演算時，發現過去寫過的一段程式碼可以「再利用」，於是把它 copy 到現有的程式碼中，再修改掉部分不同的地方。但日後發現共同的那部分的設計變了，絕大部分的時間你僅會修改其中的一個，而忽略掉另一個，這時候就造成「計算的不一致」，這是很多程式錯誤的來源。
 
 一些建議：
@@ -113,11 +156,11 @@ Control Coupling
 - 透過參數化讓你的方法的重用性變高;
 - 把你的方法抽象化到父類別。
 
-### Point 範例
+### 7.3.2 Point 範例
 
 Point 是一個座標上的點，裡面儲存 x, y 軸的座標值。
 
-```java=
+```java
 class Point {
 	private double x, y;
 	void setX(double x) { this.x = x; }
@@ -133,7 +176,7 @@ class Point {
 **極座標可以由絕對座標計算出來，所以不要在用額外的欄位去儲存**：需要的時候在計算即可。
 
 
-```java=
+```java
 private double x, y; //只儲存 x, y
 
 double getRho() { 
@@ -156,6 +199,115 @@ void setTheta(double theta) {
 ```
 
 
+### 7.3.3 小節練習
+
+1️⃣ 哪個軟體設計原則的目標是減少程式碼中的重複，提高程式碼的可維護性？
+🇦 開閉原則
+🇧 資料隱藏原則
+🇨 模組化設計
+🇩 不重複原則（DRY原則）
+
+<details>
+<summary>答案</summary>
+
+🇩 不重複原則（DRY原則）
+</details>
+
+2️⃣ 系統僅儲存生日資料，而不儲存年齡的目的是：
+🇦 不重複原則。
+🇧 開畢原則。
+🇨 最少知識原則。
+🇩 防護變異原則。
+🇪 模組化原則。
+
+<details>
+<summary>答案</summary>
+
+🇦 不重複原則。
+</details>
+
+3️⃣ 以下 `ReportGenerator` 類別用於生成不同格式的報告，但它違反了 DRY 原則。請修改程式碼，使其符合 DRY 原則。
+
+```java
+public class ReportGenerator {
+
+    public void generateTextReport(String data) {
+        System.out.println("--- 文字報告 ---");
+        System.out.println("報告數據：" + data);
+        System.out.println("報告生成時間：" + java.time.LocalDateTime.now());
+        System.out.println("--- 報告結束 ---");
+    }
+
+    public void generateCsvReport(String data) {
+        System.out.println(",,, CSV 報告 ,,,");
+        System.out.println("數據, " + data);
+        System.out.println("生成時間, " + java.time.LocalDateTime.now());
+        System.out.println(",,, 報告結束 ,,,");
+    }
+
+    public void generateJsonReport(String data) {
+        System.out.println("{{{ JSON 報告 }}}");
+        System.out.println("\"data\": \"" + data + "\"");
+        System.out.println("\"time\": \"" + java.time.LocalDateTime.now() + "\"");
+        System.out.println("{{{ 報告結束 }}}");
+    }
+
+    public static void main(String[] args) {
+        ReportGenerator generator = new ReportGenerator();
+        String reportData = "測試數據";
+        generator.generateTextReport(reportData);
+        generator.generateCsvReport(reportData);
+        generator.generateJsonReport(reportData);
+    }
+}
+```
+
+**要求：**
+1. 修改 `ReportGenerator` 類別，使其符合 DRY 原則。
+2. 建立一個通用的 `generateReport()` 方法，接受報告格式和數據作為參數。
+3. 將報告的通用邏輯（例如時間戳）提取到 `generateReport()` 方法中。
+4. 確保不同格式的報告仍能正確生成。
+
+**提示：**
+* 考慮將重複的程式碼提取到一個私有方法中。
+* 使用參數化方法來處理不同格式的報告。
+
+<details>
+<summary>答案</summary>
+
+```java
+public class ReportGenerator {
+
+    private void generateReport(String header, String footer, String dataFormat, String timeFormat, String data) {
+        System.out.println(header);
+        System.out.println(dataFormat.replace("{data}", data));
+        System.out.println(timeFormat.replace("{time}", java.time.LocalDateTime.now().toString()));
+        System.out.println(footer);
+    }
+
+    public void generateTextReport(String data) {
+        generateReport("--- 文字報告 ---", "--- 報告結束 ---", "報告數據：{data}", "報告生成時間：{time}", data);
+    }
+
+    public void generateCsvReport(String data) {
+        generateReport(",,, CSV 報告 ,,,", ",,, 報告結束 ,,,", "數據, {data}", "生成時間, {time}", data);
+    }
+
+    public void generateJsonReport(String data) {
+        generateReport("{{{ JSON 報告 }}}", "{{{ 報告結束 }}}", "\"data\": \"" + data + "\"", "\"time\": \"" + java.time.LocalDateTime.now() + "\"", data);
+    }
+
+    public static void main(String[] args) {
+        ReportGenerator generator = new ReportGenerator();
+        String reportData = "測試數據";
+        generator.generateTextReport(reportData);
+        generator.generateCsvReport(reportData);
+        generator.generateJsonReport(reportData);
+    }
+}
+```
+</details>
+
 ## 7.4 私財勿露：資訊隱藏原則
 
 > [!TIP]
@@ -168,11 +320,11 @@ void setTheta(double theta) {
 > Each module has a secret design involves a series of decision: for each such decision, wonder who needs to know and who can be kept in the dark.
 
 
-### Sort 範例
+### 7.4.1 Sort 範例
 
 以下程式有何問題？
 
-```java=
+```java
 public void sort() {
    for (int i=0; i< data.length; i++) 
       for (int j=0; j<data.length-i; j++) 
@@ -187,6 +339,119 @@ public void swap(int x; int y) {
 }
 ```
 
+
+### 7.4.2 小節練習
+
+1️⃣ 哪個軟體設計原則強調將資料和操作資料的方法封裝在一個單元中，以防止外部直接存取和修改內部狀態？
+🇦 開閉原則
+🇧 資料隱藏原則
+🇨 模組化設計
+🇩 不重複原則
+
+<details>
+<summary>答案</summary>
+
+🇧 資料隱藏原則
+</details>
+
+2️⃣ 說明 `StringTokenizer` 是如何運作的？我們可以猜測他內部有一個變數在記錄目前位置，每次執行 `nextToken()` 時他就會 `+1`，但為什麼我們不能看這個值？也不能修改這個值？其設計的原則為何？
+
+<details>
+<summary>答案</summary>
+
+`StringTokenizer` 透過封裝內部狀態（例如目前讀取的位置）來運作，對外僅提供所需的方法如 `hasMoreTokens()` 和 `nextToken()`。我們不能直接存取或修改內部位置的變數，是為了防止外部程式不當修改導致狀態混亂或產生錯誤。這符合**資訊隱藏原則**，不公開多餘的資訊與服務，讓模組的實作細節對外部隱藏，提高系統的安全性和可維護性。
+</details>
+
+3️⃣ 以下 `BankAccount` 類別沒有遵守資訊隱藏原則，請修改程式碼，使其符合資訊隱藏原則。
+
+```java
+public class BankAccount {
+    public int accountNumber;
+    public double balance;
+
+    public BankAccount(int accountNumber, double balance) {
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+    }
+
+    public void deposit(double amount) {
+        this.balance += amount;
+    }
+
+    public void withdraw(double amount) {
+        this.balance -= amount;
+    }
+
+    public void displayBalance() {
+        System.out.println("帳戶餘額：" + this.balance);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        BankAccount account = new BankAccount(12345, 1000.0);
+        // 直接修改帳戶餘額 (違反資訊隱藏)
+        account.balance = -500.0;
+        account.displayBalance(); // 輸出錯誤的餘額
+    }
+}
+```
+
+**要求：**
+1. 修改 `BankAccount` 類別，使用 `private` 修飾詞隱藏 `accountNumber` 和 `balance` 屬性。
+2. 提供公開的 getter 方法（例如 `getBalance()`）來存取私有屬性。
+3. 確保只能透過 `deposit()` 和 `withdraw()` 方法修改 `balance` 屬性。
+4. 加上對於 withdraw 的金額做驗證，如果餘額不足，需要回傳錯誤訊息。
+
+<details>
+<summary>答案</summary>
+
+```java
+public class BankAccount {
+    private int accountNumber;
+    private double balance;
+
+    public BankAccount(int accountNumber, double balance) {
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+    }
+
+    public int getAccountNumber() {
+        return accountNumber;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void deposit(double amount) {
+        if (amount > 0) {
+            this.balance += amount;
+        }
+    }
+
+    public void withdraw(double amount) {
+        if (amount > 0 && this.balance >= amount) {
+            this.balance -= amount;
+        } else {
+            System.out.println("錯誤：餘額不足或提款金額無效。");
+        }
+    }
+
+    public void displayBalance() {
+        System.out.println("帳戶餘額：" + this.balance);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        BankAccount account = new BankAccount(12345, 1000.0);
+        account.withdraw(1500.0); // 將會輸出錯誤訊息
+        account.displayBalance();
+    }
+}
+```
+</details>
 
 ## 7.5 生人勿語：迪密特原則
 
@@ -220,6 +485,108 @@ class Register {
 一個物件儘可能的少知道其他物件，反之，物件本身提供最少訊息給其他物件。也就是說，一個物件本身提供最少的公開方法與公開屬性給外界使用。
 
 
+### 7.5.1 小節練習
+
+1️⃣ 假設我們有一個汽車零件組裝系統，其中包含以下類別：
+* `Car`（汽車）：代表一輛完整的汽車。
+* `Engine`（引擎）：代表汽車的引擎。
+* `Wheel`（輪胎）：代表汽車的輪胎。
+* `Mechanic`（技工）：負責檢查汽車。
+
+原始程式碼（違反迪米特法則）：
+
+```java
+public class Car {
+    private Engine engine;
+    private Wheel wheel;
+
+    public Car(Engine engine, Wheel wheel) {
+        this.engine = engine;
+        this.wheel = wheel;
+    }
+
+    public Engine getEngine() {
+        return engine;
+    }
+
+    public Wheel getWheel() {
+        return wheel;
+    }
+}
+
+public class Engine {
+    public void checkEngineStatus() {
+        System.out.println("引擎狀態正常。");
+    }
+}
+
+public class Wheel {
+    public void checkWheelPressure() {
+        System.out.println("輪胎胎壓正常。");
+    }
+}
+
+public class Mechanic {
+    public void checkCar(Car car) {
+        car.getEngine().checkEngineStatus();
+        car.getWheel().checkWheelPressure();
+    }
+}
+```
+
+**問題：**
+1. 請說明上述程式碼違反了迪米特法則的原因。
+2. 請修改上述程式碼，使其符合迪米特法則。
+
+**提示：**
+* 迪米特法則的核心概念是「只與你的直接朋友交談，不與陌生人交談」。
+* 「朋友」的定義包括：物件本身、傳入的參數、物件所建立的任何物件，以及物件的直接元件物件。
+
+<details>
+<summary>答案</summary>
+
+**原因：**
+`Mechanic` 類別依賴傳入的 `Car` 參數，`Car` 是它的「朋友」。但是，`Mechanic` 在 `checkCar` 方法中透過 `car.getEngine()` 和 `car.getWheel()` 取得了 `Engine` 和 `Wheel` 物件，並直接呼叫了這兩個「陌生人」的內部方法。這增強了類別之間的耦合，違反了迪米特法則（不和陌生人交談）。
+
+**修改後的程式碼：**
+應該讓 `Car` 自身提供一個檢查方法，委派呼叫給內部的零件。
+
+```java
+public class Car {
+    private Engine engine;
+    private Wheel wheel;
+
+    public Car(Engine engine, Wheel wheel) {
+        this.engine = engine;
+        this.wheel = wheel;
+    }
+
+    public void check() {
+        engine.checkEngineStatus();
+        wheel.checkWheelPressure();
+    }
+}
+
+public class Engine {
+    public void checkEngineStatus() {
+        System.out.println("引擎狀態正常。");
+    }
+}
+
+public class Wheel {
+    public void checkWheelPressure() {
+        System.out.println("輪胎胎壓正常。");
+    }
+}
+
+public class Mechanic {
+    public void checkCar(Car car) {
+        car.check(); // Mechanic 僅與 Car 交流
+    }
+}
+```
+</details>
+
 ## 7.6 不變應萬變：開畢原則
 
 > [!TIP]
@@ -240,7 +607,7 @@ class Register {
 
 
 
-### Shape 範例
+### 7.6.1 Shape 範例
 
 一個繪圖編輯器類別要繪製不同形狀的圖形，呼叫形狀(Shape)抽象類別提供的抽象方法為統一服務介面。設計形狀類別的繼承架構，實作不同形狀的繪製子類別，例如矩形(Rectangle)、圓形(Circle)、或其他形狀。*若要增加需求繪製新的形狀，則設計新的繪製形狀的子類別，達到 OCP 開放原則*；如此並不會修改到原先已經存在的類別程式碼，滿足OCP的關閉原則。其程式碼如下所示。
 
@@ -264,7 +631,7 @@ class Circle extends Shape {
 
 
 
-### Price 範例
+### 7.6.2 Price 範例
 
 假設一個主機板的價格是透過計算每一個零件的總和而得的：
 
@@ -400,13 +767,110 @@ classDiagram
 
 > 價格策略經常波動，我們就將之抽象為一個物件，透過擴充來處理
 
-### 小節練習
+### 7.6.3 小節練習
 
-- 關於開畢原則何者為是？
-	- 檔案開啟後且使用過後一定記得關閉該檔案。
-	- 軟體開發專案開始時必須有規劃，結案時必須有統整分析。
-	- 系統設計儘量允許開放擴充，避免直接修改。
-	- 一個案子必須結束後才能進行下一個案子，以求最好的效能。
+1️⃣ 關於開畢原則何者為是？
+🇦 檔案開啟後且使用過後一定記得關閉該檔案。
+🇧 軟體開發專案開始時必須有規劃，結案時必須有統整分析。
+🇨 系統設計儘量允許開放擴充，避免直接修改。
+🇩 一個案子必須結束後才能進行下一個案子，以求最好的效能。
+
+<details>
+<summary>答案</summary>
+
+🇨 系統設計儘量允許開放擴充，避免直接修改。
+</details>
+
+2️⃣ 哪個軟體設計原則指出軟體實體（類別、模組、函數等）應該對擴展開放，對修改關閉？
+🇦 開閉原則
+🇧 資料隱藏原則
+🇨 模組化設計
+🇩 不重複原則
+
+<details>
+<summary>答案</summary>
+
+🇦 開閉原則
+</details>
+
+3️⃣ 以下 `ShapeDrawer` 類別用於繪製不同形狀，但它違反了開閉原則。請修改程式碼，使其符合開閉原則。
+
+```java
+public class ShapeDrawer {
+
+    public void drawShape(String shapeType) {
+        if ("Rectangle".equals(shapeType)) {
+            System.out.println("繪製矩形");
+            // 繪製矩形的程式碼
+        } else if ("Circle".equals(shapeType)) {
+            System.out.println("繪製圓形");
+            // 繪製圓形的程式碼
+        } else if ("Triangle".equals(shapeType)) {
+            System.out.println("繪製三角形");
+        }
+        // 如果需要新增其他形狀，必須修改此類別
+    }
+
+    public static void main(String[] args) {
+        ShapeDrawer drawer = new ShapeDrawer();
+        drawer.drawShape("Rectangle");
+        drawer.drawShape("Circle");
+        drawer.drawShape("Triangle");
+    }
+}
+```
+
+**要求：**
+1. 修改 `ShapeDrawer` 類別，使其符合開閉原則。
+2. 建立一個 `Shape` 介面，定義 `draw()` 方法。
+3. 建立 `Rectangle`、`Circle` 和 `Triangle` 類別，實作 `Shape` 介面。
+4. 修改 `ShapeDrawer` 類別，使其接受 `Shape` 物件作為參數，並呼叫其 `draw()` 方法。
+5. 在 `Main` 類別中，創建不同形狀的物件，並傳遞給 `ShapeDrawer` 繪製。
+
+**提示：**
+* 使用介面（interface）和繼承（inheritance）實現多型（polymorphism）。
+* 讓 `ShapeDrawer` 依賴於抽象（`Shape` 介面），而不是具體類別。
+
+<details>
+<summary>答案</summary>
+
+```java
+interface Shape {
+    void draw();
+}
+
+class Rectangle implements Shape {
+    public void draw() {
+        System.out.println("繪製矩形");
+    }
+}
+
+class Circle implements Shape {
+    public void draw() {
+        System.out.println("繪製圓形");
+    }
+}
+
+class Triangle implements Shape {
+    public void draw() {
+        System.out.println("繪製三角形");
+    }
+}
+
+public class ShapeDrawer {
+    public void drawShape(Shape shape) {
+        shape.draw();
+    }
+
+    public static void main(String[] args) {
+        ShapeDrawer drawer = new ShapeDrawer();
+        drawer.drawShape(new Rectangle());
+        drawer.drawShape(new Circle());
+        drawer.drawShape(new Triangle());
+    }
+}
+```
+</details>
 
 
 ## 7.7 防火牆：防護變異原則
@@ -427,7 +891,7 @@ classDiagram
 
 受保護變異原則的目的是使軟體系統更能應對變化，從而提高其穩定性、可維護性和可擴展性。
 
-### Order 範例
+### 7.7.1 Order 範例
 
 假設我們有一個線上商店系統，其中包含以下類別：
 
@@ -539,7 +1003,7 @@ public class PaymentProcessor {
 
 通過以上修改，`PaymentProcessor` 類別不再直接依賴於具體的支付方式，而是依賴於 `PaymentMethod` 介面。這樣，當新增或修改支付方式時，只需新增或修改相應的實現類別，而無需修改 `PaymentProcessor` 類別的程式碼，從而符合了「受保護變異」的原則。
 
-### 常見方法
+### 7.7.2 常見方法
 
 以下是一些達成「隔離變化」的方法：
 
@@ -561,281 +1025,4 @@ public class PaymentProcessor {
 
 透過這些方法，可以有效地將變化隔離在系統的局部範圍內，提高程式碼的可維護性和可擴展性。
 
-
-## 7.EX 綜合練習
-
-### 選擇題
-
-**題目一：**
-
-哪個軟體設計原則強調將程式碼分解成獨立、可重複使用的部分？
-
-* A) 開閉原則
-* B) 資料隱藏原則
-* C) 模組化設計
-* D) 不重複原則
-
-**題目二：**
-
-哪個軟體設計原則的目標是減少程式碼中的重複，提高程式碼的可維護性？
-
-* A) 開閉原則
-* B) 資料隱藏原則
-* C) 模組化設計
-* D) 不重複原則（DRY原則）
-
-**題目三：**
-
-哪個軟體設計原則強調將資料和操作資料的方法封裝在一個單元中，以防止外部直接存取和修改內部狀態？
-
-* A) 開閉原則
-* B) 資料隱藏原則
-* C) 模組化設計
-* D) 不重複原則
-
-**題目四：**
-
-哪個軟體設計原則指出軟體實體（類別、模組、函數等）應該對擴展開放，對修改關閉？
-
-* A) 開閉原則
-* B) 資料隱藏原則
-* C) 模組化設計
-* D) 不重複原則
-
-**題目五：**
-
-以下哪個選項不是軟體設計原則?
-
-* A) 單一職責原則(SRP)
-* B) 里氏替換原則(LSP)
-* C) 介面隔離原則(ISP)
-* D) 隨機應變原則(ARP)
-
-**解答：**
-
-* 題目一：C) 模組化設計
-* 題目二：D) 不重複原則（DRY原則）
-* 題目三：B) 資料隱藏原則
-* 題目四：A) 開閉原則
-* 題目五：D) 隨機應變原則(ARP)
-
-希望這些題目能幫助您更好地理解軟體設計原則。
-
-**題目六：**
-
-系統僅儲存生日資料，而不儲存年齡的目的是
-
-* A) 不重複原則。
-* B) 開畢原則。
-* C) 最少知識原則。
-* D) 防護變異原則。
-* E) 模組化原則。	
-
-**題目七：**
-
-說明 StringTokenizer 是如何運作的？我們可以猜測他內部有一個變數在記錄目前位置，每次執行 nextToken() 時他就會 +1, 但為什麼我們不能看這個值？也不能修改這個值？其設計的原則為何？
-
-### 程式題
-
-#### 7.EX.01 資料隱藏
-
-以下 `BankAccount` 類別沒有遵守資訊隱藏原則，請修改程式碼，使其符合資訊隱藏原則。
-
-```java
-public class BankAccount {
-    public int accountNumber;
-    public double balance;
-
-    public BankAccount(int accountNumber, double balance) {
-        this.accountNumber = accountNumber;
-        this.balance = balance;
-    }
-
-    public void deposit(double amount) {
-        this.balance += amount;
-    }
-
-    public void withdraw(double amount) {
-        this.balance -= amount;
-    }
-
-    public void displayBalance() {
-        System.out.println("帳戶餘額：" + this.balance);
-    }
-}
-
-public class Main {
-    public static void main(String[] args) {
-        BankAccount account = new BankAccount(12345, 1000.0);
-        // 直接修改帳戶餘額 (違反資訊隱藏)
-        account.balance = -500.0;
-        account.displayBalance(); // 輸出錯誤的餘額
-    }
-}
-```
-
-**要求：**
-
-1.  修改 `BankAccount` 類別，使用 private 修飾詞隱藏 `accountNumber` 和 `balance` 屬性。
-2.  提供公開的 getter 方法（例如 `getBalance()`）來存取私有屬性。
-3.  確保只能透過 `deposit()` 和 `withdraw()` 方法修改 `balance` 屬性。
-4.  加上對於 withdraw 的金額做驗證，如果餘額不足，需要回傳錯誤訊息。
-
-
-#### 7.EX.02 OCP
-
-**題目：**
-
-以下 `ShapeDrawer` 類別用於繪製不同形狀，但它違反了開閉原則。請修改程式碼，使其符合開閉原則。
-
-```java
-public class ShapeDrawer {
-
-    public void drawShape(String shapeType) {
-        if ("Rectangle".equals(shapeType)) {
-            System.out.println("繪製矩形");
-            // 繪製矩形的程式碼
-        } else if ("Circle".equals(shapeType)) {
-            System.out.println("繪製圓形");
-            // 繪製圓形的程式碼
-        } else if ("Triangle".equals(shapeType)) {
-            System.out.println("繪製三角形");
-        }
-        // 如果需要新增其他形狀，必須修改此類別
-    }
-
-    public static void main(String[] args) {
-        ShapeDrawer drawer = new ShapeDrawer();
-        drawer.drawShape("Rectangle");
-        drawer.drawShape("Circle");
-        drawer.drawShape("Triangle");
-    }
-}
-```
-
-**要求：**
-
-1.  修改 `ShapeDrawer` 類別，使其符合開閉原則。
-2.  建立一個 `Shape` 介面，定義 `draw()` 方法。
-3.  建立 `Rectangle`、`Circle` 和 `Triangle` 類別，實作 `Shape` 介面。
-4.  修改 `ShapeDrawer` 類別，使其接受 `Shape` 物件作為參數，並呼叫其 `draw()` 方法。
-5.  在 `Main` 類別中，創建不同形狀的物件，並傳遞給 `ShapeDrawer` 繪製。
-
-**提示：**
-
-* 使用介面（interface）和繼承（inheritance）實現多型（polymorphism）。
-* 讓 `ShapeDrawer` 依賴於抽象（`Shape` 介面），而不是具體類別。
-
-#### 7.EX.03 DRY
-
-**題目：**
-
-以下 `ReportGenerator` 類別用於生成不同格式的報告，但它違反了 DRY 原則。請修改程式碼，使其符合 DRY 原則。
-
-```java
-public class ReportGenerator {
-
-    public void generateTextReport(String data) {
-        System.out.println("--- 文字報告 ---");
-        System.out.println("報告數據：" + data);
-        System.out.println("報告生成時間：" + java.time.LocalDateTime.now());
-        System.out.println("--- 報告結束 ---");
-    }
-
-    public void generateCsvReport(String data) {
-        System.out.println(",,, CSV 報告 ,,,");
-        System.out.println("數據, " + data);
-        System.out.println("生成時間, " + java.time.LocalDateTime.now());
-        System.out.println(",,, 報告結束 ,,,");
-    }
-
-    public void generateJsonReport(String data) {
-        System.out.println("{{{ JSON 報告 }}}");
-        System.out.println("\"data\": \"" + data + "\"");
-        System.out.println("\"time\": \"" + java.time.LocalDateTime.now() + "\"");
-        System.out.println("{{{ 報告結束 }}}");
-    }
-
-    public static void main(String[] args) {
-        ReportGenerator generator = new ReportGenerator();
-        String reportData = "測試數據";
-        generator.generateTextReport(reportData);
-        generator.generateCsvReport(reportData);
-        generator.generateJsonReport(reportData);
-    }
-}
-```
-
-**要求：**
-
-1.  修改 `ReportGenerator` 類別，使其符合 DRY 原則。
-2.  建立一個通用的 `generateReport()` 方法，接受報告格式和數據作為參數。
-3.  將報告的通用邏輯（例如時間戳）提取到 `generateReport()` 方法中。
-4.  確保不同格式的報告仍能正確生成。
-
-**提示：**
-
-* 考慮將重複的程式碼提取到一個私有方法中。
-* 使用參數化方法來處理不同格式的報告。
-
-
-### 7.EX.04 Demeter
-
-假設我們有一個汽車零件組裝系統，其中包含以下類別：
-
-* `Car`（汽車）：代表一輛完整的汽車。
-* `Engine`（引擎）：代表汽車的引擎。
-* `Wheel`（輪胎）：代表汽車的輪胎。
-* `Mechanic`（技工）：負責檢查汽車。
-
-原始程式碼（違反迪米特法則）：
-
-```java
-public class Car {
-    private Engine engine;
-    private Wheel wheel;
-
-    public Car(Engine engine, Wheel wheel) {
-        this.engine = engine;
-        this.wheel = wheel;
-    }
-
-    public Engine getEngine() {
-        return engine;
-    }
-
-    public Wheel getWheel() {
-        return wheel;
-    }
-}
-
-public class Engine {
-    public void checkEngineStatus() {
-        System.out.println("引擎狀態正常。");
-    }
-}
-
-public class Wheel {
-    public void checkWheelPressure() {
-        System.out.println("輪胎胎壓正常。");
-    }
-}
-
-public class Mechanic {
-    public void checkCar(Car car) {
-        car.getEngine().checkEngineStatus();
-        car.getWheel().checkWheelPressure();
-    }
-}
-```
-
-**問題：**
-
-1.  請說明上述程式碼違反了迪米特法則的原因。
-2.  請修改上述程式碼，使其符合迪米特法則。
-
-**提示：**
-
-* 迪米特法則的核心概念是「只與你的直接朋友交談，不與陌生人交談」。
-* 「朋友」的定義包括：物件本身、傳入的參數、物件所建立的任何物件，以及物件的直接元件物件。
 

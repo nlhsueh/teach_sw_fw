@@ -64,3 +64,8 @@ tools/
 *_slide.md
 HW/
 *.pptx
+
+.gemini/
+
+# AI Assistant configs
+.agent/

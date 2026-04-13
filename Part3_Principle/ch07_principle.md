@@ -1025,4 +1025,31 @@ public class PaymentProcessor {
 
 透過這些方法，可以有效地將變化隔離在系統的局部範圍內，提高程式碼的可維護性和可擴展性。
 
+## 7.8 綜合練習
 
+本小節提供三個設計挑戰，旨在複習本章所學的設計原則。請根據情境描述與任務要求，畫出對應的 UML 類別圖。
+
+---
+
+1️⃣ **智慧家庭系統的依賴問題 (迪米特法則)**
+
+*   **場景**：在一個智慧家庭 App 中，`HomeOwner` 物件直接透過層層 get 方法取得位於路由器 (`Router`) 內的感測器 (`Sensor`)，進而確認電池 (`Battery`) 的剩餘容量：
+    `int capacity = homeOwner.getRouter().getSensor().getBattery().getCapacity();`
+*   **任務**：請繪製出符合迪米特法則的重構設計圖。
+*   **提示 (Hint)**：找出誰才是 `HomeOwner` 的「直接朋友」？如何透過委派（Delegation）機制，讓 `HomeOwner` 不需要知道路由器內部的層級結構，就能獲取所需資訊？
+
+---
+
+2️⃣ **多元訊息發送服務 (開閉原則)**
+
+*   **場景**：某系統的 `NotificationService` 類別中，有一個 `send(String type, String message)` 方法。目前的程式碼使用 `if-else` 或 `switch` 來判斷 `type` 是 "Email" 還是 "SMS"，並分別執行不同的發送邏輯。
+*   **任務**：請設計一個符合開閉原則（OCP）的架構，使得未來若要新增 "Line" 或 "FB" 發送方式時，不需要修改原本的 `NotificationService` 類別。
+*   **提示 (Hint)**：嘗試將「發送」動作抽象化，建立一個共享的介面。這與本章提到的 Shape 範例有何相似之處？
+
+---
+
+3️⃣ **雲端儲存適配器 (防護變異原則)**
+
+*   **場景**：一個文件編輯器 `DocumentEditor` 直接引用了第三方的 `DropboxAPI` 類別來執行存檔與讀取。由於 API 可能隨版本更新而變動，或是未來可能需要更換供應商，這種直接依賴的方式風險極大。
+*   **任務**：請繪製一個設計圖，為核心邏輯 `DocumentEditor` 建立一個「防火牆」，將可能變動的 API 實作與穩定的編輯器邏輯隔離。
+*   **提示 (Hint)**：考慮使用介面（Interface）在 `DocumentEditor` 與具體 API 之間建立一個穩定的抽象層。這就是「受保護變異」中所謂的隔離防火牆。

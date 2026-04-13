@@ -189,7 +189,103 @@ void setLevel(int l) { level = l; }
 
 ---
 
-## 9.3 綜合練習
+## 9.3 核心重構案例詳解
+
+本節針對實務中最常見的三個重構方法進行深度解析，透過對比重構前後的代碼與架構，幫助理解「壞味道」的消除過程。
+
+### 9.3.1 搬移方法 (Move Method)
+
+當一個類別的方法頻繁存取另一個類別的屬性時（依戀情結），該方法應搬移至目標類別。
+
+```mermaid
+---
+title: 重構案例- 搬移方法 (Move Method)
+---
+classDiagram
+    direction LR
+    class Account {
+        -AccountType type
+        -int daysOverdrawn
+        +getOverdraftCharge() int -- 搬移前
+        +bankCharge() int
+    }
+    class AccountType {
+        +getOverdraftCharge(int days) int -- 搬移後
+    }
+    Account o-- AccountType
+    note for Account "搬移前：Account 承擔了計費邏輯"
+    note for AccountType "搬移後：計費邏輯與類型定義合一"
+```
+
+*   **重構前**：`Account` 類別內具備 `getOverdraftCharge()` 方法，但讀取的資料幾乎都來自於 `AccountType`。
+*   **重構後**：將方法移至 `AccountType`，`Account` 僅需呼叫 `type.getOverdraftCharge(daysOverdrawn)`。
+
+### 9.3.2 提煉類別 (Extract Class)
+
+當一個類別因職責過多而變得龐大（大類別）時，應將其部分屬性與行為提煉至新的類別中。
+
+```java
+// 重構前：Person 類別包含了所有的辦公室電話資訊
+class Person {
+    private String name;
+    private String officeAreaCode;
+    private String officeNumber;
+
+    public String getTelephoneNumber() {
+        return "(" + officeAreaCode + ") " + officeNumber;
+    }
+}
+
+// 重構後：提煉出 TelephoneNumber 類別
+class TelephoneNumber {
+    private String areaCode;
+    private String number;
+    public String getTelephoneNumber() {
+        return "(" + areaCode + ") " + number;
+    }
+}
+
+class Person {
+    private String name;
+    private TelephoneNumber officeTelephone = new TelephoneNumber();
+}
+```
+
+*   **好處**：降低了 `Person` 類別的複雜度，且 `TelephoneNumber` 未來可被其他類別復用。
+
+### 9.3.3 以衛句取代巢狀判斷 (Replace Nested Conditional with Guard Clauses)
+
+當條件判斷過於深層（巢狀）時，會增加閱讀的認知負荷。應使用「衛句」提早退出方法。
+
+```java
+// 重構前：深層巢狀邏輯
+double getPayAmount() {
+    double result;
+    if (isDead) result = deadAmount();
+    else {
+        if (isSeparated) result = separatedAmount();
+        else {
+            if (isRetired) result = retiredAmount();
+            else result = normalPayAmount();
+        }
+    }
+    return result;
+}
+
+// 重構後：使用衛句 (Guard Clauses) 扁平化邏輯
+double getPayAmount() {
+    if (isDead) return deadAmount();
+    if (isSeparated) return separatedAmount();
+    if (isRetired) return retiredAmount();
+    return normalPayAmount();
+}
+```
+
+*   **核心理念**：若條件判斷是「非正常情況」的特殊處理，應在判斷後立即回傳，讓「正常情況」的邏輯保持在最外層，提高清晰度。
+
+---
+
+## 9.4 綜合練習
 
 本小節提供互動式練習，請思考重構的原則並核對解答。
 

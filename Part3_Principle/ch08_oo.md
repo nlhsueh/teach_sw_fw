@@ -34,6 +34,9 @@ classDiagram
     class Child
     Child --|> Parent
 
+    class ClientA
+    ClientA ..> Child : op()
+
     class Expert {
         +op()
     }
@@ -42,6 +45,9 @@ classDiagram
     }
     Boss o-- Expert
     Boss ..> Expert : op()
+
+    class ClientB
+    ClientB ..> Boss : op()
 
     note for Child "繼承 (白箱重用)"
     note for Boss "委託 (黑箱重用)"
@@ -57,11 +63,11 @@ classDiagram
 
 想像一個播放器，其播放的介面都是 `play()`。一開始的 `RecordPlayer`, `EightTrackPlayer` 的實作方法都是 `abc`。後來新的兩個播放器 `PortableCassettePlayer` 與 `MP3Player` 的播放方式已經改變，實作變成 `xyz`，所以必須進行 `override`。但 `MP3` 又不能繼承 `PortableCassettePlayer`，只好程式碼重複。依據不重複原則，這是不好的設計。
 
- ![](https://i.imgur.com/eeB7M6K.png) 
+ <img src="https://i.imgur.com/eeB7M6K.png" width="1000">
 
 可以透過委託的方式來解決這個問題，如下圖所示。
 
- ![](https://i.imgur.com/8IaLiDj.png) 
+ <img src="https://i.imgur.com/8IaLiDj.png" width="1000">
 
 ---
 
@@ -153,8 +159,6 @@ classDiagram
     note for DiskDrive "低階實作"
 ```
 
-圖解：善用介面的架構
-
 介面的主要目的在定義兩個物件之間溝通的規格。考慮一個 `IDE` 的介面是電腦主機板與 `IDE` 設備如硬碟的溝通橋樑。當 `IDE` 介面一被定義後，主機板的廠商可以依照此介面去設計他們的主機板，而不需要理會將來的硬碟是 `IBM` 或 `Seagate` 或 `Quantum`。相同的，硬碟廠商也可以依照 `IDE` 介面去設計他們的硬碟，而不需理會將來是哪一種主機板與其溝通
  
 軟體的設計亦是相同的道理。兩個模組之間可以先定好一個溝通的介面，而後各模組的負責人就可以依此介面分別去實作，之後在結合即可。這樣的好處除增加系統平行開發的可能之外，亦可以增加系統的彈性：模組 `A` 不需要明確的知道與其合作的哪一個模組（假設是模組 `B`），他只要知道與其合作的介面為何即可（假設為介面 `I`）。將來如果系統作修改或擴充，我們可以用符合介面 `I` 的模組 `B'` 來取代 `B`，而不需要修改任何模組 `A` 的程式碼。
@@ -205,7 +209,7 @@ public Moter implements IManeuverable{
 ```
 ```mermaid
 ---
-title: Interface Design: IManeuverable
+title: Interface Design for IManeuverable
 ---
 classDiagram
     direction LR
@@ -358,7 +362,7 @@ class App {
 ```
 ```mermaid
 ---
-title: LSP Violation: Rectangle & Square
+title: LSP Violation- Rectangle & Square
 ---
 classDiagram
     direction LR
@@ -397,7 +401,7 @@ classDiagram
 
 ```mermaid
 ---
-title: LSP Violation: Tree & Graph
+title: LSP Violation- Tree & Graph
 ---
 classDiagram
     direction LR
@@ -483,14 +487,12 @@ classDiagram
         +timeout(int)
     }
     Timer ..> TimerClient: timeout()
-
-    note for TimerClient "回呼介面 (Callback)"
 ```
 
 
 ```mermaid
 ---
-title: Sequence: Interaction between Timer and TimerClient
+title: Interaction between Timer and TimerClient
 ---
 sequenceDiagram
     main->>timer: register(12, timerClient)
@@ -543,8 +545,8 @@ classDiagram
         +timeout()
     }
     Door <|-- TimedDoor
-    TimerClient <|-- TimedDoor
-    TimedDoor <.. Timer: timeout()
+    TimerClient <|-- Door
+    TimerClient <.. Timer: timeout()
 
     note for Door "介面污染點 (被迫繼承了 TimerClient)"
     note for TimerClient "與 Door 無關的介面"
@@ -680,7 +682,7 @@ classDiagram
 
 ```mermaid
 ---
-title: Quiz: Interface Pollution in SmartDevice
+title: Quiz- Interface Pollution in SmartDevice
 ---
 classDiagram
     direction LR
@@ -736,7 +738,7 @@ void Copy() {
 <!-- ![](https://i.imgur.com/ATnkhGY.png) -->
 ```mermaid
 ---
-title: DIP Violation: High-level depends on Low-level
+title: DIP Violation- High-level depends on Low-level
 ---
 classDiagram
     direction LR
@@ -789,7 +791,7 @@ void copy(Reader r, Writer w)  {
 
 ```mermaid
 ---
-title: DIP Optimized: Depending on Abstraction
+title: DIP Optimized- Depending on Abstraction
 ---
 classDiagram
     direction LR
@@ -1212,7 +1214,7 @@ class People ? {
 
 ```mermaid
 ---
-title: Exercise: ButtonPanel DIP Design
+title: Exercise- ButtonPanel DIP Design
 ---
 classDiagram
     direction LR

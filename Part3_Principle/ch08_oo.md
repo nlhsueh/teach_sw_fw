@@ -137,7 +137,7 @@ classDiagram
 
 > 不要直接呼叫一個實作的類別。請呼叫一個介面，藉此降低模組之間的耦合力。
 
-![](https://i.imgur.com/lWKZCaL.png) 
+<img src="https://i.imgur.com/lWKZCaL.png" width="600">
 圖解：耦合度 1 與 3 的差別
 
 ```mermaid

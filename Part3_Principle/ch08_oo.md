@@ -63,11 +63,11 @@ classDiagram
 
 想像一個播放器，其播放的介面都是 `play()`。一開始的 `RecordPlayer`, `EightTrackPlayer` 的實作方法都是 `abc`。後來新的兩個播放器 `PortableCassettePlayer` 與 `MP3Player` 的播放方式已經改變，實作變成 `xyz`，所以必須進行 `override`。但 `MP3` 又不能繼承 `PortableCassettePlayer`，只好程式碼重複。依據不重複原則，這是不好的設計。
 
- <img src="https://i.imgur.com/eeB7M6K.png" width="1000">
+ <img src="https://i.imgur.com/eeB7M6K.png" width="800">
 
 可以透過委託的方式來解決這個問題，如下圖所示。
 
- <img src="https://i.imgur.com/8IaLiDj.png" width="1000">
+ <img src="https://i.imgur.com/8IaLiDj.png" width="800">
 
 ---
 

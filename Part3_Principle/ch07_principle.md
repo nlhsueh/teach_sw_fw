@@ -243,7 +243,7 @@ void setTheta(double theta) {
 
 2️⃣ 系統僅儲存生日資料，而不儲存年齡的目的是：
 - (A) 不重複原則。
-- (B) 開畢原則。
+- (B) 開閉原則。
 - (C) 最少知識原則。
 - (D) 防護變異原則。
 - (E) 模組化原則。
@@ -489,6 +489,8 @@ class Register {
 
 原始程式碼（違反迪米特法則）：
 
+<details>
+<summary>原始程式碼</summary>
 ```java
 public class Car {
     private Engine engine;
@@ -527,6 +529,7 @@ public class Mechanic {
     }
 }
 ```
+</details>
 
 **問題：**
 1. 請說明上述程式碼違反了迪米特法則的原因。
@@ -535,12 +538,6 @@ public class Mechanic {
 **提示：**
 * 迪米特法則的核心概念是「只與你的直接朋友交談，不與陌生人交談」。
 * 「朋友」的定義包括：物件本身、傳入的參數、物件所建立的任何物件，以及物件的直接元件物件。
-
-<details>
-<summary>解答</summary>
-
-**原因：**
-`Mechanic` 類別依賴傳入的 `Car` 參數，`Car` 是它的「朋友」。但是，`Mechanic` 在 `checkCar` 方法中透過 `car.getEngine()` 和 `car.getWheel()` 取得了 `Engine` 和 `Wheel` 物件，並直接呼叫了這兩個「陌生人」的內部方法。這增強了類別之間的耦合，違反了迪米特法則（不和陌生人交談）。
 
 ```mermaid
 ---
@@ -557,6 +554,12 @@ classDiagram
     note for Engine "陌生人"
     note for Wheel "陌生人"
 ```
+
+<details>
+<summary>解答</summary>
+
+**原因：**
+`Mechanic` 類別依賴傳入的 `Car` 參數，`Car` 是它的「朋友」。但是，`Mechanic` 在 `checkCar` 方法中透過 `car.getEngine()` 和 `car.getWheel()` 取得了 `Engine` 和 `Wheel` 物件，並直接呼叫了這兩個「陌生人」的內部方法。這增強了類別之間的耦合，違反了迪米特法則（不和陌生人交談）。
 
 **修改後的程式碼：**
 應該讓 `Car` 自身提供一個檢查方法，委派呼叫給內部的零件。
@@ -575,38 +578,7 @@ classDiagram
 ```
 
 ```java
-public class Car {
-    private Engine engine;
-    private Wheel wheel;
-
-    public Car(Engine engine, Wheel wheel) {
-        this.engine = engine;
-        this.wheel = wheel;
-    }
-
-    public void check() {
-        engine.checkEngineStatus();
-        wheel.checkWheelPressure();
-    }
-}
-
-public class Engine {
-    public void checkEngineStatus() {
-        System.out.println("引擎狀態正常。");
-    }
-}
-
-public class Wheel {
-    public void checkWheelPressure() {
-        System.out.println("輪胎胎壓正常。");
-    }
-}
-
-public class Mechanic {
-    public void checkCar(Car car) {
-        car.check(); // Mechanic 僅與 Car 交流
-    }
-}
+<!-- 略 -->
 ```
 </details>
 
@@ -799,7 +771,7 @@ classDiagram
 
 ### 💡 7.6.3 隨堂測驗
 
-1️⃣ 關於開畢原則何者為是？
+1️⃣ 關於開閉原則何者為是？
 - (A) 檔案開啟後且使用過後一定記得關閉該檔案。
 - (B) 軟體開發專案開始時必須有規劃，結案時必須有統整分析。
 - (C) 系統設計儘量允許開放擴充，避免直接修改。

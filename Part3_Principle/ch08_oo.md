@@ -1,6 +1,3 @@
-###### tags: `OOSE`
-
-by NL Hsueh
 
 # Ch08 物件導向設計原則
 

@@ -40,17 +40,6 @@
 
 ---
 
-2️⃣ 以下哪個選項不是軟體設計原則?
-- (A) 單一職責原則(SRP)
-- (B) 里氏替換原則(LSP)
-- (C) 介面隔離原則(ISP)
-- (D) 隨機應變原則(ARP)
-
-
-<details>
-<summary>解答</summary>
-(D)。
-</details>
 
 ## 7.2 低耦高聚原則
 
@@ -180,7 +169,7 @@ Control Coupling
 > [!TIP]
 > 資料或是計算應該只存在一個地方，不要造成重複。
 
-重複是邪惡的，很容易出錯。例如我們把一筆成績資料存在兩個不同的檔案 $a_1$ 及 $a_2$，分別給 $m_1$ 與 $m_2$ 兩個模組來讀取，當資料修改成績時時必須同時修改 $a_1$ 及 $a_2$ 兩個檔案- 一開始工程師可能還會記得這件事，但時間一久或交接沒有確實，就很容易忘了同步，造成程式的錯誤。不重複原則（==Don't Repeat Yourself Principle; DRY==） 的原則就是不要描述再軟體設計時，不論是資料或是計算，都應該儘量的避免重複。
+重複是邪惡的，很容易出錯。例如我們把一筆成績資料存在兩個不同的檔案 $a_1$ 及 $a_2$，分別給 $m_1$ 與 $m_2$ 兩個模組來讀取，當資料修改成績時時必須同時修改 $a_1$ 及 $a_2$ 兩個檔案- 一開始工程師可能還會記得這件事，但時間一久或交接沒有確實，就很容易忘了同步，造成程式的錯誤。不重複原則（Don't Repeat Yourself Principle; `DRY`） 的原則就是不要描述再軟體設計時，不論是資料或是計算，都應該儘量的避免重複。
 
 ### 7.3.1 Copy-Paste 程式開發
 工程師常有過這樣的經驗：需要某一段演算時，發現過去寫過的一段程式碼可以「再利用」，於是把它 copy 到現有的程式碼中，再修改掉部分不同的地方。但日後發現共同的那部分的設計變了，絕大部分的時間你僅會修改其中的一個，而忽略掉另一個，這時候就造成「計算的不一致」，這是很多程式錯誤的來源。
@@ -242,7 +231,7 @@ void setTheta(double theta) {
 - (A) 開閉原則
 - (B) 資料隱藏原則
 - (C) 模組化設計
-- (D) 不重複原則（DRY原則）
+- (D) 不重複原則
 
 
 <details>
@@ -316,6 +305,8 @@ public class ReportGenerator {
 <details>
 <summary>解答</summary>
 
+說明：我們將重複的印出邏輯抽取成一個共用的 private 方法 `generateReport()`，並且把不同的部分（例如標題、資料格式字串）變成參數傳入。這樣一來，不論未來要增加什麼格式的報告，核心的列印邏輯和時間獲取都集中在一處，完全符合不重複原則（DRY）。
+
 ```java
 public class ReportGenerator {
 
@@ -373,7 +364,7 @@ public void sort() {
             swap(j, j+1); 
 }
 
-public void swap(int x; int y) {
+public void swap(int x, int y) {
    int temp = data[x];
    data[x] = data[y];
    data[y] = temp;
@@ -450,51 +441,10 @@ public class Main {
 <details>
 <summary>解答</summary>
 
-```java
-public class BankAccount {
-    private int accountNumber;
-    private double balance;
-
-    public BankAccount(int accountNumber, double balance) {
-        this.accountNumber = accountNumber;
-        this.balance = balance;
-    }
-
-    public int getAccountNumber() {
-        return accountNumber;
-    }
-
-    public double getBalance() {
-        return balance;
-    }
-
-    public void deposit(double amount) {
-        if (amount > 0) {
-            this.balance += amount;
-        }
-    }
-
-    public void withdraw(double amount) {
-        if (amount > 0 && this.balance >= amount) {
-            this.balance -= amount;
-        } else {
-            System.out.println("錯誤：餘額不足或提款金額無效。");
-        }
-    }
-
-    public void displayBalance() {
-        System.out.println("帳戶餘額：" + this.balance);
-    }
-}
-
-public class Main {
-    public static void main(String[] args) {
-        BankAccount account = new BankAccount(12345, 1000.0);
-        account.withdraw(1500.0); // 將會輸出錯誤訊息
-        account.displayBalance();
-    }
-}
-```
+說明：
+1. 將 `accountNumber` 與 `balance` 的修飾詞改為 `private`，確保外部無法直接存取內部狀態，滿足資訊隱藏的功能。
+2. 新增公開的 getter 方法（如 `getAccountNumber()`、`getBalance()`）讓外部安全地讀取狀態。
+3. 只能透過特定方法（例如 `deposit()` 和 `withdraw()`）來變更餘額。並且在 `withdraw(double amount)` 內加入判斷邏輯：若提款金額大於0且餘額足夠（`balance >= amount`）才允許扣款，否則輸出錯誤訊息。透過公有方法來保護內部資料，避免不合法的變更。
 </details>
 
 ## 7.5 生人勿語：最少知識原則
@@ -513,7 +463,7 @@ public class Main {
 - 每個單元只能和它的朋友交談：不能和陌生單元交談；或
 - 只和自己直接的朋友交談。
 
-設計系統時必須注意類別的數量，並且避免製造出太多類別之間的耦合關係。一個簡單的例子是：人可以命令一隻狗行走，但不要命令狗的腿行走。人跟狗有關係，狗跟他的腿有關係，整個系統有兩個關係；若人又跟狗的腿有關係，整個系統就會有三種關係。
+設計系統時必須注意類別的數量，並且避免製造出太多類別之間的耦合關係。一個簡單的例子是：當去便利商店結帳時，應該是由顧客自己從「錢包」拿出「鈔票」交給「店員」，而不是讓「店員」直接去翻找顧客的「錢包」拿取「鈔票」。在此情境中，店員只需要跟顧客互動（成為朋友單元拿取鈔票），而不該直接探究顧客的錢包（陌生單元）內部拿錢，這就符合了最少知識原則。
 
 ```java
 class Register {
@@ -592,8 +542,24 @@ public class Mechanic {
 **原因：**
 `Mechanic` 類別依賴傳入的 `Car` 參數，`Car` 是它的「朋友」。但是，`Mechanic` 在 `checkCar` 方法中透過 `car.getEngine()` 和 `car.getWheel()` 取得了 `Engine` 和 `Wheel` 物件，並直接呼叫了這兩個「陌生人」的內部方法。這增強了類別之間的耦合，違反了迪米特法則（不和陌生人交談）。
 
+```mermaid
+classDiagram
+    Mechanic --> Car : 依賴
+    Mechanic --> Engine : 違反原則 (直接呼叫陌生人)
+    Mechanic --> Wheel : 違反原則 (直接呼叫陌生人)
+    Car *-- Engine
+    Car *-- Wheel
+```
+
 **修改後的程式碼：**
 應該讓 `Car` 自身提供一個檢查方法，委派呼叫給內部的零件。
+
+```mermaid
+classDiagram
+    Mechanic --> Car : 依賴
+    Car *-- Engine
+    Car *-- Wheel
+```
 
 ```java
 public class Car {
@@ -693,7 +659,7 @@ public double totalPrice(Part[] parts) {
 
 但是，倘若今天有新的需求變更：主機板必須漲價四成五、記憶體必須調漲兩成七。該如何因應？
 	
-#### 方案一
+#### 方案一：硬派修改法 (Hard-Coding)
 直接利用 `instanceOf` 來判斷是不是主機板、記憶體來做判斷因應：
 
 ```java
@@ -713,7 +679,7 @@ public double totalPrice(Part[] parts) {
 
 雖然可以解決問題，但 totalPrice() 這個方法就被修改了。這與 OCP 原則相違背。
 	
-#### 方案二
+#### 方案二：繼承覆寫法 (Inheritance)
 下述的作法，透過繼承來修改價格。從 `getPrice()` 下手，如要修改價格策略時就修改 `getPrice()` 的內容。這樣的好處是 `totalPrice()` 的方法不需要做任何的修改。
 
 ```java
@@ -733,7 +699,7 @@ public class ConcretePart extends Part {
 
 但這樣的方式還是很「髒」，各零件物件不斷的被修改。
 	
-#### 方案三 
+#### 方案三：策略模式 (Strategy Pattern)
 下述的方法把價格策略抽象出來成為一個類別，不同的計價策略（例如打折策略）繼承價格策略後修改 `getPrice()` 的方法。
 
 ```java
@@ -827,21 +793,7 @@ classDiagram
 
 ---
 
-2️⃣ 哪個軟體設計原則指出軟體實體（類別、模組、函數等）應該對擴展開放，對修改關閉？
-- (A) 開閉原則
-- (B) 資料隱藏原則
-- (C) 模組化設計
-- (D) 不重複原則
-
-
-<details>
-<summary>解答</summary>
-(A)。
-</details>
-
----
-
-3️⃣ 以下 `ShapeDrawer` 類別用於繪製不同形狀，但它違反了開閉原則。請修改程式碼，使其符合開閉原則。
+2️⃣ 以下 `ShapeDrawer` 類別用於繪製不同形狀，但它違反了開閉原則。請修改程式碼，使其符合開閉原則。
 
 ```java
 public class ShapeDrawer {
@@ -882,41 +834,31 @@ public class ShapeDrawer {
 <details>
 <summary>解答</summary>
 
-```java
-interface Shape {
-    void draw();
-}
+說明：與其將所有形狀的繪製邏輯寫死在 `ShapeDrawer` 中，不如將 `Shape` 抽象化成為介面。未來如果需要新增其他形狀，我們只需要實作該介面，完全不會去修改到 `ShapeDrawer` 的原有程式碼。這讓程式輕易擴充，同時對修改封閉（對擴充開放，對修改封閉）。
 
-class Rectangle implements Shape {
-    public void draw() {
-        System.out.println("繪製矩形");
+```mermaid
+classDiagram
+    class Shape {
+        <<interface>>
+        +draw() void
     }
-}
-
-class Circle implements Shape {
-    public void draw() {
-        System.out.println("繪製圓形");
+    class ShapeDrawer {
+        +drawShape(Shape shape) void
     }
-}
-
-class Triangle implements Shape {
-    public void draw() {
-        System.out.println("繪製三角形");
+    class Rectangle {
+        +draw() void
     }
-}
-
-public class ShapeDrawer {
-    public void drawShape(Shape shape) {
-        shape.draw();
+    class Circle {
+        +draw() void
+    }
+    class Triangle {
+        +draw() void
     }
 
-    public static void main(String[] args) {
-        ShapeDrawer drawer = new ShapeDrawer();
-        drawer.drawShape(new Rectangle());
-        drawer.drawShape(new Circle());
-        drawer.drawShape(new Triangle());
-    }
-}
+    ShapeDrawer --> Shape : 依賴
+    Shape <|.. Rectangle : 實作
+    Shape <|.. Circle : 實作
+    Shape <|.. Triangle : 實作
 ```
 </details>
 

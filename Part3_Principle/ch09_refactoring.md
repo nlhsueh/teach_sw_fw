@@ -2,373 +2,332 @@
 
 # Ch09 把脈清毒：程式碼重構
 
-Martin Folwer 在他的書中 *Refactoring: improving the design of existing  code* 書中介紹了程式壞味道（bad smell）與重構（refactoring）方法。前者表示不良程式的現象，後者表示解決的方法。
+Martin Fowler 在其經典著作 *Refactoring: Improving the Design of Existing Code* 中介紹了「程式壞味道」（Bad Smell）與「重構」（Refactoring）方法。前者代表程式中存在的不良現象，後者則是具體的解決之道。
 
-這些壞味道與重構的方法可以說是設計樣式的基本元素，一個設計設計可能包含若干個重構方法，用以解決若干個程式壞味道。
+> [!TIP]
+> 這些壞味道與重構方法是「設計樣式」（Design Patterns）的基本元素。一個具備設計感的程式系統往往包含若干個重構步驟，用以消除特定的程式壞味道。
 
-## 把脈：程式壞味道
+## 9.1 把脈：程式壞味道
 
-Matin Folwer 共提到 21 個程式壞味道，在此我們介紹部分。
+Martin Fowler 共提到了 21 個典型的程式壞味道，以下介紹其中最常見的部分：
 
-- **重複的程式碼 Duplicated Code**。重複的程式碼應該抽出來集中在一個類別（或元件）中，需要的時候再去繼承或呼叫。重複的程式碼的維護性很低：我們常常改了這個忘了改另一個。
-- **冗長的方法 Long Method**。一個1000 行的程式碼好不好看得懂？好不好維護？一個方法通常代表一個處理的流程或演算法，大到某個程度後我們就必須要學會「抽象」- 把部分的流程抽象到另一個方法裡。
-- **大類別 Large Class**。同理，一個大類別包含很多的屬性、方法讓程式員難以理解類別的責任，應該把責任做分割，交給另一個類別來做。
-- **太長的參數列 Long Parameter List**。參數太多太長時（想像一下，10個參數），參數代表一個方法可以調整的靈活度，有其複雜度，太多的參數令人難以理解該方法的彈性。過多的參數也會引來冗長的方法。一樣，我們應該把部分的參數彙整起來，抽象成另一個物件類別。
-- **發散變更 Divergent Change**：一個類別有太多的變更原因而造成內聚力差。一個類別最好能有一個專一的功能，也就是內聚力要高，類別內的屬性和方法彼此間是有關係的。亦即，不要炒大鍋菜一樣把不相關的功能都擠在一個類別內。
-- **散彈槍手術 Shotgun Surgery**：一個變更，要改很多「其他」模組。想像一下一個「班級人數」的值散落在10 個模組裡，當這個人數值需要改變時，你需要翻箱倒櫃的修改這十個模組。如果這個值是放在一個設定檔中，模組啟動時去讀這個檔就好了，如此修改就會少很多。
-- **依戀情結 Feature Envy**：一個計算要取好多其他類別的值。一個內聚力強的類別其計算時主要會用到該類別的屬性，例如一個 Circle 的物件，有一個 area() 的方法來計算他的面積，會用到他內部的屬性 ridius，少許的引用其他類別的資料來運算當然難免，但如果過份的依賴大量其他的類別，那麼你的抽象化可能就出現了問題：是不是這個計算應該移到別的類別中？
-- **資料泥團 Data Clumps**：常常會一起出現的資料卻沒有抽象成一個類別型態。例如說住址，有一群的城市、街道、ZIP code、號等字串出現，為什麼不把它抽象成 Address 的類別呢？
-- **基本型別偏執 Primitive Obsession**：不用小類別，堅持只用基本型別。例如「錢」的這個變數，一開始你可能會用 int 來代表，又發現需要描述是哪個國家的幣值，所以又加了一個變數 String country。這會讓程式碼變得凌亂難懂，其實我們可以宣告一個小類別 Money，裡面包含這兩個屬性。
-- **Switch 敘述句**：太多的 switch case，不會用多型。Switch 有一個缺點，當你要新增一個 case 選項時，你需要修改程式碼。如果我們本來就預期會有 case 的改變，那麼就用多型吧，至少可以不在修改程式的情況下，透過擴充來完成彈性的設計。
-- **平行繼承體系 Parallel Inheritance Hierarchies**：可以說是散彈槍手術的一種：當你為某一個類別建立一個子類別時，你也需要為另一個類別建立子類別。假設你有兩個繼承樹，分別為 `SalariedEmployee`與 `HourlyEmployee`，其下分別有 `Engineer`, `Analyzer`, `Manager` 等類別，當我們要新增一個 `SoftwareEngineer` 類別時，必須在這兩個繼承樹分別新增，這就是一種不好的設計。
-- **不實用的一般性 Speculative Generality**: 預留的太多不實用的擴充點。為了滿足「擴充性上的彈性」，我們常常會把程式寫的複雜些，但是仔細想一想，是不是這些擴充真的需要？還是為了設計而設計？
-- **暫時欄位 Temporary Field**: 有一些暫時欄位只對某些特殊的方法或特殊時機才會用到，令人難以了解他的意義。例如為了不想傳太多參數就把某些值以 instance variable 的方式寫在類別內。
-- **過度的訊息串 Message Chains**：`a.getB().getC().getD()` 當訊息串過長時可能是功能封裝的有問題，可能要考慮直接的訊息傳遞。
-- **過度的中間人 Middle Man**：太多的方法都是透過委託來進行，該類別的方法封裝要考慮改寫。
-- **狎暱關係 Inappropriate Intimacy**：類別間的過於親密（頻繁）的屬性存取，這可能是責任或模組切割的不合適所造成。可以考慮把其中一個的方法整併到另一類別中，若是誰整併誰都不合適，也可能增加一個中間人物件來降低親密關係。
-- **同功能不同介面 Alternative Classes with Different Interfaces**：因為有不同的工程師做相同的工作，而造成相同的功能卻有多個不同的介面與實作。
-- **資料類別 Data Class**：類別內僅有欄位，或是存取這些欄位的 `getter`, `setter`。思考這些資料的特性，為他們添增合適的方法來解決這個問題。
-- **防臭的註解 Comments**：有些註解就像防臭劑一樣，因為程式碼寫的太亂太差，只好不斷的添加註解來說明。應該適當的為功能與類別做拆解模組化、賦與合適的名稱來幫助理解，而不是一味的加上註解。
+- **重複的程式碼 (Duplicated Code)**：相同的程式結構出現在多處。應將其萃取出並集中在單一類別或方法中（如 `Extract Method`）。重複代碼會大幅降低維護性，導致「改了這、忘了那」的困境。
+- **冗長的方法 (Long Method)**：方法過長（例如超過 100 行）會極難閱讀與維護。方法應代表單一的處理流程或演算法，當過於複雜時，應透過抽象化將其拆分。
+- **大類別 (Large Class)**：一個類別承擔過多責任，包含過多屬性與方法。應將責任分割，交給不同的類別處理（如 `Extract Class`）。
+- **太長的參數列 (Long Parameter List)**：參數過多（如超過 5 個）會增加理解難度並容易導致呼叫錯誤。可考慮將相關參數封裝成物件（如 `Introduce Parameter Object`）。
+- **發散變更 (Divergent Change)**：一個類別因為過多不相關的變動原因而需要修改。這代表內聚力差，應確保一個類別僅負責一個專一的功能。
+- **散彈槍手術 (Shotgun Surgery)**：每當進行一個變更，都需要修改許多不同的模組（跨多個類別）。這會導致修改風險極高，理想情況下應將變動點集中。
+- **依戀情結 (Feature Envy)**：一個類別的方法頻繁存取另一個類別的屬性。這通常代表該方法應該屬於被存取的那個類別。
+- **資料泥團 (Data Clumps)**：某些資料總是一起出現（如：郵遞區號、城市、街道），卻沒有被封裝成類別。應將其抽象化為一個物件（如 `Address`）。
+- **基本型別偏執 (Primitive Obsession)**：堅持只用基本型別（如 `int`, `String`）而抗拒使用小類別。例如「幣值」應由 `Money` 類別表示，而非僅用 `int` 加 `String`。
+- **Switch 敘述句 (Switch Statements)**：過度使用 `switch-case` 而非多型。當需要新增選項時必須修改程式碼，違反開閉原則 (OCP)。
+- **平行繼承體系 (Parallel Inheritance Hierarchies)**：當你為類別 A 增加子類別時，也必須為類別 B 增加子類別。這是「散彈槍手術」的一種特例。
+- **不實用的一般性 (Speculative Generality)**：為了「未來可能的擴充」而預留了過多複雜的設計，但實際上卻從未用到。
+- **暫時欄位 (Temporary Field)**：某些屬性僅在特定演算法執行時才有用，其餘時間皆為空值，這會增加類別理解的難度。
+- **過度的訊息串 (Message Chains)**：`a.getB().getC().getD()`。過長的呼叫鏈表示類別導航過於透明，違反迪米特法則。
+- **過度的中間人 (Middle Man)**：一個類別過多方法都只是在轉發 (Delegate) 請求設計。應考慮務必移除中間人，讓 Client 直接與目標物件溝通。
+- **狎暱關係 (Inappropriate Intimacy)**：類別之間存取過於頻繁的內部私有細節。應透過重構降低其依賴程度或重新分配職責。
+- **同功能不同介面 (Alternative Classes with Different Interfaces)**：兩個類別的功能幾乎相同，但方法名稱或介面卻不同。
+- **資料類別 (Data Class)**：類別僅包含欄位與 `getter/setter`，缺乏行為。應思考將相關邏輯移入此類別中。
+- **防臭的註解 (Comments)**：當程式碼寫得太差時，工程師被迫加上大量註解。應透過改善命名與重構來讓程式碼「自我解釋」。
 
+---
 
+## 9.2 清毒：程式碼重構
 
-## 清毒：程式碼重構
+重構方法一共有六大類，包含 25 種形式與 70 多個具體方法：
 
-重構方法一共有六大類，25 種形式 72 個重整的方法：
+1. **方法組裝 (Composing Methods)**：重組方法內的語句。
+2. **特性移動 (Moving Features Between Objects)**：在物件之間移動屬性或方法。
+3. **資料組織 (Organizing Data)**：改善資料結構的處理方式。
+4. **條件簡化 (Simplifying Conditional Expressions)**：簡化複雜的邏輯判斷。
+5. **呼叫簡化 (Making Method Calls Simpler)**：讓介面與方法調用更清晰。
+6. **一般化處理 (Dealing with Generalization)**：處理類別架構中的繼承關係。
 
-- 合：Compose Method，方法組裝。
-- 移：Move features between object，特性移動，亦即在物件之間移動特性（屬性或方法）。
-- 組：Organize data，資料組織。
-- 化：Simply conditional expression，條件簡化。
-- 簡：Make method calls simpler，呼叫簡化。
-- 通：Deal with generalization，一般化處理。
+> [!IMPORTANT]
+> 重構方法著重在「動作」，沒有絕對的對錯，有些方法甚至恰好對立（如 `Extract Method` 與 `Inline Method`），應根據具體情境靈活應用。
 
+### 9.2.1 方法組裝
 
-25 種形式包含：Change 改變、Encapsulate 封裝、Extract 萃取、Hide 隱藏、Move 移動、Pull up 拉上、Push down 推下、Replace 取代等。
+- **Extract Method**：把功能萃取出來，形成另一個獨立方法。
+- **Inline Method**：直接使用該方法的功能，減少不必要的包裝。
 
-注意這些重構方法著重在動作，沒有絕對的對錯，有些還恰好對立，例如 extract method 要你把方法抽出來，inline method 則要你把方法合為一體，其使用的情境要看你的應用程式而定。
-
-### 方法組裝
-
-
-- Extract Method: 把功能萃取出來，形成另一個方法。
-- Inline Method: 直接使用該方法的功能，不將其包裝為一個方法，因為直接使用更直覺。Inline method 和 extract method 兩者恰好是相反。
-
-```java=
+```java
+// Inline Method 範例
 class Student {
    boolean pass() {
-      return isGoodGrade()? true: false;
-   }
-   boolean isGoodGrade() {
-      return grade > 60
-   }   
-}
-// 使用 inline method 重構後
-class Student {
-   boolean pass() {
-      return grade > 60? true: false;
+      // Before: return isGoodGrade();
+      // After:
+      return grade > 60;
    }
 }
 ```
 
+- **Introduce Explaining Variables**：導入有意義的變數名稱，取代複雜的表示式（特別是條件判斷）。
 
-- Introduce Explaining Variables: 導入有意義的變數。特別是在一群條件判斷式中。
-
-
-```java=
-class Student {
-   boolean getScholarship() {
-      if (sType == "M" && g1 > 60 && g2 > 70)
-         return true;
-    }
-}
-// introduce explaining variable 重構後
+```java
+// Introduce Explaining Variables 範例
 class Student {
    boolean getScholarship() {
       boolean isMasterStudent = (sType == "M");
       boolean allPass = (g1 > 60 && g2 > 70);
-      if (isMasterStudent && allPass) 
+      if (isMasterStudent && allPass) {
          return true;
-    }     
+      }
+      return false;
+   }     
 }   
 ```
 
-- Inline Temp: 不宣告一個變數來表達一個簡單的表示式 (expression)，直接用就好。
-- Split Temporary Variable: 不用某個 local 變數來儲存不同的計算意義，而是每次都給一個有意義的變數名稱。例如我們常常一會兒 `len = heigh + width`, 一會兒又 `len = now() - age`, 容易造成混亂，不好。
-- Remove Assignments to Parameters: 不改變 parameter 的值，而是用另一個變數來儲存該值，再做運算。
+- **Inline Temp**：不宣告暫時變數，直接使用表達式。
+- **Split Temporary Variable**：不共用同一個暫時變數來儲存不同的計算意義。
 
+### 9.2.2 特性移動
 
-### 特性移動
+- **Move Method / Field**：將方法或屬性移至更合適的類別。
+- **Extract Class**：將責任過重的類別拆分為多個專一的小類別。
+- **Inline Class**：將過於簡單的類別併入另一個類別中。
+- **Remove Middle Man**：移除轉發層，讓物件直接溝通。
 
+### 9.2.3 資料組織
 
-- Move Method: 移動方法到別的類別。
-- Move Field: 移動屬性到別的類別。
-- Extract Class: 當一個類別負責的功能太多，將獨立的功能萃取出成為另一個類別。
-- Inline Class: 合併類別，將兩個相近的類別合併，不分成兩個類別。
-- Remove Middle Man: 移除中間人，讓兩個物件直接溝通。
+- **Replace Data Value with Object**：將單純的字串或數值封裝為具有行為的物件。
+- **Replace Array with Object**：將存有不同型態資料的陣列改為明確的物件（類別）。
 
-
-### 資料組織
-
-- Replace Data Value with Object: 某一資料具備自己的屬性與行為，那麼就為他封裝為一個類別，而不是一個字串。例如 People 可宣告為一個類別，不要僅宣告為一個字串描述其姓名。
-- Change Value to Reference: 一些物件都有相同的值，不要讓他們各自擁有資料，建立一個物件讓他們共同參考。
-- Replace Array with Object: 將一個存有不同型態的陣列，改以物件來設計。
-
-```java=
-String student [] = {"Nick", "P1010", "Master"}
-// 重構後
+```java
+// Before: String student [] = {"Nick", "P1010", "Master"}
+// After:
 class Student {
    String name;
-   String SSN;
+   String id;
    String degree;
 }    
 ```
-- Encapsulate Field: 將公開的屬性資料，宣告為私有，並且宣告 `getter`, `setter` 來存取該屬性。
-- Encapsulate Collection: 一個類別內具備有集合物件（Set），原本提供此集合物件的 `getter` 與 `setter`, 將之重整為 read-only 的 `getter`，或是對此物件的動作。
 
-```java=
+- **Encapsulate Field**：將公開屬性改為私有，並提供 `getter / setter`。
+- **Encapsulate Collection**：對集合物件不提供直接的 setter，而是提供 `add / remove` 方法。
+
+```java
+// Encapsulate Collection 範例
 class Student {
-   getCourse(): Set;
-   setCourse(Set); 
-}
-// encapsulate collection 重構後：
-class Student {
-   getCourse(): SetIterator; //read-only getter
-   addCourse(Course); // operation to Course, not set
-   removeCourse(Course) 
+   private Set courses = new HashSet();
+   
+   public void addCourse(Course course) { courses.add(course); }
+   public void removeCourse(Course course) { courses.remove(course); }
+   public Set getCourses() { return Collections.unmodifiableSet(courses); }
 }   
 ```
 
-- Replace Subclass with Fields: 兩個子類別的差異很小，僅是用一個變數來區分他們的差異，可濃縮為一個父類別，並也用一個變數來區分即可。
+- **Replace Subclass with Fields**：當子類別差異過小時，改用欄位區分即可，不需建立子類別。
 
-```java=
-class Master extends Student {
-   static int getDegree() {return 3;}
-}   
-class Undergradute extends Student {
-   static int getDegree() {return 2;}
-}   
-// 重構後
-class Student {
-   int degree;
-   public Student (int s) { degree = s;}
-   int getDegree() { return degree; }
-}   
-```
+### 9.2.4 條件簡化
 
+- **Consolidate Duplicate Conditional Fragments**：將所有路徑中重複出現的程式片段抽離出條件句。
+- **Replace Nested Conditional with Guard Clauses**：避免深層巢狀，使用 Guard Clauses（衛句）提早回傳。
 
-### 條件簡化
-
-- Consolidate Duplicate Conditional Fragments: 相同的程式片段存在於所有的條件流中，則可以將之移出。
-
-```java=
-if (isFemale()) {
-   tall > 170? return "basketball": "baseball";
-   orgTeam();
-}   
-else {
-   tall > 190? return "basketball": "baseball";
-   orgTeam();
-}   
-// 重構後
-if (isFemale())
-   tall > 170? return "basketball": "baseball";
-else
-   tall > 190? return "basketball": "baseball";  
-orgTeam(); // 移出來
-```
-- Replace Nested Conditional with Guard Clauses: 避免巢狀的判斷句，用扁平的判斷來取代。
-
-```java=
+```java
+// Guard Clauses 範例
 boolean isPass() {
-   boolean result;
-   if (isPhD) 
-      result = computePhDGrade();
-   else 
-      if (isPartTimeMaster)    
-         result = computePartTimeMasterGrade()
-      else
-         if (isMaster)
-            result = computeMasterGrade()
-   result = computeGrade()
-   return result;
-}
-//重構後
-boolean isPass() {
-   if (isPhD)
-      return computePhDGrade();
-   if (isPartTImeMaster)
-      return computePartTimeMasterGrade()
-   if (isMaster)
-      return computeMasterGrade()
+   if (isPhD) return computePhDGrade();
+   if (isPartTimeMaster) return computePartTimeMasterGrade();
+   if (isMaster) return computeMasterGrade();
    return computeGrade();
 }               
 ```
 
-- Replace Conditional with Polymorphism: 用多型來取代判斷。
+- **Replace Conditional with Polymorphism**：以「多型」取代複雜的 `switch-case` 或 `if-else`。
 
-```java=
-class Student {
-   int getGrade() {
-      swith (type) {
-         case PHD:
-             return getQualityExam();
-         case MASTER:
-             return exam*0.5 + report*0.5;
-         case UNDER:
-             return exam*0.7 + report*0.3;        
-      }
-   }   
-}
-//重構後
-class PhDStudent extends Student {
-   int getGrade() {
-      return getQualityExam();
-   }   
-}
-class MasterStudent extends Student {
-   int getGrade() {
-      return exam*0.5 + report*0.5;
-   }   
-}
-...
-```      
-
-### 呼叫簡化
-
-Seperate Query from Modifier: 將查詢與修改的方法分開來，讓每一個方法有一個明確獨立的功能。
-
-```java=
-int getGradeAndSetLevel(} { ... }
-// 重構後
-int getGrade() {...}
-void setLevel() { ... }
+```mermaid
+---
+title: 重構案例- 以多型取代判斷
+---
+classDiagram
+    direction LR
+    class Student {
+        <<abstract>>
+        +getGrade()* int
+    }
+    class PhDStudent {
+        +getGrade() int
+    }
+    class MasterStudent {
+        +getGrade() int
+    }
+    class UndergradStudent {
+        +getGrade() int
+    }
+    
+    Student <|-- PhDStudent
+    Student <|-- MasterStudent
+    Student <|-- UndergradStudent
+    
+    note for Student "定義抽象方法 (規格)"
+    note for PhDStudent "實作博士生計分邏輯"
 ```
-- Parameterize Method: 將多個方法彙整為一個方法，以參數來進行一般化。
-- Replace Parameter with Explicit Methods: 一個方法區分為若干個不同的部份，由參數來決定執行哪一個部分。重構後用明確的方法名稱來取代個部分，讓程式更簡潔明確。
-```java=
-setValue(String title, int v} {
-   if (title == "grade")
-      grade = v;
-   else if (title == "level") 
-      level = v;
-}
-// 重構後
-setGrade(int grade) {grade = g;}
-setLevel(int lv) { level = lv;}          
-```
-- Introduce Parameter Object: 方法包含了一大群的參數，可用一個物件來取代這些參數。
-```java=
-void exam(Time startTime, Time endTime) {...}
-// 重構後
-void exam(TimeRange examTime) {...}
-```
-- Remove Setting Method: 當我們要設計一個 Immutable object 時，物件的屬性值只有在其建構時設定，不提供 setter 的方法以修改其內部值。
-- Hide Method: 將公開的方法設為私有，不要外部的物件呼叫，以避免不需要的錯誤。
-- Replace Error Code with Exception: 當程式發生例外時，不回傳錯誤碼，而是拋出例外。
 
-```java=
+### 9.2.5 呼叫簡化
+
+- **Separate Query from Modifier**：將讀取資料與修改資料的方法分開。
+- **Replace Parameter with Explicit Methods**：與其用參數控制方法行為，不如拆分為明確命名的多個方法。
+
+```java
+// Before: setValue("grade", v);
+// After:
+void setGrade(int g) { grade = g; }
+void setLevel(int l) { level = l; }
+```
+
+- **Introduce Parameter Object**：將過長的參數列封裝成單一物件。
+- **Replace Error Code with Exception**：不回傳錯誤代碼（如 `-1`），改以拋出例外。
+
+### 9.2.6 一般化處理
+
+- **Pull Up Method / Field**：將共通的方法或屬性移至父類別。
+- **Push Down Method / Field**：將僅子類別需要的方法或屬性移至該子類別。
+- **Extract Superclass**：為具備相似行為的類別提取出共通的父類別。
+- **Replace Inheritance with Delegation**：子類別若僅需父類別的部分功能，改用「委託」而非「繼承」。
+
+---
+
+## 9.3 綜合練習
+
+本小節提供互動式練習，請思考重構的原則並核對解答。
+
+---
+
+1️⃣ **觀念辨析：軟體重構的目的**
+軟體重構之後，會改善其功能（外部行為）嗎？為什麼？
+
+<details>
+<summary>解答</summary>
+
+**不會。**
+**說明：** 重構的定義是在「不改變軟體外部行為」的前提下，改善其內部的程式結構。目的是提高可讀性、維護性與擴展性，而非增加新功能或修正 Bug（雖然重構過程中常會發現潛在的 Bug）。
+</details>
+
+---
+
+2️⃣ **壞味道辨識：散彈槍手術 (Shotgun Surgery)**
+下列何者為散彈槍手術的概念？ (單選)
+- (A) 一個類別因為過多的需求變動而頻繁修改
+- (B) 每當一個變動，你必須在許多不同的類別中同時做出修改
+- (C) 相關聯的資料總是一起出現卻沒有封裝成類別
+- (D) 一個計算邏輯需要從許多其他類別中取得資料
+
+<details>
+<summary>解答</summary>
+
+**解答：(B)**
+**說明：** 散彈槍手術是指一種變更散佈在多個類別中（像散彈一樣散開）。(A) 對應的是「發散變更」(Divergent Change)。
+</details>
+
+---
+
+3️⃣ **重構方法：重複程式碼**
+關於解決「重複程式碼」的方法，下列敘述何時有誤？ (單選)
+- (A) 若在同一個類別中，可透過 `Extract Method` 萃取。
+- (B) 若在不相干類別中，可透過 `Extract Class` 先將重複部分抽取出來。
+- (C) 若在兩個具備相同父類別的子類別中，應使用 `Push Down Method` 處理。
+- (D) 若部分相似但不完全相同，仍可萃取出相同部分。
+
+<details>
+<summary>解答</summary>
+
+**解答：(C)**
+**說明：** 若子類別有重複代碼，應使用 `Pull Up Method` 將其往上移至父類別，而非往下的 `Push Down`。
+</details>
+
+---
+
+4️⃣ **壞味道辨識：過長的參數列**
+關於「過多參數」的壞味道，下列敘述何時有誤？ (單選)
+- (A) 增加理解難度。
+- (B) 會大幅降低程式的執行效率。
+- (C) 容易造成呼叫時參數順序錯誤的 Bug。
+- (D) 每次需要更多參數時都需連動修改呼叫處，增加維護困難。
+
+<details>
+<summary>解答</summary>
+
+**解答：(B)**
+**說明：** 重構主要關注的是「維護性」而非「執行效率」。參數列長度對執行效率的影響在現代編譯器中微乎其微。
+</details>
+
+---
+
+5️⃣ **解決方案：巨大的類別**
+對於「巨大的類別」，下列哪一項重構方法**不建議**使用？ (單選)
+- (A) 將每個方法都獨立成一個新類別，以確保功能不干擾。
+- (B) 運用 `Extract Class` 將相關變數與邏輯提煉至新類別。
+- (C) 使用 `Extract Subclass` 拆解出特定的子類別功能。
+- (D) 透過 `Extract Interface` 為不同客群定義適合的操作介面。
+
+<details>
+<summary>解答</summary>
+
+**解答：(A)**
+**說明：** 過度拆分會造成「懶惰類別」或「過多中間人」，反而增加系統複雜度。重構應基於責任 (Responsibility) 來拆分。
+</details>
+
+---
+
+6️⃣ **實作應用：重構錯誤處理**
+以下程式碼存在什麼問題？應如何重構？
+```java
 int computeGrade() {
-   ....
-   if (grade >100 || grade < 0)
-      return -1;
+   // ... 運算邏輯 ...
+   if (grade > 100 || grade < 0) return -1;
    return 0;
 }
-// 重構後
-void computeGrade() throws Exception {
-   ...
-   if (grade > 100 || grade < 0) 
-      throw new Exception("Error grade");
-   ...
-}         
 ```
 
-### 一般化處理
+<details>
+<summary>解答</summary>
 
+**問題：** `Replace Error Code with Exception`
+**說明：** 應拋出明確的例外（Exception）而非回傳特殊碼（-1）。
+**重構建議：**
+```java
+void computeGrade() throws GradeException {
+   if (grade > 100 || grade < 0) throw new GradeException("成績區間錯誤");
+}
+```
+</details>
 
-- Pull Up Field: 當兩個子類別有相同的屬性，則將相同的屬性往上提至父類別。
-- Pull Up Method: 當兩個子類別有相同的方法，則將相同的方法往上提至父類別。
-- Push Down Method: 當父類別的方法並不適用所有的子類別，將該方法往下移至子類別。
+---
 
-```java=
+7️⃣ **實作應用：集合封裝**
+以下設計可能違反了什麼原則？該如何改善？
+```java
 class Student {
-   void attendOralDefense() {...}
-}
-// 重構後
-class MasterStudent extends Student {
-   void attendOralDefense() {...}
-   ...
-}
-class UnderGraduateStudent extens Student {
-   ...
+   Set getCourse() { return courses; }
+   void setCourse(Set c) { this.courses = c; }
 }
 ```
 
-- Extract Superclass: 當有兩個類別具備相似的屬性與方法時，建立一個父類別，並且讓這兩個類別繼承之。
-- Replace Inheritance with Delegation: 當子類別僅繼承部分的行為，改以委託來設計，該繼承的部份改用委託來完成。
-- Replace Delegation with Inheritance: 當物件將多半的工作委託給另一物件，可直接繼承之。
+<details>
+<summary>解答</summary>
+
+**問題：** `Encapsulate Collection`
+**說明：** 直接提供 setter 會讓外部可以隨意替換整個集合，破壞封裝。
+**重構建議：** 移除 `setCourse`，改提供 `addCourse` 與 `removeCourse`，並讓 `getCourse` 回傳不可變的 View。
+</details>
+
+---
+
+8️⃣ **實作應用：取代複雜條件句**
+若類別中出現繁雜的 `switch (studentType)` 來計算成績，最建議的重構手法是？
+
+<details>
+<summary>解答</summary>
+
+**解答：** `Replace Conditional with Polymorphism` (以多型取代判斷)
+**說明：** 建立 `Student` 抽象父類別，並讓不同類身份的子類別實作各自的 `getGrade()` 方法，符合 OCP 原則。
+</details>
+
+---
 
 
-## 綜合練習
+---
 
-- ex01 軟體重構後會改善其功能嗎？為什麼？
-- ex02 下列何者為Shotgun Surgery的概念?	(單選)
-  - [ ] 1. 一個類別會因為因應太多的變更原因而需修改
-  - [ ] 2. 每次為因應同一種變更，你必須同時在許多類別上做出許多修改
-  - [ ] 3. 常常會一起出現的資料群卻沒有抽象呈一個類別型態	
-  - [ ] 4. 一個計算要取好多其他類別的值。
-- ex03 關於"重複程式碼"壞味道的重構方法，底下說明何時有誤？	(單選)
-  - [ ] 1. 若在同一個class中有重複的程式碼，我們可透過提取函式(Extract Method)將重複的部分抽出來變成method。
-  - [ ] 2. 若不相干的兩個類別中具有重複的程式碼，我們可透過提取類別(Extract Class)將重複的部分先抽取出來並獨立成一個新的class。
-  - [ ] 3. 若在兩個子類別(同一個父類別下)具有重複的程式碼，可透過提取類別(Extract Class)將重複的部分先抽取出來，並獨立成一個新的父類別。
-  - [ ] 4. 若重複的部分相似但不完全相同，仍可透過提取函式(Extract Method)將重複且相同的部分抽取出來。	
-	
-- ex04 關於"過多的參數"壞味道，請問底下哪一個敘述有誤？	(單選)
-  - [ ] 1. 太長的參數列難以理解
-  - [ ] 2. 太長的參數列執行效率差 
-  - [ ] 3. 對於具有過多參數的method，呼叫此method之程式容易形成呼叫參數順序錯誤的bug
-  - [ ] 4. 對於具有過多參數的method，一旦需要更多的輸入參數，在修改這個method時，也要修改呼叫的程式，造成維護的困難	
-	
-- ex05 對於"巨大的類別"壞味道之重構方法，底下敘述何者有誤？(單選)
-  - [ ] 1. 可以將每個method均獨立成一個類別，以確保功能間不互相干擾。
-  - [ ] 2. 可以運用Extract Class方法將數個相關聯的變數一起提煉至新的class中。
-  - [ ] 3. 可以使用Extract Subclass，將原本的巨大類別拆解成父類別與子類別。
-  - [ ] 4. 可先觀察客戶端程式如何用原本的類別，先透過Extract Interface為每一種使用方法提煉出一個interface。	
-	
-- ex06 散彈槍手術 Shotgun Surgery 可以透過哪些重構方法來解決？
-- ex07 以下程式碼可能有哪個問題？該如何重構之？
-```java=
-int computeGrade() {
-   ....
-   if (grade >100 || grade < 0)
-      return -1;
-   return 0;
-}
-```
-
-- ex08 以下程式碼可能有哪個問題？該如何重構之？
-
-```java=
-class Student {
-   getCourse(): Set
-   setCourse(Set) 
-}
-```
-
-- ex09 以下程式有何缺點？可以如何重構？
-```java=
-class Student {
-   int getGrade() {
-      swith (type) {
-         case PHD:
-             return getQualityExam();
-         case MASTER:
-             return exam*0.5 + report*0.5;
-         case UNDER:
-             return exam*0.7 + report*0.3;        
-      }
-   }   
-}
-```
-
-可註冊 [物件導向設計II- 重構](https://sec.openedu.tw/courses/course-v1:SEC+SE101.2+201709/about)，觀看教學影片並回答相關問題。
+*本章節旨在引導學生掌握從發現「壞味道」到執行「重構」的流程，轉化不良程式為高品質設計。*

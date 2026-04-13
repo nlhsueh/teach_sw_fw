@@ -543,22 +543,35 @@ public class Mechanic {
 `Mechanic` 類別依賴傳入的 `Car` 參數，`Car` 是它的「朋友」。但是，`Mechanic` 在 `checkCar` 方法中透過 `car.getEngine()` 和 `car.getWheel()` 取得了 `Engine` 和 `Wheel` 物件，並直接呼叫了這兩個「陌生人」的內部方法。這增強了類別之間的耦合，違反了迪米特法則（不和陌生人交談）。
 
 ```mermaid
+---
+title: 迪米特法則違反- 技師與汽車
+---
 classDiagram
-    Mechanic --> Car : 依賴
+    direction LR
+    Mechanic --> Car : 依賴 (朋友)
     Mechanic --> Engine : 違反原則 (直接呼叫陌生人)
     Mechanic --> Wheel : 違反原則 (直接呼叫陌生人)
     Car *-- Engine
     Car *-- Wheel
+
+    note for Engine "陌生人"
+    note for Wheel "陌生人"
 ```
 
 **修改後的程式碼：**
 應該讓 `Car` 自身提供一個檢查方法，委派呼叫給內部的零件。
 
 ```mermaid
+---
+title: 迪米特法則解決- 封裝委派
+---
 classDiagram
-    Mechanic --> Car : 依賴
+    direction LR
+    Mechanic --> Car : 依賴 (僅與朋友交流)
     Car *-- Engine
     Car *-- Wheel
+
+    note for Car "封裝委派"
 ```
 
 ```java
@@ -747,7 +760,11 @@ public class Part {
 <!-- ![](https://i.imgur.com/db1bF3L.png)
  -->
 ```mermaid
+---
+title: 開閉原則案例- 計價策略
+---
 classDiagram
+    direction LR
     class Part {
         -partName: String
         +setPrice(double)
@@ -772,6 +789,9 @@ classDiagram
     Part o-- PricePolicy
     PricePolicy <|-- SalePrice
     PricePolicy <|-- ChrismaxPolicy
+
+    note for PricePolicy "抽象層"
+    note for SalePrice "具體策略"
 ```
 
 
@@ -837,7 +857,11 @@ public class ShapeDrawer {
 說明：與其將所有形狀的繪製邏輯寫死在 `ShapeDrawer` 中，不如將 `Shape` 抽象化成為介面。未來如果需要新增其他形狀，我們只需要實作該介面，完全不會去修改到 `ShapeDrawer` 的原有程式碼。這讓程式輕易擴充，同時對修改封閉（對擴充開放，對修改封閉）。
 
 ```mermaid
+---
+title: 開閉原則解決- 圖形繪製器
+---
 classDiagram
+    direction LR
     class Shape {
         <<interface>>
         +draw() void
@@ -859,6 +883,9 @@ classDiagram
     Shape <|.. Rectangle : 實作
     Shape <|.. Circle : 實作
     Shape <|.. Triangle : 實作
+
+    note for Shape "抽象介面"
+    note for ShapeDrawer "高階模組"
 ```
 </details>
 

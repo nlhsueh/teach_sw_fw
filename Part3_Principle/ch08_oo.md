@@ -24,7 +24,7 @@
 
 ```mermaid
 ---
-title: Inheritance vs. Delegation
+title: 繼承 vs. 委託
 ---
 classDiagram
     direction LR
@@ -77,7 +77,7 @@ classDiagram
 
 ```mermaid
 ---
-title: Delegation with Abstraction
+title: 具備抽象的委託
 ---
 classDiagram
     direction LR
@@ -142,7 +142,7 @@ classDiagram
 
 ```mermaid
 ---
-title: Interface Decoupling (IDE Example)
+title: 介面解耦 (IDE 範例)
 ---
 classDiagram
     direction LR
@@ -209,7 +209,7 @@ public Moter implements IManeuverable{
 ```
 ```mermaid
 ---
-title: Interface Design for IManeuverable
+title: IManeuverable 介面設計
 ---
 classDiagram
     direction LR
@@ -362,7 +362,7 @@ class App {
 ```
 ```mermaid
 ---
-title: LSP Violation- Rectangle & Square
+title: LSP 違反- 矩形與正方形
 ---
 classDiagram
     direction LR
@@ -401,7 +401,7 @@ classDiagram
 
 ```mermaid
 ---
-title: LSP Violation- Tree & Graph
+title: LSP 違反- 樹與圖
 ---
 classDiagram
     direction LR
@@ -474,7 +474,7 @@ class TimerClient {
 
 ```mermaid
 ---
-title: Timer and TimerClient Callback
+title: Timer 與 TimerClient 回呼
 ---
 classDiagram
     direction LR
@@ -492,7 +492,7 @@ classDiagram
 
 ```mermaid
 ---
-title: Interaction between Timer and TimerClient
+title: Timer 與 TimerClient 的交互作用
 ---
 sequenceDiagram
     main->>timer: register(12, timerClient)
@@ -526,12 +526,11 @@ class Door extends TimerClient { //錯誤的設計！！
 
 ```mermaid
 ---
-title: Interface Pollution (Door & TimerClient)
+title: 介面污染- 門與計時器客戶端
 ---
 classDiagram
     direction LR
     namespace DOOR {
-    note "Bad design"    
     class Door {
         <<abstract>>
         +lock()* 
@@ -557,9 +556,6 @@ classDiagram
 > [!NOTE]
 > 錯誤設計：`TimedDoor` 為了要成為一種 `TimerClient`，但本身又不能繼承 `TimerClient`，只好讓 `Door` 去繼承 `TimerClient`。
 
-> [!WARNING]
-> 請畫出上述設計的 UML 類別圖
-
 其實這個問題我們可以有兩個解決方法：
 
 - 把 `TimerClient` 設計成介面
@@ -576,7 +572,7 @@ classDiagram
 
 ```mermaid
 ---
-title: ISP Solution: Adapter Pattern
+title: ISP 解決方案- 轉接器模式
 ---
 classDiagram
     direction LR
@@ -625,7 +621,7 @@ public interface WindowListener extends EventListener {
 
 ```mermaid
 ---
-title: WindowListener and WindowAdapter (Java AWT)
+title: WindowListener 與 WindowAdapter (Java AWT)
 ---
 classDiagram
     direction LR
@@ -682,7 +678,7 @@ classDiagram
 
 ```mermaid
 ---
-title: Quiz- Interface Pollution in SmartDevice
+title: 隨堂測驗- 智慧裝置的介面污染
 ---
 classDiagram
     direction LR
@@ -738,7 +734,7 @@ void Copy() {
 <!-- ![](https://i.imgur.com/ATnkhGY.png) -->
 ```mermaid
 ---
-title: DIP Violation- High-level depends on Low-level
+title: DIP 違反- 高階相依於低階
 ---
 classDiagram
     direction LR
@@ -791,7 +787,7 @@ void copy(Reader r, Writer w)  {
 
 ```mermaid
 ---
-title: DIP Optimized- Depending on Abstraction
+title: DIP 優化- 相依於抽象
 ---
 classDiagram
     direction LR
@@ -965,7 +961,7 @@ class AC implements ButtonControlable {
 
 ```mermaid
 ---
-title: Lamp Program (DIP optimized)
+title: 檯燈程式 (DIP 優化)
 ---
 classDiagram
     direction LR
@@ -1109,7 +1105,7 @@ public class MyJUnitTest {
 
 ```mermaid
 ---
-title: Android Activity Framework (IoC)
+title: Android Activity 框架 (IoC)
 ---
 classDiagram
     direction LR
@@ -1129,12 +1125,12 @@ classDiagram
         +onDestroy()
     }
 
-    AndroidSystem o-- Activity : 1. 擁有與管理 (Aggregation)
-    AndroidSystem ..> Activity : 2. 觸發事件回呼 (Inversion of Control)
-    Activity <|-- MainActivity : 3. 繼承並實作 (Inheritance)
+    AndroidSystem o-- Activity : 1. 擁有與管理 (聚合)
+    AndroidSystem ..> Activity : 2. 觸發事件回呼 (控制反轉)
+    Activity <|-- MainActivity : 3. 繼承並實作 (繼承)
 
-    note for AndroidSystem "控制權在此 (Framework)"
-    note for Activity "抽象規格 (Spec)"
+    note for AndroidSystem "控制權在此 (框架)"
+    note for Activity "抽象規格 (規格)"
 ```
 
 **說明**：透過將 `Activity` 抽象化，`AndroidSystem` 只需要針對 `Activity` 介面進行通用的流程控制（如呼叫 `onCreate`），而不需要知道具體是哪一個 App 頁面在執行，這就是典型的 IoC 應用。
@@ -1144,7 +1140,7 @@ classDiagram
 
 ## 8.8 練習
 
-- **ex01** 請將下述程式從繼承改成委託的方式來撰寫
+1️⃣ 請將下述程式從繼承改成委託的方式來撰寫。
 
 ```java
 class B {
@@ -1161,9 +1157,77 @@ class App {
    }
 }      
 ```
-- **ex02** 只要是交通工具 `Vehicle` 就必須要能向左轉 (`turnLeft`)、向右轉 (`turnRight`)、停止 (`stop`) 或前進 (`forward`)。但如何實作 (`implementation`) 都必須由 `Bike` 或 `Car` 來決定。該怎麼設計類別結構？
-- **ex03** 同上，`VehicleManager` 控制所有的交通工具：紅燈停，綠燈行。
-- **ex04** 下面的程式不夠通用，可否用 `interface` 改寫成更通用些？
+
+<details>
+<summary>解答</summary>
+
+```java
+class A {
+    private B b = new B(); // 包含
+    public void m1() {
+        b.m1();             // 委託
+    }
+}
+```
+**說明**：透過在 `A` 類別中建立 `B` 的實作物件，並將請求轉發給該物件，可以避免繼承帶來的強耦合，同時達到相同的行為效果。
+</details>
+
+---
+
+2️⃣ 只要是交通工具 `Vehicle` 就必須要能向左轉 (`turnLeft`)、向右轉 (`turnRight`)、停止 (`stop`) 或前進 (`forward`)。但如何實作 (`implementation`) 都必須由 `Bike` 或 `Car` 來決定。該怎麼設計類別結構？
+
+<details>
+<summary>解答</summary>
+
+```java
+interface Vehicle {
+    void turnLeft();
+    void turnRight();
+    void stop();
+    void forward();
+}
+
+class Bike implements Vehicle {
+    public void turnLeft() { /* Bike implementation */ }
+    public void turnRight() { /* Bike implementation */ }
+    public void stop() { /* Bike implementation */ }
+    public void forward() { /* Bike implementation */ }
+}
+
+class Car implements Vehicle {
+    public void turnLeft() { /* Car implementation */ }
+    public void turnRight() { /* Car implementation */ }
+    public void stop() { /* Car implementation */ }
+    public void forward() { /* Car implementation */ }
+}
+```
+**說明**：使用介面（Interface）來定義「行為契約」，讓不同的交通工具根據自身特性實作具體細節，這體現了「行為一般化」與「多型」的概念。
+</details>
+
+---
+
+3️⃣ 同上題，請設計一個 `VehicleManager` 來控制所有的交通工具：紅燈時停止（`stop`），綠燈時前進（`forward`）。
+
+<details>
+<summary>解答</summary>
+
+```java
+class VehicleManager {
+    public void control(Vehicle v, boolean isRedLight) {
+        if (isRedLight) {
+            v.stop();
+        } else {
+            v.forward();
+        }
+    }
+}
+```
+**說明**：`VehicleManager` 只需要與 `Vehicle` 介面互動，這符合了「相依於抽象」的原則，使其能處理任何實作了 `Vehicle` 介面的物件。
+</details>
+
+---
+
+4️⃣ 下面的程式不夠通用，因為它分別為 `Car` 與 `Bike` 撰寫了兩套邏輯。請用 `interface` 改寫成更通用的版本。
 
 ```java
 void control (Car[] cc) {
@@ -1189,32 +1253,78 @@ void controlBike (Bike[] bb) {
 }
 ```
 
-- **ex05** 應用 `interface` `Comparable`，來設計一個「通用型的 `getMax`」，它可以找出任何陣列內最大的元素，例如可以找到最 `max` 的 `People`。
+<details>
+<summary>解答</summary>
+
+```java
+void control(Vehicle[] vehicles) {
+    for (Vehicle v : vehicles) {
+        if (isRed()) {
+            v.stop();
+        } else if (isGreen()) {
+            v.forward();
+        }
+    }
+}
+```
+**說明**：透過讓 `Car` 與 `Bike` 統一實作 `Vehicle` 介面，我們可以使用單一方法來處理包含不同交通工具的陣列，大幅減少代碼重複並提高系統彈性（LSP 與 DIP 的綜合應用）。
+</details>
+
+5️⃣ 應用 `interface` `Comparable`，來設計一個「通用型的 `getMax`」，它可以找出任何陣列內最大的元素，例如應能找到 `max` 的 `People` 物件。
 
 ```java
 interface Comparable {
   public int compare(Comparable other);
 }
 class GeneralMax {
-    public static ? getMax(?[] data) {
-       ? 
+    public static Comparable getMax(Comparable[] data) {
+       // 請實作此處
   }
 }
 class Main {
-   ?
+   // 測試程式碼
 }
-class People ? {
-   ?
+class People implements Comparable {
+   // 實作 compare 方法
 }
 ```
 
-- **ex06** 應用 `DIP` 的原則設計一個通用型的開關器 (`ButtonPanel`)，它可以用來開關所有電器 -- 只要它有 `on`, `off` 的介面。注意 `ButtonPanel` 不能「看到很多」不同型態的電器，這樣耦合度會很高，也違反了 `DIP` 的原則。這個例子可以作為一個「`GUI` 元件」設計的練習。參考下圖設計，請完成程式碼。
+<details>
+<summary>解答</summary>
+
+```java
+class GeneralMax {
+    public static Comparable getMax(Comparable[] data) {
+        if (data == null || data.length == 0) return null;
+        Comparable max = data[0];
+        for (int i = 1; i < data.length; i++) {
+            if (data[i].compare(max) > 0) {
+                max = data[i];
+            }
+        }
+        return max;
+    }
+}
+
+class People implements Comparable {
+    int age;
+    public int compare(Comparable other) {
+        return this.age - ((People)other).age;
+    }
+}
+```
+**說明**：透過讓 `getMax` 相依於 `Comparable` 介面（DIP），此方法就能處理任何實作了該介面的類別，而不需針對 `People`、`Student` 等具體類別重複撰寫邏輯。
+</details>
+
+---
+
+6️⃣ 應用 `DIP` 的原則設計一個通用型的開關器 (`ButtonPanel`)，它可以用來開關所有電器 -- 只要它有 `on`, `off` 的介面。注意 `ButtonPanel` 不能「看到很多」不同型態的電器，這樣耦合度會很高，也違反了 `DIP` 的原則。這個例子可以作為一個「`GUI` 元件」設計的練習。參考下圖設計，請完成程式碼。
 
 <!-- ![](https://i.imgur.com/fJMgrym.png) -->
 
 ```mermaid
 ---
-title: Exercise- ButtonPanel DIP Design
+title: 練習- ButtonPanel DIP 設計
 ---
 classDiagram
     direction LR
@@ -1250,35 +1360,74 @@ classDiagram
     note for ButtonControlable "相依抽象層"
 ```
 
+<details>
+<summary>解答</summary>
 
-- **ex07** 請參考 `DIP` 原則 (`Dependency Inversion Principle`) 設計一個通用型的遙控器 `RemoteController`，可以對電視 (`TV`) 或冷氣 (`AirConditioner`) 做開、關、上、下 (`on`, `off`, `up`, `down`) 等動作。`TV` 預設的頻道是第七台，上下會在 1-15 間變化。冷氣預設 25 度，會在 20-30 度間變化。使用 `Swing` 來呈現此遙控器面板。(Hint: `IRemoteControllable`，參考 [Swing 範例](https://github.com/nlhsueh/OOSE/blob/master/src/swing/SwingApp.java))。
-
-- **ex08** 以下原則何者錯誤？
-  - [ ] 設計應該模組化，達到低耦合度，高內聚力
-  - [ ] 「相依反轉」說的是，高階的物件不該相依於低階，應該都相依於抽象
-  - [ ] `LSP` 告訴我們概念上的一般化，不一定都有繼承關係
-  - [ ] 不重複原則，說的是資料和程式碼應該要避免重複
-
-
-## 8.9 解答參考
-
-- ex01 透過委託來改寫如下：
 ```java
-class A {
-  B b;
-  public A(B b) {
-    this.b = b;
-  }
-  public void m1() {
-    b.m1();
-  }
-}      
+class ButtonPanel extends JPanel implements ActionListener {
+    private JButton onButton, offButton;
+    private ButtonControlable device;
+
+    public void connect(ButtonControlable bc) {
+        this.device = bc;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == onButton) {
+            device.turnOn();
+        } else if (e.getSource() == offButton) {
+            device.turnOff();
+        }
+    }
+}
+```
+**說明**：`ButtonPanel` 作為高階 UI 模組，不直接引用 `Lamp` 或 `Fan`，而是透過 `ButtonControlable` 介面與具體電器互動，這使得它具備極高的重用性，只需透過 `connect` 即可掛載不同設備。
+</details>
+
+---
+
+7️⃣ 請參考 `DIP` 原則 (`Dependency Inversion Principle`) 設計一個通用型的遙控器 `RemoteController`，可以對電視 (`TV`) 或冷氣 (`AirConditioner`) 做開、關、上、下 (`on`, `off`, `up`, `down`) 等動作。`TV` 預設的頻道是第七台，上下會在 1-15 間變化。冷氣預設 25 度，會在 20-30 度間變化。使用 `Swing` 來呈現此遙控器面板。
+
+<details>
+<summary>解答</summary>
+
+**設計核心：介面定義**
+```java
+interface IRemoteControllable {
+    void on();
+    void off();
+    void up();
+    void down();
+}
 ```
 
-<!-- \begin{figure}[h]
-\begin{center}
-\includegraphics[width=0.7\columnwidth]{principle/DIPControllable.png}
-\label{fig:dip:controllable}
-\end{center}
-\end{figure}
- -->
+**類別實作 (以 TV 為例)：**
+```java
+class TV implements IRemoteControllable {
+    int channel = 7;
+    public void up() { if(channel < 15) channel++; }
+    public void down() { if(channel > 1) channel--; }
+    // ... on/off 實作
+}
+```
+**說明**：`RemoteController` 類別內部擁有一位 `IRemoteControllable`成員。當按下按鈕時呼叫 `client.on()` 等方法，從而實現對不同家電的控制。
+</details>
+
+---
+
+8️⃣ 下列關於軟體設計原則的敘述，何者**錯誤**？
+
+- (A) 設計應該模組化，以達到低耦合度（Low Coupling）與高內聚力（High Cohesion）。
+- (B) 「相依反轉原則（DIP）」指的是高階物件不應相依於低階物件，兩者皆應相依於抽象。
+- (C) Liskov 取代原則（LSP）告訴我們，只要概念上具備「一般化」關係，就應該建立繼承。
+- (D) 不重複原則（DRY）主張知識的呈現（包含程式碼與邏輯）在系統中應該是唯一且明確的。
+
+<details>
+<summary>解答</summary>
+
+(C)。
+**說明**：LSP 強調的是「行為上的取代性」。即便概念上是繼承關係（如正方形之於矩形），若子類別行為會限制或破壞父類別原本的約定，則不應建立繼承關係。
+</details>
+
+

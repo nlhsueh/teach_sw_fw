@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<quiz><question type="category"><category><text>$course$/top/ch02/easy</text></category></question><question type="multichoice">
+    <name><text>easy.MC01</text></name>
+    <questiontext format="html">
+      <text>關於 Java 的繼承，下列敘述何者正確？</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>&lt;code&gt;final&lt;/code&gt; 關鍵字可以用來防止一個類別被繼承。</text></answer>
+    <answer fraction="0"><text>Java 支援類別的多重繼承（一個類別可以同時 extends 兩個父類別）。</text></answer>
+    <answer fraction="0"><text>private 方法可以被子類別覆寫（override）。</text></answer>
+    <answer fraction="0"><text>抽象類別（abstract class）內不能包含已實作的具體方法。</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>easy.MC02</text></name>
+    <questiontext format="html">
+      <text>以下程式碼中，&lt;code&gt;Bike&lt;/code&gt; 的建構子呼叫 &lt;code&gt;super()&lt;/code&gt; 時會發生什麼問題？&lt;br&gt;&lt;pre&gt;class Vehicle {
+    int speed;
+    public Vehicle(int speed) { this.speed = speed; }
+}
+class Bike extends Vehicle {
+    public Bike(int seatHeight) {
+        super(); // 問題在這裡
+    }
+}&lt;/pre&gt;</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>編譯錯誤，因為 Vehicle 沒有無參數建構子，super() 無法呼叫。</text></answer>
+    <answer fraction="0"><text>執行時錯誤，因為 speed 沒有被初始化。</text></answer>
+    <answer fraction="0"><text>正常執行，super() 呼叫的是 Object 的建構子。</text></answer>
+    <answer fraction="0"><text>編譯錯誤，因為子類別的建構子不能使用 super()。</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>easy.MC03</text></name>
+    <questiontext format="html">
+      <text>以下程式碼執行後，&lt;code&gt;a.m1()&lt;/code&gt; 會輸出什麼？&lt;br&gt;&lt;pre&gt;class A { void m1() { System.out.println("A"); } }
+class B extends A { void m1() { System.out.println("B"); } }
+A a = new B();
+a.m1();&lt;/pre&gt;</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>B</text></answer>
+    <answer fraction="0"><text>A</text></answer>
+    <answer fraction="0"><text>編譯錯誤，A 型態的變數不能指向 B 的物件。</text></answer>
+    <answer fraction="0"><text>執行時錯誤（ClassCastException）。</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>easy.MC04</text></name>
+    <questiontext format="html">
+      <text>關於「向下轉型（downcasting）」，下列何者正確？</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>向下轉型在語法上需要明確強制轉型，若執行時物件的實際型態不符，會拋出 ClassCastException。</text></answer>
+    <answer fraction="0"><text>向下轉型是自動的，不需要強制轉型語法。</text></answer>
+    <answer fraction="0"><text>向下轉型時如果物件實際型態不符，會發生編譯錯誤而非執行時錯誤。</text></answer>
+    <answer fraction="0"><text>向下轉型等同於向上轉型，不影響執行結果。</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>easy.MC05</text></name>
+    <questiontext format="html">
+      <text>下列關於抽象類別（abstract class）的敘述，何者「錯誤」？</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>抽象類別必須至少包含一個抽象方法，否則無法宣告為 abstract。</text></answer>
+    <answer fraction="0"><text>抽象類別無法直接使用 new 建立物件。</text></answer>
+    <answer fraction="0"><text>抽象類別可以同時包含抽象方法與已實作的具體方法。</text></answer>
+    <answer fraction="0"><text>繼承抽象類別的子類別，若未實作所有抽象方法，則該子類別也必須宣告為 abstract。</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>easy.MC06</text></name>
+    <questiontext format="html">
+      <text>在以下的多型範例中，&lt;code&gt;render(new Triangle())&lt;/code&gt; 被呼叫時，程式的行為為何？&lt;br&gt;&lt;pre&gt;abstract class Shape { abstract void draw(); }
+class Circle extends Shape { void draw() { System.out.println("圓"); } }
+class Square extends Shape { void draw() { System.out.println("方"); } }
+class App {
+    void render(Shape s) { s.draw(); }
+}&lt;/pre&gt;</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>因為 Triangle 類別不存在，這行程式碼將產生編譯錯誤，但 render 方法本身不需要修改。</text></answer>
+    <answer fraction="0"><text>因為 render 方法只接受 Shape 的直接子類別，Triangle 無法傳入。</text></answer>
+    <answer fraction="0"><text>程序可以正常執行，但輸出將是空的。</text></answer>
+    <answer fraction="0"><text>程序會執行 Shape 的預設 draw() 方法。</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>easy.MC07</text></name>
+    <questiontext format="html">
+      <text>以下關於 Java 介面（interface）的敘述，何者正確？</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>一個類別可以同時實作（implements）多個介面，藉此達到概念上的多重繼承。</text></answer>
+    <answer fraction="0"><text>介面中可以定義 private 屬性（instance variables）供實作類別使用。</text></answer>
+    <answer fraction="0"><text>實作介面的類別可以選擇性地不實作介面中的某些方法。</text></answer>
+    <answer fraction="0"><text>介面與抽象類別的唯一差別，在於介面不能包含任何方法。</text></answer>
+  </question>
+  <question type="multichoice">
+    <name><text>easy.MC08</text></name>
+    <questiontext format="html">
+      <text>關於「動態綁定（Dynamic Binding）」，下列敘述何者最正確？</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>當一個父類別型態的變數呼叫被覆寫的方法時，JVM 在執行時期根據物件的「實際型態」決定執行哪個版本的方法。</text></answer>
+    <answer fraction="0"><text>動態綁定發生在編譯時期，由編譯器決定要呼叫哪個方法。</text></answer>
+    <answer fraction="0"><text>動態綁定只適用於 static 方法。</text></answer>
+    <answer fraction="0"><text>動態綁定與多型無關，它只是一個效能最佳化的機制。</text></answer>
+  </question>
+  <question type="category"><category><text>$course$/top/ch02/essay</text></category></question><question type="essay">
+    <name><text>essay.SA01</text></name>
+    <questiontext format="html">
+      <text>請說明「抽象類別（Abstract Class）」與「介面（Interface）」的異同，並各舉一個適合使用的情境。例如：何時應該使用抽象類別？何時應該使用介面？為什麼 Java 允許一個類別實作多個介面，但只能繼承一個類別？</text>
+    </questiontext>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+  </question>
+  <question type="essay">
+    <name><text>essay.SA02</text></name>
+    <questiontext format="html">
+      <text>請解釋「動態綁定（Dynamic Binding）」與「多型（Polymorphism）」的關係，並以以下情境說明：假設有一個 Animal 抽象類別，包含抽象方法 speak()，以及繼承它的 Dog 和 Cat 子類別。若以 Animal a = new Dog() 宣告後呼叫 a.speak()，請說明 JVM 如何決定執行哪個 speak() 方法，以及這種設計帶來什麼好處。</text>
+    </questiontext>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+  </question>
+</quiz>

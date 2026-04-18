@@ -1,0 +1,315 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<quiz>
+  
+  <question type="category">
+    <category>
+      <text>$course$/ch01/easy</text>
+    </category>
+  </question>
+
+  
+  <question type="multichoice">
+    <name><text>easy.MC01</text></name>
+    <questiontext format="html">
+      <text>關於 Java 的「類別 (Class)」與「物件 (Object)」，下列敘述何者正確？</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>類別是物件的藍圖，同一個類別可以建立多個物件。</text></answer>
+    <answer fraction="0"><text>物件是類別的藍圖，類別是物件的實例。</text></answer>
+    <answer fraction="0"><text>一個類別在程式中只能建立一個物件。</text></answer>
+    <answer fraction="0"><text>物件可以在執行時修改其所屬類別的定義。</text></answer>
+  </question>
+
+  <question type="multichoice">
+    <name><text>easy.MC02</text></name>
+    <questiontext format="html">
+      <text>在 Java 中，下列哪一種是「原生型態 (Primitive Type)」，而非類別型態？</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>int</text></answer>
+    <answer fraction="0"><text>String</text></answer>
+    <answer fraction="0"><text>Integer</text></answer>
+    <answer fraction="0"><text>ArrayList</text></answer>
+  </question>
+
+  <question type="multichoice">
+    <name><text>easy.MC03</text></name>
+    <questiontext format="html">
+      <text>以下 Java 程式碼執行後，&lt;code&gt;Counter.count&lt;/code&gt; 的輸出值為何？&lt;br&gt;&lt;pre&gt;class Counter {
+    static int count = 0;
+    Counter() { count++; }
+}
+public class Main {
+    public static void main(String[] args) {
+        new Counter(); new Counter(); new Counter();
+        System.out.println(Counter.count);
+    }
+}&lt;/pre&gt;</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>3</text></answer>
+    <answer fraction="0"><text>0</text></answer>
+    <answer fraction="0"><text>1</text></answer>
+    <answer fraction="0"><text>編譯錯誤，count 必須宣告為 public 才能存取。</text></answer>
+  </question>
+
+  <question type="multichoice">
+    <name><text>easy.MC04</text></name>
+    <questiontext format="html">
+      <text>關於 &lt;code&gt;private&lt;/code&gt; 存取修飾子，下列敘述何者正確？</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>&lt;code&gt;private&lt;/code&gt; 成員只能在宣告它的同一個類別內部被存取。</text></answer>
+    <answer fraction="0"><text>&lt;code&gt;private&lt;/code&gt; 成員可以在同一個 package 內的所有類別存取。</text></answer>
+    <answer fraction="0"><text>&lt;code&gt;private&lt;/code&gt; 成員可以被子類別繼承並使用。</text></answer>
+    <answer fraction="0"><text>&lt;code&gt;private&lt;/code&gt; 方法可以被其他類別透過物件呼叫。</text></answer>
+  </question>
+
+  <question type="multichoice">
+    <name><text>easy.MC05</text></name>
+    <questiontext format="html">
+      <text>以下程式碼中，&lt;code&gt;this&lt;/code&gt; 關鍵字的主要用途為何？&lt;br&gt;&lt;pre&gt;class Person {
+    String name;
+    Person(String name) {
+        this.name = name;
+    }
+}&lt;/pre&gt;</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>區分同名的類別屬性與建構子參數，this.name 指向物件的屬性。</text></answer>
+    <answer fraction="0"><text>建立一個新的 Person 物件。</text></answer>
+    <answer fraction="0"><text>呼叫父類別的建構子。</text></answer>
+    <answer fraction="0"><text>this 等同於 static，代表類別本身。</text></answer>
+  </question>
+
+  <question type="multichoice">
+    <name><text>easy.MC06</text></name>
+    <questiontext format="html">
+      <text>Java 方法的「值傳遞 (Pass by Value)」特性，對參考型態（如物件）的影響為何？</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>傳遞的是物件的「參考值（記憶體位址）」，因此方法內對物件屬性的修改會影響原物件。</text></answer>
+    <answer fraction="0"><text>傳遞物件時會建立物件的完整副本，方法內的修改完全不影響原物件。</text></answer>
+    <answer fraction="0"><text>參考型態採用的是傳參考 (pass by reference)，與原生型態不同。</text></answer>
+    <answer fraction="0"><text>Java 不允許將物件作為方法參數傳入。</text></answer>
+  </question>
+
+  <question type="multichoice">
+    <name><text>easy.MC07</text></name>
+    <questiontext format="html">
+      <text>下列哪一種方法重載（Method Overloading）的定義是「不合法」的？</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>在同一個類別內定義兩個名稱相同、參數完全相同，但回傳型別不同的方法。</text></answer>
+    <answer fraction="0"><text>在同一個類別內定義兩個名稱相同、但參數型別不同的方法。</text></answer>
+    <answer fraction="0"><text>在同一個類別內定義兩個名稱相同、但參數數量不同的方法。</text></answer>
+    <answer fraction="0"><text>在同一個類別內同時擁有 add(int, int) 與 add(double, double) 兩個方法。</text></answer>
+  </question>
+
+  <question type="multichoice">
+    <name><text>easy.MC08</text></name>
+    <questiontext format="html">
+      <text>關於 Java &lt;code&gt;static&lt;/code&gt; 成員，下列敘述何者「錯誤」？</text>
+    </questiontext>
+    <single>true</single>
+    <shuffleanswers>true</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <answer fraction="100"><text>static 方法可以直接存取同一類別中非靜態（instance）的成員變數。</text></answer>
+    <answer fraction="0"><text>static 變數屬於整個類別，所有物件共享同一份資料。</text></answer>
+    <answer fraction="0"><text>static 方法不需要建立物件實例即可透過類別名稱呼叫。</text></answer>
+    <answer fraction="0"><text>static 變數常被用來實作計數器或儲存共用常數。</text></answer>
+  </question>
+
+  
+  <question type="truefalse">
+    <name><text>easy.TF01</text></name>
+    <questiontext format="html">
+      <text>&lt;p dir="ltr"&gt;&lt;span&gt;一個抽象類別一定至少要有一個抽象方法&lt;/span&gt;&lt;/p&gt;</text>
+    </questiontext>
+    <generalfeedback format="html"><text /></generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>1.0000000</penalty>
+    <hidden>0</hidden>
+    <idnumber />
+    <answer fraction="0" format="moodle_auto_format">
+      <text>true</text>
+      <feedback format="html"><text /></feedback>
+    </answer>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>false</text>
+      <feedback format="html"><text /></feedback>
+    </answer>
+  </question>
+
+  <question type="truefalse">
+    <name><text>easy.TF02</text></name>
+    <questiontext format="html">
+      <text>&lt;p&gt;有一個方法 op:&lt;/p&gt;
+&lt;pre&gt;public void op(A a) {
+    …
+}
+&lt;/pre&gt;
+&lt;p&gt;A 可能是一個具體類別、抽象方法，但不可能是介面&lt;/p&gt;</text>
+    </questiontext>
+    <generalfeedback format="html"><text /></generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>1.0000000</penalty>
+    <hidden>0</hidden>
+    <idnumber />
+    <answer fraction="0" format="moodle_auto_format">
+      <text>true</text>
+      <feedback format="html"><text /></feedback>
+    </answer>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>false</text>
+      <feedback format="html"><text /></feedback>
+    </answer>
+  </question>
+
+  <question type="truefalse">
+    <name><text>easy.TF03</text></name>
+    <questiontext format="html">
+      <text>&lt;p&gt;B 是 A 的子類別：&lt;/p&gt;
+&lt;pre&gt;A a = new B();
+&lt;/pre&gt;
+&lt;p&gt;會產生編譯錯誤，因為型態不同&lt;/p&gt;</text>
+    </questiontext>
+    <generalfeedback format="html"><text /></generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>1.0000000</penalty>
+    <hidden>0</hidden>
+    <idnumber />
+    <answer fraction="0" format="moodle_auto_format">
+      <text>true</text>
+      <feedback format="html"><text /></feedback>
+    </answer>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>false</text>
+      <feedback format="html"><text /></feedback>
+    </answer>
+  </question>
+
+  <question type="truefalse">
+    <name><text>easy.TF04</text></name>
+    <questiontext format="html">
+      <text>&lt;p&gt;B 是 A 的子類別：&lt;/p&gt;
+&lt;pre&gt;B b = (B) new A()
+&lt;/pre&gt;
+&lt;p&gt;會產生編譯錯誤&lt;/p&gt;</text>
+    </questiontext>
+    <generalfeedback format="html"><text /></generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>1.0000000</penalty>
+    <hidden>0</hidden>
+    <idnumber />
+    <answer fraction="0" format="moodle_auto_format">
+      <text>true</text>
+      <feedback format="html"><text /></feedback>
+    </answer>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>false</text>
+      <feedback format="html"><text /></feedback>
+    </answer>
+  </question>
+
+  <question type="truefalse">
+    <name><text>easy.TF05</text></name>
+    <questiontext format="html">
+      <text>&lt;p dir="ltr"&gt;&lt;span&gt;具備抽象方法的類別，不可能是具體類別&lt;/span&gt;&lt;/p&gt;</text>
+    </questiontext>
+    <generalfeedback format="html"><text /></generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>1.0000000</penalty>
+    <hidden>0</hidden>
+    <idnumber />
+    <answer fraction="100" format="moodle_auto_format">
+      <text>true</text>
+      <feedback format="html"><text /></feedback>
+    </answer>
+    <answer fraction="0" format="moodle_auto_format">
+      <text>false</text>
+      <feedback format="html"><text /></feedback>
+    </answer>
+  </question>
+
+  <question type="truefalse">
+    <name><text>easy.TF06</text></name>
+    <questiontext format="html">
+      <text>&lt;p dir="ltr"&gt;&lt;span&gt;任何一種類別，不可能同時有抽象方法又有具體方法&lt;/span&gt;&lt;/p&gt;</text>
+    </questiontext>
+    <generalfeedback format="html"><text /></generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>1.0000000</penalty>
+    <hidden>0</hidden>
+    <idnumber />
+    <answer fraction="0" format="moodle_auto_format">
+      <text>true</text>
+      <feedback format="html"><text /></feedback>
+    </answer>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>false</text>
+      <feedback format="html"><text /></feedback>
+    </answer>
+  </question>
+
+  <question type="truefalse">
+    <name><text>easy.TF07</text></name>
+    <questiontext format="html">
+      <text>&lt;p dir="ltr"&gt;&lt;span&gt;抽象類別無法生成物件&lt;/span&gt;&lt;/p&gt;</text>
+    </questiontext>
+    <generalfeedback format="html"><text /></generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>1.0000000</penalty>
+    <hidden>0</hidden>
+    <idnumber />
+    <answer fraction="100" format="moodle_auto_format">
+      <text>true</text>
+      <feedback format="html"><text /></feedback>
+    </answer>
+    <answer fraction="0" format="moodle_auto_format">
+      <text>false</text>
+      <feedback format="html"><text /></feedback>
+    </answer>
+  </question>
+
+  
+  <question type="category">
+    <category>
+      <text>$course$/ch01/essay</text>
+    </category>
+  </question>
+
+  <question type="essay">
+    <name><text>essay.SA01</text></name>
+    <questiontext format="html">
+      <text>請說明「封裝 (Encapsulation)」的概念，並舉例說明在 Java 中如何利用 private 屬性與 getter/setter 方法實現封裝，以及封裝帶來哪些好處。</text>
+    </questiontext>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+  </question>
+
+  <question type="essay">
+    <name><text>essay.SA02</text></name>
+    <questiontext format="html">
+      <text>請解釋 Java 中「原生型態 (Primitive Type)」與「類別型態 (Reference Type)」在記憶體配置上的差異（Stack vs. Heap），並說明當一個物件被傳入方法時，為何對物件屬性的修改會反映到原物件，但對原生型態變數的修改則不會。</text>
+    </questiontext>
+    <responseformat>editor</responseformat>
+    <responserequired>1</responserequired>
+    <responsefieldlines>15</responsefieldlines>
+  </question>
+</quiz>

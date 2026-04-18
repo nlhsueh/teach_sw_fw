@@ -57,7 +57,7 @@ Thumbs.db
 
 # Project specific
 _OOSE/
-# exam/
+exam/
 *.HW
 gh/
 tools/

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校園管理系統 | SpringDemo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+            color: #1e293b;
+        }
+
+        nav {
+            background: #fff;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-tab { background: transparent; color: var(--secondary); }
+        .btn-tab.active { background: var(--primary); color: white; }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        h2 { margin-top: 0; font-size: 1.25rem; color: var(--primary); }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { text-align: left; padding: 0.75rem; border-bottom: 1px solid #e2e8f0; }
+        th { color: var(--secondary); font-weight: 500; font-size: 0.875rem; }
+
+        .form-grading { display: flex; gap: 5px; align-items: center; }
+        .input-score { width: 60px; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; }
+
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .bg-A { background: #dcfce7; color: #166534; }
+        .bg-F { background: #fee2e2; color: #991b1b; }
+
+        .teaching-tip {
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background: #e0e7ff;
+            border-left: 4px solid var(--primary);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div style="font-weight: 700; font-size: 1.25rem; color: var(--primary);">Spring University</div>
+    <div class="role-selector">
+        <button class="btn btn-tab active" onclick="switchRole('admin', this)">行政管理</button>
+        <button class="btn btn-tab" onclick="switchRole('teacher', this)">老師平台</button>
+        <button class="btn btn-tab" onclick="switchRole('student', this)">學生中心</button>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- Admin View -->
+    <div id="view-admin" class="view">
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2>全校老師 Faculty</h2>
+                <div id="admin-teachers">載入中...</div>
+            </div>
+            <div class="card">
+                <h2>所有學生 Students</h2>
+                <div id="admin-students">載入中...</div>
+            </div>
+            <div class="card">
+                <h2>開課狀況 Courses</h2>
+                <div id="admin-courses">載入中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teacher View -->
+    <div id="view-teacher" class="view" style="display:none;">
+        <div class="card">
+            <h2>打分系統 (選取身份)</h2>
+            <select id="teacher-id-selector" onchange="loadTeacherView(this.value)">
+                <option value="">請選擇老師...</option>
+            </select>
+            <hr>
+            <div id="teacher-grading-area" style="display:none;">
+                <div class="dashboard-grid" id="teacher-course-list">
+                    <!-- Courses taught by teacher -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student View -->
+    <div id="view-student" class="view" style="display:none;">
+        <div class="card">
+            <h2>學生選課與成績 (選取身份)</h2>
+            <select id="student-id-selector" onchange="loadStudentView(this.value)">
+                <option value="">請選擇學生...</option>
+            </select>
+            <hr>
+            <div id="student-dashboard" style="display:none;">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>我的成績單</h3>
+                        <div id="student-grades"></div>
+                    </div>
+                    <div class="card">
+                        <h3>可選課程</h3>
+                        <div id="student-enrollment"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="teaching-tip">
+        💡 <strong>軟體開發演示點：</strong><br>
+        1. <strong>LSP (里氏替換原則)</strong>：雖然 Teacher 與 Student 功能不同，但系統透過處理 <code>SchoolMember</code> 清單來統一管理成員基本資訊。<br>
+        2. <strong>Composition (組合)</strong>：當您看到行政管理中的系所列表，這反映了 <code>School</code> 物件對 <code>Department</code> 的強擁有關係。<br>
+        3. <strong>DTO (資料傳輸物件)</strong>：前端收到的資訊是經過過濾轉換的 DTO，避免了 Model 內部敏感欄位（如老師的隱私資料）外洩。
+    </div>
+</div>
+
+<script>
+    let allStudents = [];
+    let allTeachers = [];
+    let allCourses = [];
+
+    async function loadAllData() {
+        allStudents = await fetch('/api/school/students').then(r => r.json());
+        allTeachers = await fetch('/api/school/teachers').then(r => r.json());
+        allCourses = await fetch('/api/school/courses').then(r => r.json());
+        
+        renderAdmin();
+        updateSelectors();
+    }
+
+    function switchRole(role, btn) {
+        document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+        document.getElementById(`view-${role}`).style.display = 'block';
+        document.querySelectorAll('.btn-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadAllData();
+    }
+
+    function renderAdmin() {
+        document.getElementById('admin-teachers').innerHTML = renderTable(allTeachers, ['memberId', 'name', 'department']);
+        document.getElementById('admin-students').innerHTML = renderTable(allStudents, ['memberId', 'name', 'gradeLevel']);
+        document.getElementById('admin-courses').innerHTML = renderTable(allCourses, ['courseId', 'name', 'teacherName']);
+    }
+
+    function renderTable(data, fields) {
+        let html = '<table><thead><tr>' + fields.map(f => `<th>${f}</th>`).join('') + '</tr></thead><tbody>';
+        data.forEach(item => {
+            html += '<tr>' + fields.map(f => `<td>${item[f]}</td>`).join('') + '</tr>';
+        });
+        return html + '</tbody></table>';
+    }
+
+    function updateSelectors() {
+        const tSel = document.getElementById('teacher-id-selector');
+        tSel.innerHTML = '<option value="">請選擇老師...</option>' + 
+            allTeachers.map(t => `<option value="${t.memberId}">${t.name} (${t.department})</option>`).join('');
+
+        const sSel = document.getElementById('student-id-selector');
+        sSel.innerHTML = '<option value="">請選擇學生...</option>' + 
+            allStudents.map(s => `<option value="${s.memberId}">${s.name}</option>`).join('');
+    }
+
+    function loadTeacherView(teacherId) {
+        if (!teacherId) return;
+        const teacher = allTeachers.find(t => t.memberId === teacherId);
+        document.getElementById('teacher-grading-area').style.display = 'block';
+        
+        // Find courses taught by this teacher
+        const taught = allCourses.filter(c => c.teacherName === teacher.name);
+        let html = '';
+        taught.forEach(c => {
+            html += `<div class="card"><h3>${c.name} (${c.courseId})</h3><table><thead><tr><th>序號</th><th>學生</th><th>成績</th><th>操作</th></tr></thead><tbody>`;
+            // Find students enrolled in this course
+            allStudents.forEach(s => {
+                const enrollment = s.grades.find(g => g.courseName === c.name);
+                if (enrollment) {
+                    html += `<tr><td>${s.memberId}</td><td>${s.name}</td><td>${enrollment.score}</td><td>
+                        <div class="form-grading">
+                            <input class="input-score" id="score-${teacherId}-${s.memberId}-${c.courseId}" type="number" value="${enrollment.score}">
+                            <button class="btn btn-tab active" onclick="saveGrade('${teacherId}','${s.memberId}','${c.courseId}')">送出</button>
+                        </div>
+                    </td></tr>`;
+                }
+            });
+            html += `</tbody></table></div>`;
+        });
+        document.getElementById('teacher-course-list').innerHTML = html;
+    }
+
+    async function saveGrade(teacherId, studentId, courseId) {
+        const score = document.getElementById(`score-${teacherId}-${studentId}-${courseId}`).value;
+        await fetch('/api/school/grade', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ teacherId, studentId, courseId, score })
+        });
+        loadAllData();
+        setTimeout(() => loadTeacherView(teacherId), 300);
+    }
+
+    function loadStudentView(studentId) {
+        if (!studentId) return;
+        const student = allStudents.find(s => s.memberId === studentId);
+        document.getElementById('student-dashboard').style.display = 'block';
+        
+        // Display grades
+        let gHtml = '<table><thead><tr><th>課程</th><th>分數</th><th>等級</th></tr></thead><tbody>';
+        student.grades.forEach(g => {
+            gHtml += `<tr><td>${g.courseName}</td><td>${g.score}</td><td><span class="status-badge bg-${g.letterGrade}">${g.letterGrade}</span></td></tr>`;
+        });
+        document.getElementById('student-grades').innerHTML = gHtml + '</tbody></table>';
+
+        // Display enrollment
+        let eHtml = '<table><thead><tr><th>課程</th><th>學分</th><th>老師</th><th>操作</th></tr></thead><tbody>';
+        allCourses.forEach(c => {
+            const isEnrolled = student.grades.find(g => g.courseName === c.name);
+            eHtml += `<tr><td>${c.name}</td><td>${c.credits}</td><td>${c.teacherName}</td><td>
+                ${isEnrolled ? '<span class="status-badge bg-A">已選修</span>' : 
+                `<button class="btn btn-tab active" onclick="enroll('${studentId}','${c.courseId}')">選課</button>`}
+            </td></tr>`;
+        });
+        document.getElementById('student-enrollment').innerHTML = eHtml + '</tbody></table>';
+    }
+
+    async function enroll(studentId, courseId) {
+        await fetch('/api/school/enroll', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ studentId, courseId })
+        });
+        loadAllData();
+        setTimeout(() => loadStudentView(studentId), 300);
+    }
+
+    window.onload = loadAllData;
+</script>
+</body>
+</html>

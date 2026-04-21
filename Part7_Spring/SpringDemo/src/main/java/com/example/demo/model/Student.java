@@ -1,36 +1,35 @@
 package com.example.demo.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Student {
-    private String name;
-    private Map<Course, Integer> grades = new HashMap<>();
+public class Student extends SchoolMember {
+    private int gradeLevel;
+    private List<Grade> grades = new ArrayList<>();
 
-    public Student(String name) {
-        this.name = name;
+    public Student(String memberId, String name, int gradeLevel) {
+        super(memberId, name);
+        this.gradeLevel = gradeLevel;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void addGrade(Course course, int score) {
-        grades.put(course, score);
-    }
-
-    public Map<Course, Integer> getGrades() {
-        // Defensive copy to prevent privacy leak
-        return new HashMap<>(grades);
-    }
-
-    public double getAverageGrade() {
-        if (grades.isEmpty())
-            return 0.0;
-        int total = 0;
-        for (int score : grades.values()) {
-            total += score;
+    public void enrollCourse(Course course) {
+        // Enrollment is represented by a Grade object with no score (or 0) initially
+        // In this implementation, we add a Grade object to represent the association
+        if (grades.stream().noneMatch(g -> g.getCourse().getCourseId().equals(course.getCourseId()))) {
+            grades.add(new Grade(course, 0));
         }
-        return (double) total / grades.size();
+    }
+
+    public List<Grade> getGrades() {
+        return new ArrayList<>(grades);
+    }
+
+    public int getGradeLevel() {
+        return gradeLevel;
+    }
+
+    @Override
+    public String displayInfo() {
+        return "Student [" + memberId + "] " + name + " (Level: " + gradeLevel + ")";
     }
 }

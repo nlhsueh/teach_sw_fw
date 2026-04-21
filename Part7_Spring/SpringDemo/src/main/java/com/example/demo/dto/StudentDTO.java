@@ -1,27 +1,22 @@
 package com.example.demo.dto;
 
-import java.util.Map;
+import java.util.List;
 
 public class StudentDTO {
+    private String memberId;
     private String name;
-    private Map<String, Integer> courseGrades;
-    private double average;
+    private int gradeLevel;
+    private List<GradeDTO> grades;
 
-    public StudentDTO(String name, Map<String, Integer> courseGrades, double average) {
+    public StudentDTO(String memberId, String name, int gradeLevel, List<GradeDTO> grades) {
+        this.memberId = memberId;
         this.name = name;
-        this.courseGrades = courseGrades;
-        this.average = average;
+        this.gradeLevel = gradeLevel;
+        this.grades = grades;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public Map<String, Integer> getCourseGrades() {
-        return courseGrades;
-    }
-
-    public double getAverage() {
-        return average;
-    }
+    public String getMemberId() { return memberId; }
+    public String getName() { return name; }
+    public int getGradeLevel() { return gradeLevel; }
+    public List<GradeDTO> getGrades() { return grades; }
 }

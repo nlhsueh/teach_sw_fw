@@ -191,3 +191,171 @@ classDiagram
 1.  **與框架解耦 (Decoupling)**：注意到我們的 `SchoolService` 與 `SchoolController` 並沒有 `extends` 或 `implements` 任何 Spring 的類別。這展示了 **非侵入式 (Non-invasive)** 框架設計的優點——業務邏輯與框架分離。
 2.  **註解即契約 (Annotations as Contracts)**：`@RestController` 與 `@Service` 告訴 Spring：「請幫我管理這個類別的生命週期」。Spring 隨後會透過反射 (Reflection) 機制與這些類別互動。
 3.  **控制反轉 (Inversion of Control)**：在傳統程式中，我們會在 Controller 中 `new SchoolService()`；但在 Spring 中，我們僅標註 `@Autowired`，由框架「反向」將服務實例注入到控制器中。
+
+---
+
+## 6. Spring 中的設計模式應用 (Design Patterns in Spring)
+
+從這個框架與應用程式，可以看到以下的設計樣式被應用（以 **大學 University** 系統為例）：
+
+### 1. 單例模式 (Singleton Pattern)
+*   **Spring 應用**：Spring 中的 Bean 預設都是單例的（Singleton Scope）。
+*   **大學範例**：在一個大學系統中，`RegistrarService`（註冊組服務）只需要一個實例即可處理全校的選課邏輯。
+
+```mermaid
+graph TD
+    A[Student_A] --> S((RegistrarService Single Instance))
+    B[Student_B] --> S
+    C[Teacher_A] --> S
+    S --> D[(Database)]
+    style S fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+### 2. 工廠模式 (Factory Pattern)
+*   **Spring 應用**：`BeanFactory` 與 `ApplicationContext` 是物件的工廠，負責根據配置生產 Bean。
+*   **大學範例**：大學的「行政中心」就像工廠，根據學生的需求（例如選修課程類型）產出對應的「課程處理物件」。
+
+```mermaid
+classDiagram
+    class ApplicationContext {
+        +getBean(String name) Object
+    }
+    class Department {
+        <<interface>>
+    }
+    class CS_Department
+    class EE_Department
+    
+    ApplicationContext ..> Department : Creates
+    Department <|-- CS_Department
+    Department <|-- EE_Department
+```
+
+### 3. 代理模式 (Proxy Pattern)
+*   **Spring 應用**：這是 Spring AOP 的核心。Spring 會為 Bean 建立代理物件，以實現事務管理、安全檢查等。
+*   **大學範例**：當教師評分時，系統會先透過「代理人」確認教師是否有權限，並在完成後自動紀錄 Log。
+
+```mermaid
+sequenceDiagram
+    participant Teacher
+    participant Proxy as RegistrarProxy
+    participant Target as RegistrarService
+    
+    Teacher->>Proxy: assignGrade(studentId, score)
+    Note right of Proxy: 1. Security Check (權限檢查)
+    Proxy->>Target: assignGrade(studentId, score)
+    Note right of Target: 2. Save Score to DB
+    Target-->>Proxy: Done
+    Note right of Proxy: 3. Logging (紀錄日誌)
+    Proxy-->>Teacher: Success
+```
+
+### 4. 範本方法模式 (Template Method Pattern)
+*   **Spring 應用**：如 `JdbcTemplate`。定義一個演算法的骨架，而將一些步驟延遲到子類別中。
+*   **大學範例**：大學的「入學註冊流程」是固定的模板：填表 -> 審核 -> 發證。但不同身份（新生、轉學生）的「審核」細節不同。
+
+```mermaid
+classDiagram
+    class EnrollmentTemplate {
+        <<abstract>>
+        +enroll()
+        #fillForm()
+        #verifyCredentials()*
+        #issueID()
+    }
+    class FreshmanEnrollment {
+        #verifyCredentials() Check HighSchool Diploma
+    }
+    class TransferEnrollment {
+        #verifyCredentials() Check College Transcript
+    }
+    EnrollmentTemplate <|-- FreshmanEnrollment
+    EnrollmentTemplate <|-- TransferEnrollment
+```
+
+### 5. 觀察者模式 (Observer Pattern)
+*   **Spring 應用**：Spring Event 機制。
+*   **大學範例**：當一個課程選課人數已滿時，系統會發送通知給相關部門（如教室管理組調整教室）。
+
+```mermaid
+sequenceDiagram
+    participant System as CourseSystem
+    participant Event as CourseFullEvent
+    participant Lib as LibraryListener
+    participant Classroom as ClassroomListener
+    
+    System->>Event: Publish Event
+    Event->>Lib: Notify (Prepare Textbooks)
+    Event->>Classroom: Notify (Adjust Room Capacity)
+```
+
+### 6. 策略模式 (Strategy Pattern)
+*   **Spring 應用**：例如 Spring Security 中的不同認證策略。
+*   **大學範例**：根據不同的課程類型（必修、選修、實驗），採用不同的「評分策略」。
+
+```mermaid
+classDiagram
+    class GradingContext {
+        -GradingStrategy strategy
+        +executeGrading()
+    }
+    class GradingStrategy {
+        <<interface>>
+        +calculateGrade()*
+    }
+    class PercentileStrategy
+    class LetterGradeStrategy
+    
+    GradingContext o-- GradingStrategy
+    GradingStrategy <|-- PercentileStrategy
+    GradingStrategy <|-- LetterGradeStrategy
+```
+
+### 7. 裝飾者模式 (Decorator Pattern)
+*   **Spring 應用**：Spring 處理 HTTP Request 的各類 Wrapper。
+*   **大學範例**：一個基礎的「學生」物件，可以被動態裝飾上「助教」或「社團長」的職責。
+
+```mermaid
+classDiagram
+    class Student {
+        +study()
+    }
+    class StudentDecorator {
+        -Student decoratedStudent
+        +study()
+    }
+    class TA_Decorator {
+        +assistTeacher()
+    }
+    class ClubLeaderDecorator {
+        +organizeEvent()
+    }
+    
+    Student <|-- StudentDecorator
+    StudentDecorator <|-- TA_Decorator
+    StudentDecorator <|-- ClubLeaderDecorator
+    StudentDecorator o-- Student
+```
+
+### 8. 轉接器模式 (Adapter Pattern)
+*   **Spring 應用**：`HandlerAdapter` 等。
+*   **大學範例**：大學系統需要對接「第三方支付」或「外部學術資料庫」。
+
+```mermaid
+classDiagram
+    class UniversitySystem {
+        +requestPayment(PaymentGateway)
+    }
+    class PaymentGateway {
+        <<interface>>
+        +pay()*
+    }
+    class PayPalAdapter {
+        -PayPalSDK paypal
+        +pay()
+    }
+    
+    UniversitySystem ..> PaymentGateway
+    PaymentGateway <|-- PayPalAdapter
+    PayPalAdapter --> PayPalSDK : Adapts
+```

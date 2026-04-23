@@ -139,6 +139,11 @@ class Student {
 - **Encapsulate Collection**：對集合物件不提供直接的 setter，而是提供 `add / remove` 方法。
 
 ```java
+// Before
+class Student {
+   getCourse(): Set;
+   setCourse(Set); 
+}
 // Encapsulate Collection 範例
 class Student {
    private Set courses = new HashSet();

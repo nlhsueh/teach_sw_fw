@@ -76,9 +76,16 @@ void printUserInfo(String name, String age, String address, String email, String
 // Inline Method 範例
 class Student {
    boolean pass() {
-      // Before: return isGoodGrade();
-      // After:
-      return grade > 60;
+      return isGoodGrade()? true: false;
+   }
+   boolean isGoodGrade() {
+      return grade > 60
+   }   
+}
+// 使用 inline method 重構後
+class Student {
+   boolean pass() {
+      return grade > 60? true: false;
    }
 }
 ```
@@ -86,17 +93,21 @@ class Student {
 - **Introduce Explaining Variables**：導入有意義的變數名稱，取代複雜的表示式（特別是條件判斷）。
 
 ```java
-// Introduce Explaining Variables 範例
+class Student {
+   boolean getScholarship() {
+      if (sType == "M" && g1 > 60 && g2 > 70)
+         return true;
+    }
+}
+// introduce explaining variable 重構後
 class Student {
    boolean getScholarship() {
       boolean isMasterStudent = (sType == "M");
       boolean allPass = (g1 > 60 && g2 > 70);
-      if (isMasterStudent && allPass) {
+      if (isMasterStudent && allPass) 
          return true;
-      }
-      return false;
-   }     
-}   
+    }     
+}  
 ```
 
 - **Inline Temp**：不宣告暫時變數，直接使用表達式。
@@ -146,13 +157,29 @@ class Student {
 - **Replace Nested Conditional with Guard Clauses**：避免深層巢狀，使用 Guard Clauses（衛句）提早回傳。
 
 ```java
-// Guard Clauses 範例
 boolean isPass() {
-   if (isPhD) return computePhDGrade();
-   if (isPartTimeMaster) return computePartTimeMasterGrade();
-   if (isMaster) return computeMasterGrade();
+   boolean result;
+   if (isPhD) 
+      result = computePhDGrade();
+   else 
+      if (isPartTimeMaster)    
+         result = computePartTimeMasterGrade()
+      else
+         if (isMaster)
+            result = computeMasterGrade()
+   result = computeGrade()
+   return result;
+}
+//重構後
+boolean isPass() {
+   if (isPhD)
+      return computePhDGrade();
+   if (isPartTImeMaster)
+      return computePartTimeMasterGrade()
+   if (isMaster)
+      return computeMasterGrade()
    return computeGrade();
-}               
+}    
 ```
 
 - **Replace Conditional with Polymorphism**：以「多型」取代複雜的 `switch-case` 或 `if-else`。
@@ -184,6 +211,33 @@ classDiagram
     note for Student "定義抽象方法 (規格)"
     note for PhDStudent "實作博士生計分邏輯"
 ```
+Code: 
+```java
+class Student {
+   int getGrade() {
+      swith (type) {
+         case PHD:
+             return getQualityExam();
+         case MASTER:
+             return exam*0.5 + report*0.5;
+         case UNDER:
+             return exam*0.7 + report*0.3;        
+      }
+   }   
+}
+//重構後
+class PhDStudent extends Student {
+   int getGrade() {
+      return getQualityExam();
+   }   
+}
+class MasterStudent extends Student {
+   int getGrade() {
+      return exam*0.5 + report*0.5;
+   }   
+}
+...
+```
 
 ### 9.2.5 呼叫簡化
 
@@ -191,19 +245,53 @@ classDiagram
 - **Replace Parameter with Explicit Methods**：與其用參數控制方法行為，不如拆分為明確命名的多個方法。
 
 ```java
-// Before: setValue("grade", v);
-// After:
-void setGrade(int g) { grade = g; }
-void setLevel(int l) { level = l; }
-```
+setValue(String title, int v} {
+   if (title == "grade")
+      grade = v;
+   else if (title == "level") 
+      level = v;
+}
+// 重構後
+setGrade(int grade) {grade = g;}
+setLevel(int lv) { level = lv;}  
+```  
 
 - **Introduce Parameter Object**：將過長的參數列封裝成單一物件。
 - **Replace Error Code with Exception**：不回傳錯誤代碼（如 `-1`），改以拋出例外。
+
+```java
+int computeGrade() {
+   ....
+   if (grade >100 || grade < 0)
+      return -1;
+   return 0;
+}
+// 重構後
+void computeGrade() throws Exception {
+   ...
+   if (grade > 100 || grade < 0) 
+      throw new Exception("Error grade");
+   ...
+}         
+```
 
 ### 9.2.6 一般化處理
 
 - **Pull Up Method / Field**：將共通的方法或屬性移至父類別。
 - **Push Down Method / Field**：將僅子類別需要的方法或屬性移至該子類別。
+```java
+class Student {
+   void attendOralDefense() {...}
+}
+// 重構後
+class MasterStudent extends Student {
+   void attendOralDefense() {...}
+   ...
+}
+class UnderGraduateStudent extens Student {
+   ...
+}
+```
 - **Extract Superclass**：為具備相似行為的類別提取出共通的父類別。
 - **Replace Inheritance with Delegation**：子類別若僅需父類別的部分功能，改用「委託」而非「繼承」。
 

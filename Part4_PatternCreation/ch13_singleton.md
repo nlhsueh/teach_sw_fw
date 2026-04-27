@@ -1,5 +1,3 @@
-###### tags: `OOSE`
-
 # Ch13 獨體：獨一無二 (Singleton)
 
 ## 13.1 基本結構之獨體
@@ -34,7 +32,7 @@ Figure: Singleton Structure:
 
 以下是一個範例：
 
-```java=
+```java
 public class Singleton {
    // 宣告為 static 讓物件唯一   
    private static Singleton uniqueInstance = null;
@@ -59,7 +57,7 @@ public class Singleton {
 
 主程式
 
-```java=
+```java
 public class TestSingleton {
    public static void main(String args[]) {
       Singleton s = Singleton.instance();
@@ -76,7 +74,7 @@ public class TestSingleton {
 
 執行的結果
 
-```java= 
+```java 
 s 的參考為：Singleton@1cc810
 s 的值為：34
 s2 的參考為：Singleton@1cc810
@@ -101,7 +99,7 @@ s2 的值為：34
 
 不論是 `EnchantedMazeFactory` 或 `AgentMazeFactory` 只能生成一個物件。
 
-```java=
+```java
 public abstract class MazeFactory {
     //宣告成 protected 這樣子類別才看得到
     protected static MazeFactory uniqueInstance = null;

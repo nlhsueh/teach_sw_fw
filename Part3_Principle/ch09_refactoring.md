@@ -11,25 +11,27 @@ Martin Fowler 在其經典著作 *Refactoring: Improving the Design of Existing 
 
 Martin Fowler 共提到了 21 個典型的程式壞味道，以下介紹其中最常見的部分：
 
-- **重複的程式碼 (Duplicated Code)**：相同的程式結構出現在多處。應將其萃取出並集中在單一類別或方法中（如 `Extract Method`）。重複代碼會大幅降低維護性，導致「改了這、忘了那」的困境。
-- **冗長的方法 (Long Method)**：方法過長（例如超過 100 行）會極難閱讀與維護。方法應代表單一的處理流程或演算法，當過於複雜時，應透過抽象化將其拆分。
-- **大類別 (Large Class)**：一個類別承擔過多責任，包含過多屬性與方法。應將責任分割，交給不同的類別處理（如 `Extract Class`）。
-- **太長的參數列 (Long Parameter List)**：參數過多（如超過 5 個）會增加理解難度並容易導致呼叫錯誤。可考慮將相關參數封裝成物件（如 `Introduce Parameter Object`）。
-- **發散變更 (Divergent Change)**：一個類別因為過多不相關的變動原因而需要修改。這代表內聚力差，應確保一個類別僅負責一個專一的功能。
-- **散彈槍手術 (Shotgun Surgery)**：每當進行一個變更，都需要修改許多不同的模組（跨多個類別）。這會導致修改風險極高，理想情況下應將變動點集中。
-- **依戀情結 (Feature Envy)**：一個類別的方法頻繁存取另一個類別的屬性。這通常代表該方法應該屬於被存取的那個類別。
-- **資料泥團 (Data Clumps)**：某些資料總是一起出現（如：郵遞區號、城市、街道），卻沒有被封裝成類別。應將其抽象化為一個物件（如 `Address`）。
-- **基本型別偏執 (Primitive Obsession)**：堅持只用基本型別（如 `int`, `String`）而抗拒使用小類別。例如「幣值」應由 `Money` 類別表示，而非僅用 `int` 加 `String`。
-- **Switch 敘述句 (Switch Statements)**：過度使用 `switch-case` 而非多型。當需要新增選項時必須修改程式碼，違反開閉原則 (OCP)。
-- **平行繼承體系 (Parallel Inheritance Hierarchies)**：當你為類別 A 增加子類別時，也必須為類別 B 增加子類別。這是「散彈槍手術」的一種特例。
-- **不實用的一般性 (Speculative Generality)**：為了「未來可能的擴充」而預留了過多複雜的設計，但實際上卻從未用到。
-- **暫時欄位 (Temporary Field)**：某些屬性僅在特定演算法執行時才有用，其餘時間皆為空值，這會增加類別理解的難度。
-- **過度的訊息串 (Message Chains)**：`a.getB().getC().getD()`。過長的呼叫鏈表示類別導航過於透明，違反迪米特法則。
-- **過度的中間人 (Middle Man)**：一個類別過多方法都只是在轉發 (Delegate) 請求設計。應考慮務必移除中間人，讓 Client 直接與目標物件溝通。
-- **狎暱關係 (Inappropriate Intimacy)**：類別之間存取過於頻繁的內部私有細節。應透過重構降低其依賴程度或重新分配職責。
-- **同功能不同介面 (Alternative Classes with Different Interfaces)**：兩個類別的功能幾乎相同，但方法名稱或介面卻不同。
-- **資料類別 (Data Class)**：類別僅包含欄位與 `getter/setter`，缺乏行為。應思考將相關邏輯移入此類別中。
-- **防臭的註解 (Comments)**：當程式碼寫得太差時，工程師被迫加上大量註解。應透過改善命名與重構來讓程式碼「自我解釋」。
+| 壞味道 (Bad Smell) | 說明與建議方案 |
+| :--- | :--- |
+| **重複的程式碼**<br>(Duplicated Code) | 相同的程式結構出現在多處。應將其萃取出並集中在單一類別或方法中（如 `Extract Method`）。重複代碼會大幅降低維護性，導致「改了這、忘了那」的困境。 |
+| **冗長的方法**<br>(Long Method) | 方法過長（例如超過 100 行）會極難閱讀與維護。方法應代表單一的處理流程或演算法，當過於複雜時，應透過抽象化將其拆分。 |
+| **大類別**<br>(Large Class) | 一個類別承擔過多責任，包含過多屬性與方法。應將責任分割，交給不同的類別處理（如 `Extract Class`）。 |
+| **太長的參數列**<br>(Long Parameter List) | 參數過多（如超過 5 個）會增加理解難度並容易導致呼叫錯誤。可考慮將相關參數封裝成物件（如 `Introduce Parameter Object`）。 |
+| **發散變更**<br>(Divergent Change) | 一個類別因為過多不相關的變動原因而需要修改。這代表內聚力差，應確保一個類別僅負責一個專一的功能。 |
+| **散彈槍手術**<br>(Shotgun Surgery) | 每當進行一個變更，都需要修改許多不同的模組（跨多個類別）。這會導致修改風險極高，理想情況下應將變動點集中。 |
+| **依戀情結**<br>(Feature Envy) | 一個類別的方法頻繁存取另一個類別的屬性。這通常代表該方法應該屬於被存取的那個類別。 |
+| **資料泥團**<br>(Data Clumps) | 某些資料總是一起出現（如：郵遞區號、城市、街道），卻沒有被封裝成類別。應將其抽象化為一個物件（如 `Address`）。 |
+| **基本型別偏執**<br>(Primitive Obsession) | 堅持只用基本型別（如 `int`, `String`）而抗拒使用小類別。例如「幣值」應由 `Money` 類別表示，而非僅用 `int` 加 `String`。 |
+| **Switch 敘述句**<br>(Switch Statements) | 過度使用 `switch-case` 而非多型。當需要新增選項時必須修改程式碼，違反開閉原則 (OCP)。 |
+| **平行繼承體系**<br>(Parallel Inheritance Hierarchies) | 當你為類別 A 增加子類別時，也必須為類別 B 增加子類別。這是「散彈槍手術」的一種特例。 |
+| **不實用的一般性**<br>(Speculative Generality) | 為了「未來可能的擴充」而預留了過多複雜的設計，但實際上卻從未用到。 |
+| **暫時欄位**<br>(Temporary Field) | 某些屬性僅在特定演算法執行時才有用，其餘時間皆為空值，這會增加類別理解的難度。 |
+| **過度的訊息串**<br>(Message Chains) | `a.getB().getC().getD()`。過長的呼叫鏈表示類別導航過於透明，違反迪米特法則。 |
+| **過度的中間人**<br>(Middle Man) | 一個類別過多方法都只是在轉發 (Delegate) 請求設計。應考慮務必移除中間人，讓 Client 直接與目標物件溝通。 |
+| **狎暱關係**<br>(Inappropriate Intimacy) | 類別之間存取過於頻繁的內部私有細節。應透過重構降低其依賴程度或重新分配職責。 |
+| **同功能不同介面**<br>(Alternative Classes with Different Interfaces) | 兩個類別的功能幾乎相同，但方法名稱或介面卻不同。 |
+| **資料類別**<br>(Data Class) | 類別僅包含欄位與 `getter/setter`，缺乏行為。應思考將相關邏輯移入此類別中。 |
+| **防臭的註解**<br>(Comments) | 當程式碼寫得太差時，工程師被迫加上大量註解。應透過改善命名與重構來讓程式碼「自我解釋」。 |
 
 ### ✏️ 隨堂測驗
 
@@ -331,27 +333,7 @@ void printOwing() {
 <summary>解答</summary>
 
 **應用方法：** `Extract Method`
-**重構後：**
-```java
-void printOwing() {
-    printBanner();
-    double outstanding = getOutstanding();
-    printDetails(outstanding);
-}
-
-double getOutstanding() {
-    double result = 0.0;
-    for (Order o : orders) {
-        result += o.getAmount();
-    }
-    return result;
-}
-
-void printDetails(double outstanding) {
-    System.out.println("name: " + name);
-    System.out.println("amount: " + outstanding);
-}
-```
+**重構說明：** 應將原本混雜在 `printOwing` 中的「計算總欠款」邏輯萃取為 `getOutstanding()` 方法，並將「列印細節」的部分萃取為 `printDetails(double outstanding)` 方法。最後 `printOwing` 僅負責呼叫這些具備明確語義的方法，提升可讀性。
 </details>
 
 3️⃣ **邏輯重構練習**：請使用 `Introduce Explaining Variables` (引入解釋變數) 來優化以下複雜的條件判斷。
@@ -370,16 +352,8 @@ if ((platform.toUpperCase().indexOf("MAC") > -1) &&
 <details>
 <summary>解答</summary>
 
-**重構後：**
-```java
-final boolean isMacOs = platform.toUpperCase().indexOf("MAC") > -1;
-final boolean isSafari = browser.toUpperCase().indexOf("SAFARI") > -1;
-final boolean wasResized = wasInitialized() && resize > 0;
-
-if (isMacOs && isSafari && wasResized) {
-  // 執行特定縮放邏輯
-}
-```
+**應用方法：** `Introduce Explaining Variables`
+**重構說明：** 應將 `platform.toUpperCase().indexOf("MAC") > -1` 賦值給變數 `isMacOs`，將瀏覽器判斷賦值給 `isSafari`，將初始化與縮放狀態判斷賦值給 `wasResized`。最後 `if` 敘述句只需判斷 `(isMacOs && isSafari && wasResized)`，使邏輯一目了然。
 </details>
 
 4️⃣ **資料結構重構練習**：請將以下使用陣列存取混雜資料的程式碼，重構為使用物件 (Object)。
@@ -397,20 +371,8 @@ row[1] = "15";
 <details>
 <summary>解答</summary>
 
-**重構後：**
-```java
-class Reservation {
-  private String name;
-  private String memberCount;
-  
-  public void setName(String arg) { name = arg; }
-  public void setMemberCount(String arg) { memberCount = arg; }
-}
-
-Reservation res = new Reservation();
-res.setName("Nick");
-res.setMemberCount("15");
-```
+**應用方法：** `Replace Array with Object`
+**重構說明：** 應建立一個名為 `Reservation` 的類別，包含 `name` 與 `memberCount` 屬性及其對應的 setter/getter 方法。原本存取 `row[0]` 與 `row[1]` 的程式碼應改為呼叫物件的方法，以提供型別安全並消除「魔術數字」索引帶來的隱患。
 </details>
 
 ---
@@ -574,15 +536,8 @@ public double getAdjustedCapital() {
 <details>
 <summary>解答</summary>
 
-**重構後：**
-```java
-public double getAdjustedCapital() {
-  if (capital <= 0.0) return 0.0;
-  if (!(intRate > 0.0 && duration > 0.0)) return 0.0;
-  
-  return (income / duration) * ADJ_FACTOR;
-}
-```
+**重構建議：**
+先判斷 `capital <= 0` 與條件異常的情況，直接 `return 0.0`，最後再執行計算式並回傳。
 </details>
 
 3️⃣ **搬移方法實作練習**：請將以下程式碼中的計費邏輯，搬移至最適當的類別中。
@@ -609,28 +564,8 @@ class Account {
 <details>
 <summary>解答</summary>
 
-**重構後：**
-```java
-class Account {
-  private AccountType type;
-  private int daysOverdrawn;
-
-  double getOverdraftCharge() {
-    return type.getOverdraftCharge(daysOverdrawn); // 委託給型別類別
-  }
-}
-
-class AccountType {
-  double getOverdraftCharge(int daysOverdrawn) {
-    if (isPremium()) {
-      double result = 10.0;
-      if (daysOverdrawn > 7) result += (daysOverdrawn - 7) * 0.85;
-      return result;
-    }
-    else return daysOverdrawn * 1.75;
-  }
-}
-```
+**應用方法：** `Move Method`
+**重構說明：** 應將原屬於 `Account` 的 `getOverdraftCharge` 邏輯搬移至 `AccountType` 類別中，並接收 `daysOverdrawn` 作為參數。原本 `Account` 中的方法則改為單純呼叫（委託）`type.getOverdraftCharge(daysOverdrawn)`。這樣可以讓計費邏輯與其依賴的類別類型定義更緊密地結合。
 </details>
 
 4️⃣ **壞味道辨析**：下列關於「發散變更 (Divergent Change)」與「散彈槍手術 (Shotgun Surgery)」的敘述，何者正確？ (單選)
@@ -681,9 +616,33 @@ IntelliJ IDEA 提供了一系列強大的自動化重構工具，可以確保在
 > **AI 輔助重構的注意事項**：
 > 雖然 AI 能快速提供建議，但務必在重構後執行 **單元測試 (Unit Tests)**，確保程式碼的外部行為並未改變。
 
+### ✏️ 實作演練：School 系統重構
+
+本練習將引導你動手修復一段真實的「壞程式碼」。這段程式碼中隱藏了 **太長的參數列 (Long Parameter List)**、**資料泥團 (Data Clumps)**、**Switch 敘述句**、**冗長的方法 (Long Method)** 以及 **依戀情結 (Feature Envy)** 等問題。我們將分別透過 **IntelliJ IDEA 的自動重構功能** 與 **AI 輔助** 來優化它。
+
+- **步驟一：準備原始碼**
+  請參考專案中的 [src/RefactoringExercise.java](src/RefactoringExercise.java) 檔案。這段程式碼模擬了一個簡單的學校系統，但隱含了前述的多種壞味道。
+
+
+- **步驟二：使用 IntelliJ IDEA 工具重構**
+  嘗試**不手寫新程式碼**，僅透過 IntelliJ 的快捷鍵功能進行重構：
+  - **Extract Method (提煉方法)**：選取 `calculateAndPrintReport` 中列印部分的代碼，使用 `Cmd+Option+M` (Mac) 或 `Ctrl+Alt+M` (Win) 將其獨立。
+  - **Introduce Parameter Object (引入參數物件)**：針對 `registerStudent` 中的地址欄位，使用重構選單將其封裝成 `Address` 類別。
+  - **Move Method (搬移方法)**：針對 `printCourseInfo`，將游標停在方法名上，使用 `F6` 將其搬移到 `Course` 類別中。
+
+- **步驟三：使用 AI 輔助重構**
+  將原始碼貼給 AI (如 ChatGPT/Claude)，嘗試以下指令：
+  - 「請辨識這段程式碼中的『壞味道』並提供重構建議。」
+  - 「請針對 `studentType` 的判斷邏輯，使用『策略樣式 (Strategy Pattern)』或『多型』來重構，以符合開閉原則。」
+
+- **步驟四：討論與反思**
+  - IntelliJ 的「自動化重構」與 AI 的「邏輯改寫建議」各有什麼優缺點？
+  - 重構後，程式碼的可讀性與內聚力（Cohesion）是否有提升？
+
+
 ---
 
-## 9.5 綜合練習
+## 9.6 綜合練習
 
 本小節提供互動式練習，請思考重構的原則並核對解答。
 
@@ -748,12 +707,7 @@ int computeGrade() {
 
 **問題：** `Replace Error Code with Exception`
 **說明：** 應拋出明確的例外（Exception）而非回傳特殊碼（-1）。
-**重構建議：**
-```java
-void computeGrade() throws GradeException {
-   if (grade > 100 || grade < 0) throw new GradeException("成績區間錯誤");
-}
-```
+**重構建議：** 建議建立自定義例外類別（如 `GradeException`），並在偵測到錯誤數值時拋出，讓呼叫端能正確處理異常流程。
 </details>
 
 ---
@@ -772,7 +726,7 @@ class Student {
 
 **問題：** `Encapsulate Collection`
 **說明：** 直接提供 setter 會讓外部可以隨意替換整個集合，破壞封裝。
-**重構建議：** 移除 `setCourse`，改提供 `addCourse` 與 `removeCourse`，並讓 `getCourse` 回傳不可變的 View。
+**重構建議：** 應移除 `setCourse`，改為提供 `addCourse` 與 `removeCourse` 等特定行為；並在 `getCourse` 時回傳不可變（Unmodifiable）的 View 或副本，以保護內部狀態。
 </details>
 
 ---
@@ -811,4 +765,20 @@ class Student {
 
 ---
 
-*本章節旨在引導學生掌握從發現「壞味道」到執行「重構」的流程，轉化不良程式為高品質設計。*
+8️⃣ **觀念辨析：開發時的「兩頂帽子」**
+ Martin Fowler 提到 Kent Beck 的「兩頂帽子 (Two Hats)」隱喻，關於這兩頂帽子的切換，下列敘述何者正確？
+ - (A) 可以同時戴上兩頂帽子，邊寫新功能邊優化舊程式碼，效率最高。
+ - (B) 戴上「重構」帽子時，絕對不應該添加新功能，只能改善結構。
+ - (C) 戴上「添加功能」帽子時，可以順便修改舊有的程式邏輯以符合新需求。
+ - (D) 只有在專案最後的「維護階段」才需要戴上重構帽子。
+ 
+ <details>
+ <summary>解答</summary>
+ 
+ **解答：(B)**
+ **說明：** 重構時必須與添加功能明確分開。當你重構時，你是在改善結構而不改變行為；當你添加功能時，你是在增加行為。若兩者混在一起，一旦出錯會極難除錯。
+ </details>
+ 
+ ---
+ 
+ *本章節旨在引導學生掌握從發現「壞味道」到執行「重構」的流程，轉化不良程式為高品質設計。*

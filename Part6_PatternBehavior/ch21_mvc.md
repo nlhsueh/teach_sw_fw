@@ -39,7 +39,7 @@ MVC模式的好處：
 
 ### 程式樣板
 
-```java=
+```java
 Model m = new Model();
 View1 v1 = new View1();
 View2 v2 = new View2();
@@ -52,7 +52,7 @@ Controller c = new Controller(m);
 
 也有可能是這樣
 
-```java=
+```java
 Model m = new Model();
 View1 v1 = new View1(m);
 View2 v2 = new View2(m);
@@ -67,7 +67,7 @@ c.setM(m);
 
 ### 方案1：無模組化
 
-```java=
+```java
 public class CounterGui extends JFrame {
   //counter 是 MODEL
   private int counter = 0;
@@ -125,7 +125,7 @@ public class CounterGui extends JFrame {
 
 CODE: No Observer
 
-```java=
+```java
 package mvc.noobserver;
 
 import java.awt.TextField;
@@ -224,7 +224,7 @@ FIG: 不一致的 View
 
 
 MVCByObserver.java
-```java=
+```java
 package mvc;
 
 import java.awt.TextField;
@@ -354,7 +354,7 @@ Model 2 的流程
 
 Model 2 中通常根據 URL樣式（urlPatterns）決定哪個 Controller 要接收 View 發送的請求參數。以下 HelloServlet.java 是程式的 Controller：
 
-```java=
+```java
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -382,7 +382,7 @@ public class HelloServlet extends HttpServlet {
 
 Hello.java 是資料的一部分，以下我們用一個 HashMap 模擬一個資料庫。
 
-```java=
+```java
 import java.util.*;
 
 // MODEL
@@ -405,7 +405,7 @@ public class Hello {
 
 依上，如果 user 請求參數是 Nick 就會取得 ``Hello"字串，如果是 Mary，就會取得 ``Welcome"字串， 在取得訊息之後，先前擔任控制器的 Servlet 會轉發給畫面。Hello.jsp: 
 
-```java= %[language="html"]
+```java %[language="html"]
 // VIEW
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <html>

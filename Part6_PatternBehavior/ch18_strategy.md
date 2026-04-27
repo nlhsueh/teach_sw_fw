@@ -19,7 +19,7 @@ FIG: `Strategy`
 
 ### 18.1.2 Sort
 
-```java=
+```java
 interface SortStrategy {
     public int[] sort(int [] d);
 }
@@ -75,7 +75,7 @@ FIG: `Strategy` Structure
 ### 18.2.2 程式樣板
 
 
-```java=
+```java
 package strategy;
 
 class Context {
@@ -249,7 +249,7 @@ public class LayoutDemo extends JFrame implements ActionListener {
 
 驗證器。各種不同的輸入需要做不同的驗證，我們可以把驗證器獨立於輸入元件，這樣輸入元件就可以客製化的設計驗證器了。例如生日格式的驗證、電話格式的驗證等都需要特別的驗證方式。
 
-```java=
+```java
 myTextField.setInputVerifier(new MyInputVerifier());
 ```
 
@@ -366,7 +366,7 @@ public class VerifierTest extends JFrame {
 ### 18.ex02 GradeBook
 class GradeBook 需要排序，如何應用 `Strategy` 讓排序演算法靈活變更？
 
-```java=
+```java
 class GradeBoook {
    ?    
 }

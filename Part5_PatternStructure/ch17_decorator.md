@@ -34,7 +34,7 @@ FIG: 由框和捲軸而成的 `TextView`
 
 我們可以透過 `Strategy` 樣式來解決這個問題，在 `TextView` 建立的時候帶入兩個參數，透過參數的組合來形成各種不同的 TextView。程式碼如下：
 
-```java= 
+```java 
 採用策略設計樣式的 TextView
 public class TextView { 
     private Border border; 
@@ -61,7 +61,7 @@ FIG: 使用 Decorator 來實作 `TextView`
 
 注意我們將各種`Border`與`Scrollbar`視為一種 `Decorator`，而每一個`Decorator`可包含一個以上的`Component`，如`BorderDecorator`可能可以包含有`3D Border`、`Fancy Border`和`Plain Border`等個別裝飾品物件，而 `ScrollDecorator` 可以包含有垂直、水平的 `Scroll Bar`。這樣的架構方式可以讓動態生成的搭配裝飾更多樣性。讓我們來看`Border Decorator`中 `PlainBorder` 的程式片段：
 
-```java=
+```java
 // 採用 Decorator 樣式
 abstract class Decorator extends AbstractTextView {
    AbstractTextView tv;
@@ -106,13 +106,13 @@ public class Client {
 
 `PlainBorder`的建構子將傳入一個 `AbstractTextView` 的變數，透過 `super(c)` 來設定其所包含的元件。在 `draw()` 時呼叫 `super.draw()` 會讓所包含的 `textview` 先做它的 `draw()` 再執行 `PlainBorder` 自身的繪圖。因此，當我們想要建立一個`PlainBorder`的`TextView`只要執行以下的命令：
 
-```java=
+```java
 TextView tv = new TextView ( );
 PlainBorder plainTextView = new PlainBorder (tv) ;
 ```
 從「裝飾品」的角度來看，`PlainBorder` 裝飾在 `TextView` 之上，當我們需求 `PlainTV` 繪圖時，它會先要求 `tv` 繪出基本的文字視窗，然後再將邊線繪上。如果我們要繪一個有邊框又有垂直捲軸的文字視窗呢？我們只要在`PlainTextView`上再點綴上一個垂直捲軸即可：
 
-```java= 
+```java 
 VerticalScrollBar verticalPlainTextView = new VerticalScrollBar (plainTextView) ;
 ```	
 
@@ -140,7 +140,7 @@ FIG: Decorator
 
 ### 17.3.3 程式樣板
 
-```java=
+```java
 package decorator;
 
 abstract class Component {
@@ -154,7 +154,7 @@ class ConcreteComponent extends Component {
 }
 ```
 
-```java=
+```java
 abstract class Decorator extends Component {
 	Component c;
 
@@ -168,7 +168,7 @@ abstract class Decorator extends Component {
 }
 ```
 
-```java=
+```java
 class ConcreteDecorator1 extends Decorator {
 	public ConcreteDecorator1(Component c) {
 		super(c);
@@ -185,7 +185,7 @@ class ConcreteDecorator1 extends Decorator {
 }
 ```
 
-```java=
+```java
 class ConcreteDecorator2 extends Decorator {
 	public ConcreteDecorator2(Component c) {
 		super(c);
@@ -202,7 +202,7 @@ class ConcreteDecorator2 extends Decorator {
 }
 ```
 
-```java=
+```java
 public class DecoratorTemplate {
 	public static void main(String[] args) {
 		Component cc = new ConcreteComponent();
@@ -221,7 +221,7 @@ public class DecoratorTemplate {
 
 如果我們有 Decorator 子類別 `D1`, `D2`, `D3`, `D4`, decorator 內的功能為 `op()`, 假設每個 `op()` 都是先執行 `super().op()`, 再執行自身的行為（分別為 $f_1-f_4$），ConcreteComponent 的類別為 `CC`。
 
-```java=
+```java
  Component d = new D2(new D1(new D3(new D4(new CC()))))
 ```
 
@@ -355,7 +355,7 @@ public class InputStreamExample {
 - `CommaFilter`: 遇到數字就加上千分號
 - `CountFilter`: 在每行字後面加上單字的個數
 	
-```java=
+```java
 Writer w = new BufferredWriter(new FileWriter("test.txt"));
 Writer w2 = new LowerCaseFilter(w2);
 w2.write("THIS is A Test 12309092"); //印出 this is a test 12309092

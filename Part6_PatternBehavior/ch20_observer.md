@@ -19,7 +19,7 @@
 
 ### 方案2: 個別通知
 
-```java=
+```java
 class Stock {
     price ...;
     public priceChange(int newPrice) {
@@ -182,7 +182,7 @@ public class Fruit extends Observable {
 
 接著來看看 `Observer` 這一端：
 
-```java=
+```java
 public class Monkey implements Observer {
     float price;
     public void update(Observable obj, Object newValue) {
@@ -304,7 +304,7 @@ public class Fruit extends Plant {
 
 `DelegatedOBS` 是一個 `Observable` 的子類別：
 
-```java=
+```java
 // A subclass of Observable that allows delegation.
 public class DelegatedOBS extends Observable {
     // from PROTECTED to PUBLIC
@@ -369,7 +369,7 @@ JAVA 的 event model 與 Observer 的架構類似。
 
 其中的 `AbstractButton` 就相當於 `Observer` 中的 `Observable`，而向它註冊的就是那些監聽事件發生的類別，也就是實作 `ActionListener` 的物件 (Event Handler)。由於 `JButton` 本身已是 `AbstractButton` 的子類別，我們只要直接在 `JButton` 的實作中加入事件監聽者即可：
 
-```java=
+```java
 public class TestEventModel extends JFrame{
      private JButton b1;
      public TestEventModel() {
@@ -404,7 +404,7 @@ class Listener2 implements ActionListener {
 
 有時候程式不是很複雜時，事件的發生與處理在同一個類別內，所以常可以看到這樣的程式碼：
 
-```java=
+```java
 class TestEventModel2 extends JFrame implement ActionListener {
    ...
    b1.addActionListener(this);
@@ -520,7 +520,7 @@ public class Main {
 
 6. 請寫出 `java.util.Observer` 此介面。注意參數的正確。
 
-```java=
+```java
 interface Observer {
   ?
 }
@@ -528,7 +528,7 @@ interface Observer {
 
 7. 以下 `View1` 是一個 `Observer`, `?1` 和 `?2` 為何
 
-```java=
+```java
 class View1 implements Observer {
   public void update(?1 obs, ?2 obj) {
     ...
@@ -538,7 +538,7 @@ class View1 implements Observer {
 
 8. `Stock` 是一個 `Subject`, 價格改變時會通知所有的 `observer`, 以下 `?` 為何
 
-```java=
+```java
 class Stock extends Observable {
   public void increasePrice() { 
     price++;
@@ -572,12 +572,12 @@ class Stock extends Observable {
 <!-- #### 簡答
 
 - as below:
-    ```java=
+    ```java
        public void update(Observable obs, Object obj);
     ```
 - update()
 - as below:
-    ```java=
+    ```java
     public void update(Observable obs, Object obj);
     ```
 - Observable 只有面對一個介面：Observer，所有的物件都被抽象成 Observer 所以可以降低耦合度。
@@ -585,7 +585,7 @@ class Stock extends Observable {
 - 因為 Observable 內的 setChanged() 是 protected, 外部不能直接呼叫。 
 - as below:
 
-```java=
+```java
 package observer.stock;
 
 import java.awt.GridLayout;

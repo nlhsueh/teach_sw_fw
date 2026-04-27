@@ -1,7 +1,3 @@
-###### tags: `OOSE`
-
-@nlhsueh 
-
 # Ch25 綿綿不絕：Chain of Responsibility
 
 ## 動機與目的
@@ -14,7 +10,7 @@
 
 這樣的好處是：每一個人專注於訊息處理的形態與方法，而不用去理會訊息的流程。Java 1.0 對於事件的處理方式就是這樣的模式：
 
-```java=
+```java
 public boolean action(Event event, Object obj) {
   if (event.target == testBtn)
      doTestBtnAction();
@@ -42,7 +38,7 @@ FIG: CoR
 基本結構，針對一個問題來處理。
 
 
-```java=
+```java
 package cor;
 
 import java.util.Random;
@@ -113,7 +109,7 @@ class Handler2 extends Handler {
 
 一個介面彙總所有的事件處理。
 
-```java=
+```java
 public interface Handler { 
 	public void handleHelp(); 
 	public void handlePrint(); 
@@ -145,7 +141,7 @@ public class ConcreteHandler implements Handler {
 
 針對不同的訊息有不同的介面。 
 
-```java=
+```java
 public interface HelpHandler {
   public void handleHelp();
 }
@@ -159,7 +155,7 @@ public interface FormatHandler {
 
 每一個處理針對他可能處理的事件進行實作，無法處理的交給他的後繼者。
 
-```java=
+```java
 public class ConcreteHandler  implements HelpHandler, PrintHandler, FormatHandler {
   // 必須記錄每一個後繼者
   private HelpHandler helpSuccessor;
@@ -187,7 +183,7 @@ public class ConcreteHandler  implements HelpHandler, PrintHandler, FormatHandle
 
 只有一個介面，但帶一個參數，透過參數的判斷來決定處理的方式。 
 
-```java=
+```java
 public interface Handler {
   public void handleRequest(String request);
 }
@@ -212,7 +208,7 @@ public class ConcreteHandler implements Handler {
 
 把請求封裝成一個物件來處理。（參考 Command 設計樣式）。
 
-```java=
+```java
 public class Request {
   private String type;
   public Request(String type) {
@@ -565,7 +561,7 @@ public class OrderProcessingChainClient {
 
 - 公司內有若干不同的角色，當遇到技術問題時解決的順序是：programmer, designer, architect。遇到管理問題的解決順序是：programmer, analyzer, manager, CEO。請利用 chain of responsibility 的方式來解決此問題。
 
-```java=
+```java
 interface handle {
    public void handleTech();
    public void handleMgmt();
@@ -573,7 +569,7 @@ interface handle {
 ```
 
 Sample Answer:
-```java=
+```java
 public class DemoCoR {
 
 	public static void main(String[] args) {

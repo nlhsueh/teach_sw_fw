@@ -76,7 +76,7 @@ AbstractClass <|-- ConcreteClass
 
 ### 程式樣板
 
-```java==
+```java=
 abstract class AbsApp {
     public final void tm() {           // Template Method
         pm01();
@@ -112,7 +112,7 @@ app.tm();
 ## 19.4 範例
 
 ### 19.4.1 Open Document
-```java=
+```java
 class DocApp {
    // TEMPLATE METHOD
    final void openDocument (String name) { 
@@ -138,7 +138,7 @@ class DocApp {
 
 設計一個通用的遊戲，`playOneGame()` 是一個 `Template Method`。
 
-```java=
+```java
 abstract class Game {
    protected int playersCount; 
 
@@ -163,7 +163,7 @@ abstract class Game {
 
 大富翁 (`Monopoly`) 或是象棋遊戲 (`ChessGame`) 都繼承 Game, 修改了部分的程式碼。
 
-```java=
+```java
 class Monopoly extends Game { 
    void initializeGame() {
       // ... 
@@ -472,7 +472,7 @@ class A {
     e. 印出勝利者
     f. 印出遊戲資訊，例如遊戲時間
 
-```java=
+```java
 public ?1 void playGame() {
    ?
 }

@@ -1,5 +1,3 @@
-###### tags: `OOSE`
-
 # Ch11 小器晚成：Factory Method
 
 Factory Method (工廠方法)
@@ -17,7 +15,7 @@ Factory Method (工廠方法)
 
 假設某一個Application物件可以產生Document物件以供其使用完成Application物件的工作。如果直接在Application某方法內生成文件物件，如下
 
-```java=
+```java
     class Application {
        void operation1() {
            doc = new Document();
@@ -122,7 +120,7 @@ Creator -> Product
 
 [Get the code](https://github.com/nlhsueh/OOSE/blob/master/src/factorymethod/FactoryMethodTemplate.java)
 
-```java=
+```java
 package factorymethod;
 
 abstract class Creator {
@@ -171,7 +169,7 @@ class ConcreteProduct extends Product {
 
 #### 方法1: 未使用設計樣式
 
-```java=
+```java
 public class MazeGame {
     // 建立一個迷宮
    public Maze createMaze() {
@@ -212,7 +210,7 @@ FIG: no factory method
 
 如果現在我們想擴充迷宮的功能，例如擴充迷宮內的房間是具備魔法的房間（enchanted room），我們可以建立一個一個新的類別 EnchantedRoom， 令其繼承Room，如下：
 
-```java=
+```java
      class EnchantedRoom extends Room {
         …
      }
@@ -220,7 +218,7 @@ FIG: no factory method
 
 而 MazeGame 中的 createMaze 方法也作修改，使其建立的房間是EnchantedRoom，不是Room：
 
-```java=
+```java
      Room r1 = new EnchantedRoom(1);
      Room r2 = new EnchantedRoom(2);
 ```    
@@ -231,7 +229,7 @@ FIG: no factory method
 
 #### 方法2: 使用設計樣式
 
-```java= 
+```java 
 public class MazeGame {
     // 建立一個迷宮
    public Maze createMaze() {
@@ -271,7 +269,7 @@ public class MazeGame {
 
 請注意第 5-8 行的目的是在建立 Room、Door 等物件，與上一個程式的第 5-8 行的目的是一樣的，可是我們卻將生產 Door，Room 等工作包成一個方法(makeDoor()、makeRoom()等)，其目的在提供一個子類別覆蓋的機會。21-36 行是 factory method 的設計。請看新版的 EnchantedMazeGame：
 
-```java=
+```java
      public class EnchantedMazeGame extends MazeGame {
         public Room makeRoom(int n) {
            return new EnchantedRoom(n);

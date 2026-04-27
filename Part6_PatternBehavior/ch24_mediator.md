@@ -1,5 +1,3 @@
-###### tags: `OOSE`
-@nlhsueh 
 
 # Ch24 七星聚會：Mediator
 ## 24.1 目的與動機

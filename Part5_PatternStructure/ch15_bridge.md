@@ -1,5 +1,3 @@
-###### tags: `OOSE`
-
 # Ch15 虛實分離 (Bridge)
 
 
@@ -52,7 +50,7 @@ FIG: Bridge Structure
 
 ### 15.2.2 程式樣板
 
-```java=
+```java
 package bridge;
 
 interface Implementor {
@@ -135,7 +133,7 @@ class RefinedAbstraction2 extends Abstraction {
 
 ### 15.3.1 Shape
 
-```java=
+```java
 abstract class Shape {
 	ShapeImp impl;
 	public Shape(ShapeImp impl) {
@@ -157,7 +155,7 @@ draw() 是由 drawLine() 所組成的方法，而 drawLine 的真實實作是委
 
 完整程式碼：
 
-```java=
+```java
 public class Draw {
 	public static void main(String args[]) {
 		System.out.println("Rectangle, 2D");

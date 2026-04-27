@@ -41,7 +41,7 @@ FIG: Polymorphic iterator
 
 ### 22.3.2 程式樣板
 
-```java=
+```java
 Iterator it = aggregateObject.iterator();
 
 while (it.hasNext()) {

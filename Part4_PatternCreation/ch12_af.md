@@ -65,7 +65,51 @@ classDiagram
 
 ## 12.2 結構與方法
 
-![](https://www.jyt0532.com/public/abstractfactory3.png)
+```mermaid
+classDiagram
+    class Client
+    class AbstractFactory {
+        <<interface>>
+        +createProductA() AbstractProductA
+        +createProductB() AbstractProductB
+    }
+    class ConcreteFactory1 {
+        +createProductA() AbstractProductA
+        +createProductB() AbstractProductB
+    }
+    class ConcreteFactory2 {
+        +createProductA() AbstractProductA
+        +createProductB() AbstractProductB
+    }
+    class AbstractProductA {
+        <<interface>>
+    }
+    class AbstractProductB {
+        <<interface>>
+    }
+    class ProductA1
+    class ProductA2
+    class ProductB1
+    class ProductB2
+
+    Client ..> AbstractFactory
+    Client ..> AbstractProductA
+    Client ..> AbstractProductB
+
+    AbstractFactory <|-- ConcreteFactory1
+    AbstractFactory <|-- ConcreteFactory2
+
+    AbstractProductA <|-- ProductA1
+    AbstractProductA <|-- ProductA2
+    AbstractProductB <|-- ProductB1
+    AbstractProductB <|-- ProductB2
+
+    ConcreteFactory1 ..> ProductA1 : creates
+    ConcreteFactory1 ..> ProductB1 : creates
+    ConcreteFactory2 ..> ProductA2 : creates
+    ConcreteFactory2 ..> ProductB2 : creates
+```
+
 
 ### 12.2.1 結構
 
@@ -85,8 +129,6 @@ classDiagram
 [src/AbstractFactoryTemplate.java](src/AbstractFactoryTemplate.java) (見 `Main` 與 `Client` 類別)
 
 
-
-
 ### 12.2.4 效益
 
 - **`DIP` 原則**。`Client` 只會看到抽象的物件 `AbstractProductA`, `AbstractProductB`, `AbstractFactory` 等類別，並不會看到比較低階的 `ProductA2`, `ProductB1` 等物件，這大大的降低了 client 與這些物件的耦合力（coupling）。這也體現了「相依倒轉原則（Dependency Inversion Principle; DIP）」。
@@ -99,9 +141,7 @@ classDiagram
 
 ## 12.3 範例
 
-AF 可以有很多的應用。在電腦工廠中... 在迷宮系統中，一般型態的迷宮是一個家族、有魔法的迷宮是一個家族。不論是哪一種家族，都需要用到零件物件如牆壁、房間、門等。
-
-在象棋系統中，長棋是一個家族、短棋是一個家族。不論是哪一種家族，都需要用到零件物件如象棋規則、象棋棋盤、棋局管理等。
+抽象工廠模式（Abstract Factory）在軟體設計中有許多經典應用。以下我們透過不同層次的範例來深入理解。
 
 ### 12.3.1 電腦工廠
 
@@ -127,6 +167,20 @@ computer.createComputer(factory);
 ```java
 ComputerFactory factory = new ComputerFactory();
 computer.createComputer(factory);
+```
+
+```mermaid
+classDiagram
+    class Computer {
+        cpu: CPU
+        memory: Memory
+        mb: MotherBoard
+        make() void
+    }
+    note for Computer "cpu = new WorkstationCPU();\nmemory = new WorkstationMemory();\nmb = new WorkstationMotherBoard();"
+    Computer ..> WorkstationCPU : creates
+    Computer ..> WorkstationMemory : creates
+    Computer ..> WorkstationMotherBoard : creates
 ```
 
 ### 12.3.2 迷宮
@@ -168,6 +222,26 @@ class MazeGame {
 
 [src/MazeFactorySample.java](src/MazeFactorySample.java)
 
+```mermaid
+classDiagram
+    class MazeGame {
+        +createMaze() Maze
+    }
+    class Maze {
+        +addRoom(Room r)
+    }
+    class Room {
+        +setSide(Direction d, Object o)
+    }
+    class Door
+    class Wall
+
+    MazeGame ..> Maze : creates
+    MazeGame ..> Room : creates
+    MazeGame ..> Door : creates
+    MazeGame ..> Wall : creates
+    Maze ..> Room : contains
+```
 
 ### 12.3.3 熱區與冰區
 
@@ -177,134 +251,138 @@ class MazeGame {
 
 [src/MazeFactorySample.java](src/MazeFactorySample.java) (見 `GameDemo` 類別)
 
-### 12.3.4 比較
+### 12.3.4 Java API 與框架中的應用
+
+抽象工廠模式在許多成熟的軟體框架中都有廣泛應用，特別是在需要處理「跨平台」或「切換不同實作家族」的情境下：
+
+1. **Java AWT `Toolkit`**：
+   `java.awt.Toolkit` 是一個經典的抽象工廠。它提供了一個介面，用來連結 AWT 元件（如 `Button`、`TextField`）到不同作業系統（Windows、macOS、Linux）的本地實作。當你在不同平台上執行 Java 程式時，系統會自動切換到對應的具體工廠實作。
+
+2. **XML 解析器 (`DocumentBuilderFactory`)**：
+   在處理 XML 時，`javax.xml.parsers.DocumentBuilderFactory` 允許程式在不指定具體解析類別的情況下，獲取能產生 `DocumentBuilder` 的工廠。這使得開發者可以輕鬆切換不同的 XML 解析引擎（例如 Xerces 或內建解析器）。
+
+3. **Spring 框架中的 `BeanFactory`**：
+   Spring 的 `BeanFactory` 容器負責管理並生產各類型的物件 (Beans)。雖然它整合了多種設計模式，但其核心能力——「透過統一介面獲取一系列相關物件而不暴露其具體類別」——正是抽象工廠模式的體現。
+
+4. **資料庫驅動 (JDBC)**：
+   JDBC 的 `Connection` 物件針對不同的資料庫（MySQL、Oracle、PostgreSQL）能生產出一系列相互關聯且相容的產品（如 `Statement`、`PreparedStatement`），這也具備了抽象工廠為特定「產品族」提供生產介面的特徵。
+
+### 12.3.5 比較
 
 在 `Factory Method` 中，我們介紹工廠方法將「物件的生成封裝成一個方法」，透過覆寫，我們可以在不需要修改程式碼的情況下讓系統使用新的類別。相較於 `Factory Method`, `Abstract Factory` 則是將「物件的生成封裝成一個類別」。
 
-## 12.4 Check
+## 12.4 隨堂測驗
 
-1.  Abstract factory 的目的為何？
-    A) 把物件的生成延遲到子類別
-    B) 轉接兩個介面不同的物件
-    C) 把同一系列的物件群的生成委託給一個物件
-    D) 一次只能生成一個物件
+1️⃣ **Abstract factory 的目的為何？**
+- (A) 把物件的生成延遲到子類別
+- (B) 轉接兩個介面不同的物件
+- (C) 把同一系列的物件群的生成委託給一個物件
+- (D) 一次只能生成一個物件
 
-2.  在 Abstract factory 設計樣式中，設計階段 client 會與哪些類別關聯
-    A) abstract factory
-    B) concrete factory
-    C) abstract product
-    D) concrete product
+<details><summary>解答</summary>
+**解答：(C) 把同一系列的物件群的生成委託給一個物件**
 
-3.  Abstract factory 樣式中，abstract factory 內宣告 m 個抽象方法，表示
-    A) 有 m 個系列
-    B) 有 m 個零件
+**解說：** `Abstract Factory` 模式的主要目的是提供一個介面，用於創建一系列相關或相互依賴的物件家族，而無需指定它們的具體類別。它將創建相關產品的責任委託給工廠物件。
+</details>
 
-4.  每一個 concrete factory 可以
-    A) 產生某一系列的某一個零件
-    B) 產生同一系列很多零件
-    C) 產生同一零件很多系列
+2️⃣ **在 Abstract factory 設計樣式中，設計階段 client 會與哪些類別關聯？**
+- (A) `AbstractFactory`
+- (B) `ConcreteFactory`
+- (C) `AbstractProduct`
+- (D) `ConcreteProduct`
 
-5.  Abstract factory 樣式中，有 n 個 concrete factory，表示
-    A) 有 n 個系列
-    B) 有 n 個零件
+<details><summary>解答</summary>
+**解答：(A) `AbstractFactory` 和 (C) `AbstractProduct`**
 
-6.  Abstract factory 和 factory method 的異同為何？
+**解說：** 在設計階段，客戶端程式碼主要依賴於抽象工廠 (`Abstract Factory`) 介面來創建產品，以及抽象產品 (`Abstract Product`) 介面來使用這些產品。這樣可以保持客戶端與具體的工廠和產品類別解耦。
+</details>
 
-7.  不要看講義，畫出 abstract factory 的架構圖。
+3️⃣ **Abstract factory 樣式中，abstract factory 內宣告 m 個抽象方法，表示：**
+- (A) 有 m 個系列
+- (B) 有 m 個零件
+
+<details><summary>解答</summary>
+**解答：(B) 有 m 個零件**
+
+**解說：** 在 `Abstract Factory` 中，每個抽象方法通常對應於產品族中的一個「零件」或一個類型的產品。因此，`m` 個抽象方法表示該工廠介面定義了創建 `m` 種不同類型產品的方法。
+</details>
+
+4️⃣ **每一個 concrete factory 可以：**
+- (A) 產生某一系列的某一個零件
+- (B) 產生同一系列很多零件
+- (C) 產生同一零件很多系列
+
+<details><summary>解答</summary>
+**解答：(B) 產生同一系列很多零件**
+
+**解說：** 每個具體工廠（Concrete Factory）負責創建一個特定產品族中的所有「零件」。它會實現抽象工廠中定義的創建每個產品的方法，並返回該產品族中對應的具體產品實例。
+</details>
+
+5️⃣ **Abstract factory 樣式中，有 n 個 concrete factory，表示：**
+- (A) 有 n 個系列
+- (B) 有 n 個零件
+
+<details><summary>解答</summary>
+**解答：(A) 有 n 個系列**
+
+**解說：** 每個具體工廠負責創建一個特定的產品族。因此，`n` 個具體工廠意味著系統可以創建 `n` 個不同的產品系列。
+</details>
+
+6️⃣ **Abstract factory 和 factory method 的異同為何？**
+
+<details><summary>解答</summary>
+**解答：**
+
+**相同點：**
+* 都是 Creational Design Pattern，用於封裝物件的創建邏輯，使得客戶端不需要知道具體要創建哪個類別的實例。
+* 都旨在將物件的實例化與其使用分離，提高程式碼的彈性和可維護性。
+
+**不同點：**
+* **Factory Method:** 關注於**創建一個單一產品**的實例，通常將物件的創建延遲到子類別。它通常在一個繼承層次結構中實現。
+* **Abstract Factory:** 關注於**創建一系列相關或相互依賴的產品族**。它提供一個創建多個產品的方法介面，而具體的產品族由具體的工廠來創建。
+* **範圍與實現：** Factory Method 範圍較小，用於單一類型物件；Abstract Factory 範圍較大，用於一組物件。Factory Method 多透過繼承實現，而 Abstract Factory 則透過物件組合提供多個工廠實現。
+</details>
+
+7️⃣ **不要看講義，畫出 Abstract Factory 的架構圖。**
+
+<details><summary>提示</summary>
+架構圖應包含以下關鍵元素：
+1. `Client`
+2. `AbstractFactory` (及 `createProductA()`, `createProductB()`)
+3. `ConcreteFactory1` & `ConcreteFactory2`
+4. `AbstractProductA` & `AbstractProductB`
+5. `ProductA1`, `ProductA2`, `ProductB1`, `ProductB2`
+及其相互間的繼承（Inheritance）與依賴（Dependency）關係。
+</details>
 
 ---
 
-好的，這就為您提供前六題的解答：
 
-1.  **Abstract factory 的目的為何？**
-    **解答：C) 把同一系列的物件群的生成委託給一個物件**
+## 12.5 課後練習
+   
+1️⃣ **Shoes Factory**
 
-    **解說：** `Abstract Factory` 模式的主要目的是提供一個介面，用於創建一系列相關或相互依賴的物件家族，而無需指定它們的具體類別。它將創建相關產品的責任委託給工廠物件。
+**情境：** 鞋子工廠必須製造鞋身 (`ShoesBody`)、鞋帶 (`ShoesStrap`)、鞋底 (`ShoesBottom`) 三個零件。不同型態的鞋子（如運動鞋 `SportShoes`、休閒鞋 `LeisureShoes`、皮鞋 `LeatherShoes`）都會用到不同型態的零件。假設製造鞋子的流程是固定的，定義在 `makeShoes()` 方法中，我們希望重用此流程而不需在新增鞋款時修改它。
 
-2.  **在 Abstract factory 設計樣式中，設計階段 client 會與哪些類別關聯**
-    **解答：A) abstract factory 和 C) abstract product**
+**任務：**
+- 應用 `Abstract Factory` 設計模式來設計此系統。
+- 畫出 `UML` 類別圖。
+- 撰寫範例程式碼。
 
-    **解說：** 在設計階段，客戶端程式碼主要依賴於抽象工廠 (`Abstract Factory`) 介面來創建產品，以及抽象產品 (`Abstract Product`) 介面來使用這些產品。這樣可以保持客戶端與具體的工廠和產品類別解耦。
+---
 
-3.  **Abstract factory 樣式中，abstract factory 內宣告 m 個抽象方法，表示**
-    **解答：B) 有 m 個零件**
+2️⃣ **Chess System**
 
-    **解說：** 在 `Abstract Factory` 中，每個抽象方法通常對應於產品族中的一個「零件」或一個類型的產品。因此，`m` 個抽象方法表示該工廠介面定義了創建 `m` 種不同類型產品的方法。
+**情境：** 設計一個彈性的象棋系統框架，支援多種玩法（如標準象棋、暗棋）。未來可能還會新增「三國象棋」等新規則。
 
-4.  **每一個 concrete factory 可以**
-    **解答：B) 產生同一系列很多零件**
+**任務：**
+1. **定義抽象產品**：`ChessPiece` (棋子)、`ChessRule` (規則)、`BoardConfig` (棋盤佈局)。
+2. **定義抽象工廠**：`ChessFactory` 包含 `createChessPiece()`、`createChessRule()` 與 `createBoardConfig()`。
+3. **實作具體家族**：
+    - **標準象棋家族**：實作 `StandardChessFactory` 及對應的棋子與規則。
+    - **暗棋家族**：實作 `BlindChessFactory` 及對應的棋子與規則。
+4. **實作客戶端**：`GameManager` 接收一個 `ChessFactory` 物件，並利用它來初始化遊戲環境。
 
-    **解說：** 每個具體工廠（Concrete Factory）負責創建一個特定產品族中的所有「零件」。它會實現抽象工廠中定義的創建每個產品的方法，並返回該產品族中對應的具體產品實例。
-
-5.  **Abstract factory 樣式中，有 n 個 concrete factory，表示**
-    **解答：A) 有 n 個系列**
-
-    **解說：** 每個具體工廠負責創建一個特定的產品族。因此，`n` 個具體工廠意味著系統可以創建 `n` 個不同的產品系列。
-
-6.  **Abstract factory 和 factory method 的異同為何？**
-
-    **解答：**
-
-    **相同點：**
-    * 都是 Creational Design Pattern，用於封裝物件的創建邏輯，使得客戶端不需要知道具體要創建哪個類別的實例。
-    * 都旨在將物件的實例化與其使用分離，提高程式碼的彈性和可維護性。
-
-    **不同點：**
-    * **Factory Method:** 關注於**創建一個單一產品**的實例，通常將物件的創建延遲到子類別。它通常在一個繼承層次結構中實現。
-    * **Abstract Factory:** 關注於**創建一系列相關或相互依賴的產品族**。它提供一個創建多個產品的方法介面，而具體的產品族由具體的工廠來創建。Abstract Factory 通常涉及到多個抽象產品和多個具體產品類別。
-    * **範圍：** Factory Method 的範圍通常較小，用於創建單一類型的物件。Abstract Factory 的範圍較大，用於創建一組相關的物件。
-    * **實現方式：** Factory Method 可以通過抽象方法在父類別中聲明，並在子類別中實現來決定創建哪個具體產品。Abstract Factory 通常涉及到一個抽象工廠介面和多個實現該介面的具體工廠類別。
-
-## 12.5 Exercise
-
-### 12.5.1 Shoes
-鞋子工廠，一定要製造鞋身 (`shoes body`)、鞋帶 (`shoes strap`)、鞋底 (`shoes bottom`) 三個零件, 不同型態的鞋子, 例如運動鞋 (`sport shoes`) 、休閒鞋 (`leisure shoes`)、皮鞋 (`leather shoes`) 都會用到不同型態的零件。假設製造鞋子流程都是固定的, 寫在 `makeShoes()` 方法中, 而我們也希望重用這樣的流程, 不想因為製造不同的鞋子就換修改到 `makeShoes` 的程式, 因此我們採用 `Abstract Factory` 來設計。請畫出 `UML` 架構圖，並寫出此程式。
+**思考點：** 當需要新增一種新的象棋玩法時，你只需要做哪些修改？這如何體現了開閉原則 (OCP)？
 
 
-### 12.5.2 ChessGame
-
-多樣玩法的彈性象棋系統
-
-**目標：** 設計一個彈性的象棋系統框架，能夠支援多種不同的象棋玩法（例如：標準象棋、暗棋）。請使用 `Abstract Factory` 設計模式來創建不同玩法所需的相關物件（棋子、規則、棋盤設定）。
-
-**情境描述：**
-
-你正在開發一個通用的象棋遊戲平台，該平台需要能夠支援多種不同的象棋玩法。目前你需要實現對以下兩種玩法的支援：
-
-* **標準象棋 (Standard Chinese Chess):** 包含車、馬、象、士、炮、兵/卒等棋子，以及標準的移動和吃子規則，使用 8x8 的棋盤和特定的初始佈局。
-* **暗棋 (Blind Chinese Chess):** 棋子背面朝上，玩家翻開後才能移動，部分棋子的吃子規則與標準象棋不同，使用特定的棋盤大小和初始棋子數量。
-
-未來平台可能需要支援更多不同的象棋玩法。你的設計應該能夠容易地擴充新的玩法，而不需要修改現有的核心程式碼。
-
-**設計參考：**
-
-1.  **定義抽象產品介面：**
-    * **`ChessPiece` (棋子):** 定義所有棋子都應具備的基本屬性（例如：名稱、顏色、位置）和行為（例如：`getName()`, `getColor()`）。
-    * **`ChessRule` (規則):** 定義特定象棋玩法的規則，例如判斷移動是否合法 (`isValidMove()`)。
-    * **`BoardConfig` (棋盤設定):** 定義特定象棋玩法的棋盤尺寸和初始棋子佈局 (`getBoardSize()`, `getInitialPlacement()`)。
-
-2.  **實現具體產品類別 (針對每種玩法)：**
-    * **標準象棋產品：** 創建標準象棋的具體棋子類別（例如 `StandardRook`, `StandardKnight`），實現 `ChessPiece` 介面。創建 `StandardChessRule` 類別實現標準象棋的規則。創建 `StandardBoardConfig` 類別定義標準象棋的棋盤設定。
-    * **暗棋產品：** 創建暗棋的具體棋子類別 (`BlindPiece`)，實現 `ChessPiece` 介面（可能需要額外的屬性來表示是否已翻開）。創建 `BlindChessRule` 類別實現暗棋的規則。創建 `BlindBoardConfig` 類別定義暗棋的棋盤設定。
-
-3.  **定義抽象工廠介面：**
-    * **`ChessFactory`:** 定義創建不同產品的方法：`createChessPiece(String name, String color)`, `createChessRule()`, `createBoardConfig()`。
-
-4.  **實現具體工廠類別 (針對每種玩法)：**
-    * **`StandardChessFactory`:** 實現 `ChessFactory` 介面，其創建方法返回標準象棋的具體產品物件 (`StandardChessPiece`, `StandardChessRule`, `StandardBoardConfig`)。
-    * **`BlindChessFactory`:** 實現 `ChessFactory` 介面，其創建方法返回暗棋的具體產品物件 (`BlindPiece`, `BlindChessRule`, `BlindBoardConfig`)。
-
-5.  **設計遊戲管理器：**
-    * 創建一個 `GameManager` 類別，該類別接收一個 `ChessFactory` 物件，並使用該工廠來創建當前玩法的棋子、規則和棋盤設定。
-
-6.  **展示不同玩法的創建：**
-    * 在你的程式中展示如何通過使用不同的具體工廠 (`StandardChessFactory` 和 `BlindChessFactory`) 來創建不同玩法的遊戲管理器，並簡要展示如何獲取對應的棋子、規則和棋盤設定。
-
-**提示引導：**
-
-1.  **思考不同玩法的「產品族」：** 標準象棋和暗棋是兩個不同的玩法，它們需要的棋子種類、規則和棋盤設定是不同的。將每個玩法視為一個獨立的「產品族」。
-2.  **抽象工廠的角色：** `ChessFactory` 的作用是提供一個統一的介面來創建屬於特定玩法的所有相關物件。它不關心具體創建哪個類別的棋子或規則，只負責提供對應玩法的「產品」。
-3.  **具體工廠的責任：** `StandardChessFactory` 和 `BlindChessFactory` 是具體的工廠，它們知道如何創建標準象棋和暗棋的具體棋子類別、規則類別和棋盤設定類別。
-4.  **客戶端如何使用工廠：** `GameManager` 是客戶端，它只需要依賴抽象工廠 `ChessFactory`。通過在創建 `GameManager` 時傳入不同的具體工廠實例，就可以讓遊戲管理器適應不同的玩法。
-5.  **如何新增新的玩法：** 思考如果未來要新增第三種象棋玩法，例如「三國象棋」，你需要做哪些修改？（答案：創建新的具體產品類別和一個新的具體工廠類別，而不需要修改已有的抽象介面和客戶端程式碼）。
-6.  **關注介面而非實作：** 在設計抽象介面（`ChessPiece`, `ChessRule`, `BoardConfig`, `ChessFactory`) 時，重點定義它們的行為，而不需要關心具體的實作細節。具體的實作將在具體產品類別和具體工廠類別中完成。

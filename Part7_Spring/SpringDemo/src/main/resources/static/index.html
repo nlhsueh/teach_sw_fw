@@ -93,6 +93,46 @@
             border-left: 4px solid var(--primary);
             font-size: 0.875rem;
         }
+
+        .progress-bar {
+            width: 100%;
+            background-color: #e2e8f0;
+            border-radius: 9999px;
+            height: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+        .risk-alert {
+            padding: 10px;
+            background-color: #fee2e2;
+            color: #991b1b;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid var(--danger);
+            font-size: 0.875rem;
+        }
+        .performance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .perf-item {
+            font-size: 0.875rem;
+        }
+        .perf-label {
+            color: var(--secondary);
+            display: block;
+        }
+        .perf-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
@@ -156,6 +196,12 @@
                         <div id="student-grades"></div>
                     </div>
                     <div class="card">
+                        <h3>學業表現報告 (DTO)</h3>
+                        <div id="student-performance-report">
+                            <!-- Performance report content -->
+                        </div>
+                    </div>
+                    <div class="card">
                         <h3>可選課程</h3>
                         <div id="student-enrollment"></div>
                     </div>
@@ -168,7 +214,11 @@
         💡 <strong>軟體開發演示點：</strong><br>
         1. <strong>LSP (里氏替換原則)</strong>：雖然 Teacher 與 Student 功能不同，但系統透過處理 <code>SchoolMember</code> 清單來統一管理成員基本資訊。<br>
         2. <strong>Composition (組合)</strong>：當您看到行政管理中的系所列表，這反映了 <code>School</code> 物件對 <code>Department</code> 的強擁有關係。<br>
-        3. <strong>DTO (資料傳輸物件)</strong>：前端收到的資訊是經過過濾轉換的 DTO，避免了 Model 內部敏感欄位（如老師的隱私資料）外洩。
+        3. <strong>DTO (資料傳輸物件)</strong>：前端收到的資訊是經過過濾轉換的 DTO。
+           <ul>
+               <li><strong>安全性</strong>：<code>StudentPerformanceDTO</code> 使用 <code>maskedName</code> 隱藏真實姓名。</li>
+               <li><strong>複雜邏輯封裝</strong>：後端計算 GPA、畢業進度與學業預警邏輯，前端只需負責展示，達成前後端職責分離。</li>
+           </ul>
     </div>
 </div>
 
@@ -256,7 +306,7 @@
         setTimeout(() => loadTeacherView(teacherId), 300);
     }
 
-    function loadStudentView(studentId) {
+    async function loadStudentView(studentId) {
         if (!studentId) return;
         const student = allStudents.find(s => s.memberId === studentId);
         document.getElementById('student-dashboard').style.display = 'block';
@@ -267,6 +317,35 @@
             gHtml += `<tr><td>${g.courseName}</td><td>${g.score}</td><td><span class="status-badge bg-${g.letterGrade}">${g.letterGrade}</span></td></tr>`;
         });
         document.getElementById('student-grades').innerHTML = gHtml + '</tbody></table>';
+
+        // Display Performance DTO
+        const performance = await fetch(`/api/school/performance/${studentId}`).then(r => r.json());
+        if (performance) {
+            const progressPct = Math.round(performance.graduationProgress * 100 * 100) / 100;
+            let pHtml = `
+                <div class="performance-grid">
+                    <div class="perf-item"><span class="perf-label">姓名 (脫敏)</span><span class="perf-value">${performance.maskedName}</span></div>
+                    <div class="perf-item"><span class="perf-label">學號</span><span class="perf-value">${performance.studentId}</span></div>
+                    <div class="perf-item"><span class="perf-label">加權 GPA</span><span class="perf-value">${performance.weightedGpa}</span></div>
+                    <div class="perf-item"><span class="perf-label">學業狀態</span><span class="perf-value">${performance.academicStanding}</span></div>
+                    <div class="perf-item"><span class="perf-label">已得學分</span><span class="perf-value">${performance.totalEarnedCredits} / 120</span></div>
+                </div>
+                <div style="margin-top:15px;">
+                    <span class="perf-label">畢業進度 (${progressPct}%)</span>
+                    <div class="progress-bar"><div class="progress-fill" style="width: ${progressPct}%"></div></div>
+                </div>
+            `;
+            
+            if (performance.isAtRisk) {
+                pHtml += `
+                    <div class="risk-alert">
+                        <strong>⚠️ 學業預警：</strong> 發現核心課程不及格或 GPA 低於 60。<br>
+                        ${performance.failedCourseNames.length > 0 ? '不及格課程：' + performance.failedCourseNames.join(', ') : ''}
+                    </div>
+                `;
+            }
+            document.getElementById('student-performance-report').innerHTML = pHtml;
+        }
 
         // Display enrollment
         let eHtml = '<table><thead><tr><th>課程</th><th>學分</th><th>老師</th><th>操作</th></tr></thead><tbody>';

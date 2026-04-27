@@ -43,4 +43,9 @@ public class SchoolController {
         double score = Double.parseDouble(payload.get("score").toString());
         schoolService.assignGrade(teacherId, studentId, courseId, score);
     }
+
+    @GetMapping("/performance/{studentId}")
+    public StudentPerformanceDTO getPerformance(@PathVariable String studentId) {
+        return schoolService.getStudentPerformance(studentId).orElse(null);
+    }
 }

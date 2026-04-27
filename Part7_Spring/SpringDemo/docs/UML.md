@@ -108,8 +108,22 @@ classDiagram
 
     class SchoolService {
         +toStudentDTO(Student) StudentDTO
+        +toPerformanceDTO(Student) StudentPerformanceDTO
     }
+
+    note for StudentPerformanceDTO "此 DTO 包含多個 Derived Attributes，<br/>將Model運算、封裝為業務報告。"
 ```
+
+### 3.1 複雜運算 DTO 設計要點 (Complex Aggregation Logic)
+在實際系統中，DTO 常被用來封裝經過 Service 層運算後的「商業報告資料」。以下以 `StudentPerformanceDTO` 為例展示其運算邏輯：
+
+| DTO 欄位 | 原始資料來源 (Model) | 轉換/運算邏輯 |
+| :--- | :--- | :--- |
+| `maskedName` | `Student.name` | **數據脫敏**：保留首尾字元，中間以星號遮蔽。 |
+| `weightedGpa` | `Grade.score` & `Course.credits` | **加權聚合**：計算所有課程的加權平均分數。 |
+| `totalEarnedCredits` | `Grade.score` & `Course.credits` | **狀態篩選**：僅加總成績 >= 60 的課程學分。 |
+| `academicStanding` | `weightedGpa` (Result) | **商業規則判定**：依 GPA 級距給予學務狀態標籤。 |
+| `isAtRisk` | `Grade.score` & `Course.credits` | **交叉驗證**：若「必修課(學分>=4)」被當即觸發警示。 |
 
 ---
 

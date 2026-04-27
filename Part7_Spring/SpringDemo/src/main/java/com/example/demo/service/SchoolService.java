@@ -159,4 +159,55 @@ public class SchoolService {
                 .findFirst().orElse("Unassigned");
         return new CourseDTO(course.getCourseId(), course.getName(), course.getCredits(), teacherName);
     }
+
+    public Optional<StudentPerformanceDTO> getStudentPerformance(String studentId) {
+        return getStudent(studentId).map(this::toPerformanceDTO);
+    }
+
+    private StudentPerformanceDTO toPerformanceDTO(Student student) {
+        StudentPerformanceDTO dto = new StudentPerformanceDTO();
+        dto.setStudentId(student.getMemberId());
+
+        String rawName = student.getName();
+        if (rawName.length() > 2) {
+            dto.setMaskedName(rawName.charAt(0) + "***" + rawName.charAt(rawName.length() - 1));
+        } else {
+            dto.setMaskedName(rawName.charAt(0) + "*");
+        }
+
+        double totalWeightedScore = 0;
+        int totalCredits = 0;
+        int earnedCredits = 0;
+        List<String> failedOnes = new ArrayList<>();
+        boolean hasCriticalFailure = false;
+
+        for (Grade g : student.getGrades()) {
+            int cr = g.getCourse().getCredits();
+            double sc = g.getScore();
+            
+            totalWeightedScore += (sc * cr);
+            totalCredits += cr;
+
+            if (sc >= 60) {
+                earnedCredits += cr;
+            } else {
+                failedOnes.add(g.getCourse().getName());
+                if (cr >= 4) hasCriticalFailure = true;
+            }
+        }
+
+        double gpa = totalCredits > 0 ? totalWeightedScore / totalCredits : 0;
+        dto.setWeightedGpa(Math.round(gpa * 100.0) / 100.0);
+        dto.setTotalEarnedCredits(earnedCredits);
+        dto.setFailedCourseNames(failedOnes);
+
+        if (gpa >= 85) dto.setAcademicStanding("Distinction");
+        else if (gpa >= 60) dto.setAcademicStanding("Pass");
+        else dto.setAcademicStanding("Probation");
+
+        dto.setGraduationProgress(Math.min(1.0, (double)earnedCredits / 120.0));
+        dto.setAtRisk(hasCriticalFailure || gpa < 60);
+
+        return dto;
+    }
 }

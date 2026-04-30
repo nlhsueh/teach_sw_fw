@@ -48,11 +48,15 @@ classDiagram
         cpu: CPU
         memory: Memory
         mb: MotherBoard
-        make() void
+        make(factory: ComputerFactory) void
     }
-    Computer ..> WorkstationCPU : creates
-    Computer ..> WorkstationMemory : creates
-    Computer ..> WorkstationMotherBoard : creates
+    class ComputerFactory {
+        <<interface>>
+        createCPU() CPU
+        createMemory() Memory
+        createMotherBoard() MotherBoard
+    }
+    Computer ..> ComputerFactory : uses
 ```
 
 
@@ -127,14 +131,35 @@ computer.createComputer(factory);
 ```mermaid
 classDiagram
     class Computer {
-        cpu: CPU
-        memory: Memory
-        mb: MotherBoard
-        make() void
+        make(factory: ComputerFactory) void
     }
-    Computer ..> WorkstationCPU : creates
-    Computer ..> WorkstationMemory : creates
-    Computer ..> WorkstationMotherBoard : creates
+    class ComputerFactory {
+        <<interface>>
+        +createCPU() CPU
+        +createMemory() Memory
+        +createMotherBoard() MotherBoard
+    }
+    class PCFactory {
+        +createCPU() CPU
+        +createMemory() Memory
+        +createMotherBoard() MotherBoard
+    }
+    class WorkstationFactory {
+        +createCPU() CPU
+        +createMemory() Memory
+        +createMotherBoard() MotherBoard
+    }
+    ComputerFactory <|.. PCFactory
+    ComputerFactory <|.. WorkstationFactory
+    Computer ..> ComputerFactory : uses
+    
+    PCFactory ..> PC_CPU : creates
+    PCFactory ..> PC_Memory : creates
+    PCFactory ..> PC_MotherBoard : creates
+    
+    WorkstationFactory ..> WorkstationCPU : creates
+    WorkstationFactory ..> WorkstationMemory : creates
+    WorkstationFactory ..> WorkstationMotherBoard : creates
 ```
 
 ### 12.3.2 迷宮

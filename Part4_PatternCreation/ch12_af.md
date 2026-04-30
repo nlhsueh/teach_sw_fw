@@ -27,7 +27,6 @@ classDiagram
         mb: MotherBoard
         make() void
     }
-    note for Computer "cpu = new PC_CPU();\nmemory = new PC_Memory();\nmb = new PC_MotherBoard();"
     Computer ..> PC_CPU : creates
     Computer ..> PC_Memory : creates
     Computer ..> PC_MotherBoard : creates
@@ -51,7 +50,6 @@ classDiagram
         mb: MotherBoard
         make() void
     }
-    note for Computer "cpu = new WorkstationCPU();\nmemory = new WorkstationMemory();\nmb = new WorkstationMotherBoard();"
     Computer ..> WorkstationCPU : creates
     Computer ..> WorkstationMemory : creates
     Computer ..> WorkstationMotherBoard : creates
@@ -65,50 +63,7 @@ classDiagram
 
 ## 12.2 結構與方法
 
-```mermaid
-classDiagram
-    class Client
-    class AbstractFactory {
-        <<interface>>
-        +createProductA() AbstractProductA
-        +createProductB() AbstractProductB
-    }
-    class ConcreteFactory1 {
-        +createProductA() AbstractProductA
-        +createProductB() AbstractProductB
-    }
-    class ConcreteFactory2 {
-        +createProductA() AbstractProductA
-        +createProductB() AbstractProductB
-    }
-    class AbstractProductA {
-        <<interface>>
-    }
-    class AbstractProductB {
-        <<interface>>
-    }
-    class ProductA1
-    class ProductA2
-    class ProductB1
-    class ProductB2
-
-    Client ..> AbstractFactory
-    Client ..> AbstractProductA
-    Client ..> AbstractProductB
-
-    AbstractFactory <|-- ConcreteFactory1
-    AbstractFactory <|-- ConcreteFactory2
-
-    AbstractProductA <|-- ProductA1
-    AbstractProductA <|-- ProductA2
-    AbstractProductB <|-- ProductB1
-    AbstractProductB <|-- ProductB2
-
-    ConcreteFactory1 ..> ProductA1 : creates
-    ConcreteFactory1 ..> ProductB1 : creates
-    ConcreteFactory2 ..> ProductA2 : creates
-    ConcreteFactory2 ..> ProductB2 : creates
-```
+![](img/af.png)
 
 
 ### 12.2.1 結構
@@ -177,7 +132,6 @@ classDiagram
         mb: MotherBoard
         make() void
     }
-    note for Computer "cpu = new WorkstationCPU();\nmemory = new WorkstationMemory();\nmb = new WorkstationMotherBoard();"
     Computer ..> WorkstationCPU : creates
     Computer ..> WorkstationMemory : creates
     Computer ..> WorkstationMotherBoard : creates

@@ -204,7 +204,19 @@ class MazeGame {
 ```mermaid
 classDiagram
     class MazeGame {
-        +createMaze() Maze
+        +createMaze(factory: MazeFactory) Maze
+    }
+    class MazeFactory {
+        +makeMaze() Maze
+        +makeRoom(n) Room
+        +makeWall() Wall
+        +makeDoor(r1, r2) Door
+    }
+    class EnchantedMazeFactory {
+        +makeMaze() Maze
+        +makeRoom(n) Room
+        +makeWall() Wall
+        +makeDoor(r1, r2) Door
     }
     class Maze {
         +addRoom(Room r)
@@ -215,10 +227,12 @@ classDiagram
     class Door
     class Wall
 
-    MazeGame ..> Maze : creates
-    MazeGame ..> Room : creates
-    MazeGame ..> Door : creates
-    MazeGame ..> Wall : creates
+    MazeFactory <|-- EnchantedMazeFactory
+    MazeGame ..> MazeFactory : uses
+    MazeFactory ..> Maze : creates
+    MazeFactory ..> Room : creates
+    MazeFactory ..> Door : creates
+    MazeFactory ..> Wall : creates
     Maze ..> Room : contains
 ```
 

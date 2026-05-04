@@ -9,7 +9,7 @@
 
 ### 13.1.1 動機
 
-有時候我們在系統中只想要一個實體，唯一的一個。例如說我們只需要一個視窗管理員，只需要一個 `RadioPlayer` (要不然聲音就打架了)，或只需要一個產品的工廠物件（請參考 `Abstract Factory`）。我們希望該唯一的物件很容易的被讀取到；並且確定不會有其他的物件被產生出來。
+有時候我們在系統中只想要一個實體，唯一的一個。例如說我們只需要一個視窗管理員，只需要一個 RadioPlayer (要不然聲音就打架了)，或只需要一個產品的工廠物件（請參考 Abstract Factory）。我們希望該唯一的物件很容易的被讀取到；並且確定不會有其他的物件被產生出來。
 
 ### 13.1.2 結構與方法
 
@@ -32,7 +32,7 @@ classDiagram
 
 - 宣告一個靜態的物件參考；
 - 將原有的建構子宣告為私有的；
-- 建立另外一個生成物件的方法，通常稱為 `instance()`, 它判斷是否物件已經生成了，若已生成則不再生成，若未生成則生成一個。
+- 建立另外一個生成物件的方法，通常稱為 instance(), 它判斷是否物件已經生成了，若已生成則不再生成，若未生成則生成一個。
 
 **優點**
 
@@ -54,7 +54,7 @@ s2 的參考為：Singleton@1cc810
 s2 的值為：34
 ```
 
-有上述的例子可以看到，不如我們呼叫多少次 `Singleton.instance`，回傳的都是相同的物件。
+有上述的例子可以看到，不如我們呼叫多少次 Singleton.instance，回傳的都是相同的物件。
 
 ## 13.3 有繼承樹的獨體
 
@@ -65,33 +65,33 @@ s2 的值為：34
 ### 13.2.1 動機
 如果在一個繼承樹中只允許產生一個物件，該怎麼設計？
 
-- 把該物件的 `reference` 建立在父類別中，並且宣告為 `protected`; 如此一來，子類別都可共享這一份物件了。
-- 父類別把原建構子宣告為 `private`, 因為不允許其他物件透過父類別來生成物件：一切都要從子類別來生成。
-- 子類別的原有建構子宣告為 `private`，如此一來，其他物件無法透過建構子「偷生」其他的物件實體了。
+- 把該物件的 reference 建立在父類別中，並且宣告為 protected; 如此一來，子類別都可共享這一份物件了。
+- 父類別把原建構子宣告為 private, 因為不允許其他物件透過父類別來生成物件：一切都要從子類別來生成。
+- 子類別的原有建構子宣告為 private，如此一來，其他物件無法透過建構子「偷生」其他的物件實體了。
 - 因為父類別與子類別們都共享同一份物件參考，所以就可以控制只生一個物件了。
 
 
 ### 13.2.2 迷宮範例
 
-不論是 `EnchantedMazeFactory` 或 `AgentMazeFactory` 只能生成一個物件。
+不論是 EnchantedMazeFactory 或 AgentMazeFactory 只能生成一個物件.
 
 [src/MazeFactorySingleton.java](src/MazeFactorySingleton.java)
 
 **比較**
 
-`Factory Method` 和 `Abstract Factory` 都是討論設計的彈性，希望日後在功能擴充時減少程式碼的修改。`Singleton` 的目的在於解決設計上的問題，是少數設計樣式中不討論設計彈性的樣式。
+Factory Method 和 Abstract Factory 都是討論設計的彈性，希望日後在功能擴充時減少程式碼的修改。Singleton 的目的在於解決設計上的問題，是少數設計樣式中不討論設計彈性的樣式。
 
 ## 13.4 Java SDK 實例
 
-`Singleton` 模式確保一個類別只有一個實例，並提供一個全域存取點。在 `Java API` 中，你可以發現一些關鍵的類別和模式運用了這個設計理念。
+Singleton 模式確保一個類別只有一個實例，並提供一個全域存取點。在 Java API 中，你可以發現一些關鍵的類別和模式運用了這個設計理念。
 
 以下是一些在 Java API 中常見的使用 Singleton 設計模式的例子：
 
-1.  **`java.lang.Runtime`:** 這個類別代表 `Java` 虛擬機器 (`JVM`) 的執行時環境。你無法直接使用 `new` 關鍵字來建立 `Runtime` 的實例，而是透過其靜態方法 `Runtime.getRuntime()` 來取得唯一的 `Runtime` 物件。這確保了每個 `JVM` 只有一個關聯的 `Runtime` 實例，負責管理記憶體、執行緒等等系統級別的操作。
+1.  **java.lang.Runtime:** 這個類別代表 Java 虛擬機器 (JVM) 的執行時環境。你無法直接使用 new 關鍵字來建立 Runtime 的實例，而是透過其靜態方法 Runtime.getRuntime() 來取得唯一的 Runtime 物件。這確保了每個 JVM 只有一個關聯的 Runtime 實例，負責管理記憶體、執行緒等等系統級別的操作。
 
-2.  **`java.lang.System`:** 雖然 `System` 類別本身並沒有直接實現 `Singleton` 模式，但它提供了一些靜態的欄位（例如 `System.in`、`System.out` 和 `System.err`），這些欄位是共享的、唯一的 `I/O` 流物件。這些流物件在整個應用程式中都是單一的存取點，負責標準輸入、標準輸出和標準錯誤輸出。
+2.  **java.lang.System:** 雖然 System 類別本身並沒有直接實現 Singleton 模式，但它提供了一些靜態的欄位（例如 System.in、System.out 和 System.err），這些欄位是共享的、唯一的 I/O 流物件。這些流物件在整個應用程式中都是單一的存取點，負責標準輸入、標準輸出和標準錯誤輸出。
 
-3.  **日誌框架（Logging Frameworks）：** 許多 `Java` 日誌框架（如 `Log4j` 和 `SLF4j`）通常會使用 `Singleton` 模式來管理其核心的日誌管理器或日誌工廠。這樣可以確保在整個應用程式中，日誌的配置和管理都是一致的，並且只有一個主要的日誌處理中心。
+3.  **日誌框架（Logging Frameworks）：** 許多 Java 日誌框架（如 Log4j 和 SLF4j）通常會使用 Singleton 模式來管理其核心的日誌管理器或日誌工廠。這樣可以確保在整個應用程式中，日誌的配置和管理都是一致的，並且只有一個主要的日誌處理中心。
 
 4.  **資料庫連接池（Database Connection Pools）：** 在實作資料庫連接池時，通常會使用 Singleton 模式來管理連接池的實例。這樣可以確保在整個應用程式中只存在一個連接池，有效地管理資料庫連接資源，避免資源浪費並提高效能。
 
@@ -110,76 +110,91 @@ Singleton 設計模式在 Java API 中被廣泛應用於需要全局唯一存取
     C) 讓一個套件只能產生一個類別
     D) 強迫一個類別只能有一個子類別
 
+    <details>
+    <summary>參考解答</summary>
+
+    **B) 讓一個類別只能產生一個物件**
+
+    **說明：** Singleton 模式的核心目標就是確保一個類別在整個應用程式生命週期中只存在一個實例（物件）。這樣做的目的是為了控制資源的存取，或者在多個組件之間共享某個唯一的狀態。
+    </details>
+
 2.  static method 的定義哪一個錯誤
     A) 不需產生物件就可以呼叫
     B) Singleton 產生物件的方法是呼叫 static method
     C) 必須引用類別中的 instance variable
     D) 可以引用類別中的 static variable
 
+    <details>
+    <summary>參考解答</summary>
+
+    **C) 必須引用類別中的 instance variable**
+
+    **說明：**
+    * **A) 不需產生物件就可以呼叫：** 這是正確的。Static 方法屬於類別本身，可以直接透過類別名稱調用，不需要先創建該類別的物件。
+    * **B) Singleton 產生物件的方法是呼叫 static method：** 這在 Singleton 的常見實現中是正確的。通常會提供一個靜態方法（例如 getInstance()）來獲取 Singleton 的唯一實例。
+    * **C) 必須引用類別中的 instance variable：** 這是**錯誤**的。Static 方法不直接與任何特定的物件實例關聯，因此它們**不能直接**存取非靜態的（instance）成員變數。它們只能存取類別中定義的靜態（static）成員變數。
+    * **D) 可以引用類別中的 static variable：** 這是正確的。Static 方法可以存取同一個類別中定義的其他靜態成員變數。
+    </details>
+
 3.  Singleton with subclassing 的意義為
     A) 一個繼承樹上只能產生一個物件
     B) 一個繼承樹上每一個類別都只能產生一個物件
+
+    <details>
+    <summary>參考解答</summary>
+
+    **B) 一個繼承樹上每一個類別都只能產生一個物件**
+
+    **說明：** 當 Singleton 應用於繼承體系時，"Singleton with subclassing" 的目標是確保繼承樹中的**每一個具體的子類別**都只能擁有一個唯一的實例。這與整個繼承樹只允許一個實例（選項 A）不同。
+    </details>
 
 4.  在象棋系統中，「將」「士」等每一個 Chess 都個別只會有一隻，所以 Chess 可以用 Singleton 來設計。
     A) 對
     B) 錯
 
+    <details>
+    <summary>參考解答</summary>
+
+    **B) 錯**
+
+    **說明：** 雖然「將」只有一隻，「士」也只有一隻，但它們是**不同種類**的棋子。Singleton 適用於確保**同一個類別**只有一個實例。在這裡，「將」是一個 King 類的實例，「士」是一個 Advisor 類的實例。King 和 Advisor 可能是 Chess 的子類別，但它們本身是不同的類別，各自應該有它們唯一的實例。因此，直接將 Chess 類設計為 Singleton 並不恰當。更適合的做法是確保每個具體的棋子類別（如 King、Advisor 等）在遊戲中只創建一個實例。
+    </details>
+
 5.  Singleton 的目的為何？ 
+
+    <details>
+    <summary>參考解答</summary>
+
+    Singleton 的主要目的是**確保一個類別在應用程式的生命週期中只存在一個實例，並提供一個全局唯一的存取點來獲取這個實例**。這有助於控制資源的使用、管理全局狀態，並避免由於創建多個實例而可能導致的不一致性問題。
+    </details>
 
 6.  Singleton 主要應用的物件技巧為何？
 
-7.  Singleton 應用在繼承樹時，主要應用的技巧為何？
-  
-----
-參考解答
-
-1.  **Singleton 的目的為**
-    **B) 讓一個類別只能產生一個物件**
-
-    **說明：** `Singleton` 模式的核心目標就是確保一個類別在整個應用程式生命週期中只存在一個實例（物件）。這樣做的目的是為了控制資源的存取，或者在多個組件之間共享某個唯一的狀態。
-
-2.  **static method 的定義哪一個錯誤**
-    **C) 必須引用類別中的 instance variable**
-
-    **說明：**
-    * **A) 不需產生物件就可以呼叫：** 這是正確的。Static 方法屬於類別本身，可以直接透過類別名稱調用，不需要先創建該類別的物件。
-    * **B) Singleton 產生物件的方法是呼叫 static method：** 這在 `Singleton` 的常見實現中是正確的。通常會提供一個靜態方法（例如 `getInstance()`）來獲取 `Singleton` 的唯一實例。
-    * **C) 必須引用類別中的 instance variable：** 這是**錯誤**的。Static 方法不直接與任何特定的物件實例關聯，因此它們**不能直接**存取非靜態的（instance）成員變數。它們只能存取類別中定義的靜態（static）成員變數。
-    * **D) 可以引用類別中的 static variable：** 這是正確的。Static 方法可以存取同一個類別中定義的其他靜態成員變數。
-
-3.  **Singleton with subclassing 的意義為**
-    **B) 一個繼承樹上每一個類別都只能產生一個物件**
-
-    **說明：** 當 Singleton 應用於繼承體系時，"Singleton with subclassing" 的目標是確保繼承樹中的**每一個具體的子類別**都只能擁有一個唯一的實例。這與整個繼承樹只允許一個實例（選項 A）不同。
-
-4.  **在象棋系統中，「將」「士」等每一個 Chess 都個別只會有一隻，所以 Chess 可以用 Singleton 來設計。**
-    **B) 錯**
-
-    **說明：** 雖然「將」只有一隻，「士」也只有一隻，但它們是**不同種類**的棋子。`Singleton` 適用於確保**同一個類別**只有一個實例。在這裡，「將」是一個 `King` 類的實例，「士」是一個 `Advisor` 類的實例。`King` 和 `Advisor` 可能是 `Chess` 的子類別，但它們本身是不同的類別，各自應該有它們唯一的實例。因此，直接將 `Chess` 類設計為 `Singleton` 並不恰當。更適合的做法是確保每個具體的棋子類別（如 `King`、`Advisor` 等）在遊戲中只創建一個實例。
-
-5.  **Singleton 的目的為何？**
-
-    Singleton 的主要目的是**確保一個類別在應用程式的生命週期中只存在一個實例，並提供一個全局唯一的存取點來獲取這個實例**。這有助於控制資源的使用、管理全局狀態，並避免由於創建多個實例而可能導致的不一致性問題。
-
-6.  **Singleton 主要應用的物件技巧為何？**
+    <details>
+    <summary>參考解答</summary>
 
     Singleton 主要應用的物件技巧包括：
-    * **私有建構子 (Private Constructor)：** 防止外部直接使用 `new` 關鍵字創建該類別的實例。
-    * **靜態成員變數 (Static Member Variable)：** 用於持有該類別唯一的實例。
+    * **私有建構子 (Private Constructor)：** 防止外部直接使用 new 關鍵字創建該類別的實例。
+    * **靜態成員變數 (Static Member Variable)：** 用於持有該類別唯一的實例.
     * **靜態方法 (Static Method)：** 提供一個全局唯一的存取點，用於獲取該類的唯一實例。這個方法通常會檢查實例是否已經創建，如果沒有則創建一個，然後返回該實例。
+    </details>
 
-7.  **Singleton 應用在繼承樹時，主要應用的技巧為何？**
+7.  Singleton 應用在繼承樹時，主要應用的技巧為何？
+
+    <details>
+    <summary>參考解答</summary>
 
     當 Singleton 應用在繼承樹時，主要需要考慮如何確保每個子類別都擁有自己的唯一實例。常見的技巧包括：
     * **為每個具體子類別實現 Singleton 模式：** 每個需要保證單一實例的具體子類別都實現自己的 Singleton 邏輯。
     * **使用註冊表 (Registry) 的方式：** 維護一個註冊表，將每個子類別的唯一實例存儲起來，並提供一個統一的介面來獲取這些實例。這通常涉及到一個基類，它負責管理子類別的實例。
+    </details>
 
 ## 13.6 Exercie
 
-1. 系統要求 `MusicPlayer` 只能產生一個物件，我們要用 `Singleton` 設計樣式來實踐，請寫出程式碼。
+1. 系統要求 MusicPlayer 只能產生一個物件，我們要用 Singleton 設計樣式來實踐，請寫出程式碼。
 
 
-2. 類別 `Vehicle` 有兩個子類別 `Motor` 與 `Bike`。若我們只想生成一個 `Vehicle` (不論它是 `Motor` 或 `Bike`)，請利用 `Singleton` 設計之。
+2. 類別 Vehicle 有兩個子類別 Motor 與 Bike。若我們只想生成一個 Vehicle (不論它是 Motor 或 Bike)，請利用 Singleton 設計之。
 
 <!-- ### 解答參考
 

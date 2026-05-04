@@ -3,7 +3,8 @@
 ## 12.1 目的與動機
 
 > 提供一個介面物件以建立一群相關的物件，但卻不明確的指明這些物件的所屬類別，用以增加建立這些物件時的彈性。
->> Provide an interface for creating families of related or dependent objects without specifying their concrete classes.
+
+> Provide an interface for creating families of related or dependent objects without specifying their concrete classes.
 
 ### 12.1.1 動機
 
@@ -21,6 +22,7 @@ class Computer {
 
 ```mermaid
 classDiagram
+    direction LR
     class Computer {
         cpu: CPU
         memory: Memory
@@ -36,14 +38,15 @@ classDiagram
 則日後 `Computer` 物件想建立不同型態的零件物件(例如工作站 `CPU`、工作站 `Memory`、工作站主機板)時，則必須修改 `make()` 方法如下：
 
 ```java
-cpu = new WorkStationCPU();
-memory = new WorkStationMemory();
-mb = new WorkStationMainBoard();
+cpu = new WS_CPU();
+memory = new WS_Memory();
+mb = new WS_MotherBoard();
 ```
 這樣的缺點是如果我們每一次有新的電腦類別產生時就必須修改程式(`make()`)一次。我們可以將生成這一群零件物件的的動作抽象為一個**工廠類別**，當日後有新的零件物件產出時，**只要擴充這個工廠類別即可，不需要修改原程式的程式碼**。
 
 ```mermaid
 classDiagram
+    direction LR
     class Computer {
         cpu: CPU
         memory: Memory
@@ -109,7 +112,7 @@ classDiagram
 請注意 `Workstation` 的各零件是都是 `Computer` 的子類別
 
 ```java
-class WorkstationCPU extends CPU {... }
+class WS_CPU extends CPU {... }
 class WorkstationMemory extends Memory {...}
 class WorkstationMotherBoard extends MotherBoard {...}
 ```	
@@ -139,27 +142,27 @@ classDiagram
         +createMemory() Memory
         +createMotherBoard() MotherBoard
     }
-    class PCFactory {
+    class PC_Factory {
         +createCPU() CPU
         +createMemory() Memory
         +createMotherBoard() MotherBoard
     }
-    class WorkstationFactory {
+    class WS_Factory {
         +createCPU() CPU
         +createMemory() Memory
         +createMotherBoard() MotherBoard
     }
-    ComputerFactory <|.. PCFactory
-    ComputerFactory <|.. WorkstationFactory
+    ComputerFactory <|.. PC_Factory
+    ComputerFactory <|.. WS_Factory
     Computer ..> ComputerFactory : uses
     
-    PCFactory ..> PC_CPU : creates
-    PCFactory ..> PC_Memory : creates
-    PCFactory ..> PC_MotherBoard : creates
+    PC_Factory ..> PC_CPU : creates
+    PC_Factory ..> PC_Memory : creates
+    PC_Factory ..> PC_MotherBoard : creates
     
-    WorkstationFactory ..> WorkstationCPU : creates
-    WorkstationFactory ..> WorkstationMemory : creates
-    WorkstationFactory ..> WorkstationMotherBoard : creates
+    WS_Factory ..> WS_CPU : creates
+    WS_Factory ..> WS_Memory : creates
+    WS_Factory ..> WS_MotherBoard : creates
 ```
 
 ### 12.3.2 迷宮
@@ -256,6 +259,26 @@ classDiagram
 
 3. **Spring 框架中的 `BeanFactory`**：
    Spring 的 `BeanFactory` 容器負責管理並生產各類型的物件 (Beans)。雖然它整合了多種設計模式，但其核心能力——「透過統一介面獲取一系列相關物件而不暴露其具體類別」——正是抽象工廠模式的體現。
+
+   *   **抽象工廠 (Abstract Factory)**：`org.springframework.beans.factory.BeanFactory` 介面，它定義了如何獲取物件的規則。
+   *   **具體工廠 (Concrete Factory)**：如 `XmlBeanFactory` 或 `AnnotationConfigApplicationContext`，它們根據不同的設定來源（XML 或 Java Annotations）來產生物件。
+   *   **產品族 (Product Family)**：在 Spring 設定檔中定義的一組相關 Beans。切換不同的設定（如開發環境 vs. 測試環境），就等同於切換了整個產品族。
+
+   **舉例說明：**
+   當我們需要從工廠取得服務物件時，不需要關心它是如何被建立的：
+   ```java
+   // 1. 建立工廠 (具體工廠實作)
+   BeanFactory factory = new ClassPathXmlApplicationContext("beans.xml");
+
+   // 2. 透過抽象介面取得產品 (不需要知道具體類別)
+   PaymentService payment = factory.getBean("paymentService", PaymentService.class);
+   InventoryService inventory = factory.getBean("inventoryService", InventoryService.class);
+
+   // 3. 使用產品族中的物件協同工作
+   payment.process(order);
+   inventory.update(order);
+   ```
+   透過這種方式，Spring 讓開發者只需要依賴介面，而將物件的組裝與生成完全交給工廠管理。
 
 4. **資料庫驅動 (JDBC)**：
    JDBC 的 `Connection` 物件針對不同的資料庫（MySQL、Oracle、PostgreSQL）能生產出一系列相互關聯且相容的產品（如 `Statement`、`PreparedStatement`），這也具備了抽象工廠為特定「產品族」提供生產介面的特徵。

@@ -5,7 +5,8 @@ Factory Method (工廠方法)
 ## 11.1 目的與動機
 
 > 定義一介面以生成物件，但將其生成延遲給子類別來作決定。
->> Define an interface for creating a single object, but let subclasses decide which class to instantiate. Factory Method lets a class defer instantiating to sub classes.
+
+> Define an interface for creating a single object, but let subclasses decide which class to instantiate. Factory Method lets a class defer instantiating to sub classes.
 
 
 ### 動機
@@ -30,16 +31,7 @@ Factory Method (工廠方法)
 
 這樣的缺點是如果我們每一次有新的文件類別產生時就必須修改程式(`operation1()`)一次。我們可以將生成文件的動作抽象為一個方法，當日後有新的文件物件產出時，只要擴充 `Application` 類別即可，不需要修改文件物件。使用工廠方法的動機即為解決此類問題。下圖為採用此設計樣式後的結構。
 
-<!-- \begin{figure}[h]
-\begin{center}
-\includegraphics[width=0.9\columnwidth]{dp/FactoryMethodDoc.png}
-\caption{Using factory method}
-\end{center}
-\end{figure}
- -->
 ![](https://i.imgur.com/ID9oxNh.png)
-
-
 
 ### 應用時機
   
@@ -48,51 +40,35 @@ Factory Method (工廠方法)
 
 ## 11.2 結構與方法
 
-<!-- \begin{figure}[h]
-\begin{center}
-\includegraphics[width=0.8\columnwidth]{dp/FactoryMethodStr.png}
-\caption{Factory Method 結構}
-\label{fig_FM_str}
-\end{center}
-\end{figure}
- -->
 ![](https://i.imgur.com/3ZEEgmY.png)
 
 ```mermaid
 classDiagram
+    
     class Creator {
         <<abstract>>
-        +factoryMethod() Product
+        +factoryMethod()* Product
         +doSomething()
     }
     class Product {
         <<abstract>>
+        +operation()*
+    }
+    class ConcreteProduct {
         +operation()
     }
-    class ConcreteProduct1 {
-        +operation()
-    }
-    class ConcreteProduct2 {
-        +operation()
-    }
-    class ConcreteCreator1 {
+    class ConcreteCreator {
         +factoryMethod() Product
     }
-    class ConcreteCreator2 {
-        +factoryMethod() Product
-    }
-    Creator <|-- ConcreteCreator1
-    Creator <|-- ConcreteCreator2
-    Product <|-- ConcreteProduct1
-    Product <|-- ConcreteProduct2
-    ConcreteCreator1 ..> ConcreteProduct1
-    ConcreteCreator2 ..> ConcreteProduct2
-    Creator --> Product
+    Creator <|-- ConcreteCreator
+    Product <|-- ConcreteProduct
+    Creator ..> Product: creates
+    ConcreteCreator ..> ConcreteProduct: creates
 ```
 
 
 
-> :question: ConcreteCreator 內的 factoryMethod() 產生的物件，可否是非 Product 的子類別？
+> ConcreteCreator 內的 factoryMethod() 產生的物件，可否是非 Product 的子類別？
 
 ### 參與者
 
@@ -132,14 +108,6 @@ classDiagram
 
 程式中的第 5-8 行建立 `Room`、`Door` 等零件物件，第 10-18 行則建立這些物件的關係。下圖描述此實例的架構。
 
-<!-- \begin{figure}[h]
-\begin{center}
-\includegraphics[width=0.4\columnwidth]{dp/FactoryMethodMaze0.png}
-\caption{No Factory Method}
-\label{fig_FM_maze0}
-\end{center}
-\end{figure}
- -->
 ```mermaid
 classDiagram
     class MazeGame {
@@ -197,16 +165,8 @@ classDiagram
 - `OCP` 的原則吻合了嗎？是的，我們的功能加強了，但沒有任何程式碼做了修改。我們新增 `EnchantedMazeGame` 與 `EnchantedRoom` 等類別。
 - `makeRoom()` 的介面有相容嗎？是的，雖然 `MazeGame.makeRoom()` 的傳回型態是定義為 `Room`，而 `EnchantedMazeGame.makeRoom()` 是傳回 `EnchantedRoom` 物件，但因為 `EnchantedRoom` 繼承自 `Room`，因而型態上是相容的。
 
-相對應的UML圖如下：你可以把這些類別內的方法寫上嗎？
+擴充後的 `EnchantedMazeGame` 架構，透過繼承並覆蓋工廠方法來生產新的零件：
 
-<!-- \begin{figure}[h]
-\begin{center}
-\includegraphics[width=0.5\columnwidth]{dp/FactoryMethodMaze1.png}
-\caption{Using Factory Method}
-\label{fig_FM_maze}
-\end{center}
-\end{figure}
- -->
 ```mermaid
 classDiagram
     class MazeGame {
@@ -232,15 +192,12 @@ classDiagram
     Wall <|-- EnchantedWall
     Door <|-- EnchantedDoor
     
-    MazeGame ..> Room : creates
-    MazeGame ..> Wall : creates
-    MazeGame ..> Door : creates
     EnchantedMazeGame ..> EnchantedRoom : creates
     EnchantedMazeGame ..> EnchantedWall : creates
     EnchantedMazeGame ..> EnchantedDoor : creates
 ```
 
-如上的 UML 圖：新增類別以擴充功能：`EnchantedMazeGame` 與 `EnchantedRoom`
+如上的 UML 圖：新增類別以擴充功能：`EnchantedMazeGame` 與 `EnchantedRoom` 等。
 
 > 心得
 

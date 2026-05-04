@@ -3,7 +3,8 @@
 ## 13.1 基本結構之獨體
 
 > 確定一個類別只會有一個物件實體，並且提供一個可以存取該物件的統一方法。
->> Ensure a class only has one instance, and provide a global point of access to it
+
+> Ensure a class only has one instance, and provide a global point of access to it
 
 
 ### 13.1.1 動機
@@ -13,9 +14,19 @@
 ### 13.1.2 結構與方法
 
 **結構**
-Figure: Singleton Structure:
 
-<img src="https://i.imgur.com/SYp4vz2.png" width=500>
+
+```mermaid
+classDiagram
+    class Singleton {
+        -Singleton uniqueInstance$ 
+        -int data
+        -Singleton()
+        +Singleton instance()$
+        +void setData(int d)
+        +int getData()
+    }
+```
 
 這個設計的技巧在於
 
@@ -32,11 +43,7 @@ Figure: Singleton Structure:
 
 以下是一個範例：
 
-[src/SingletonSample.java](src/SingletonSample.java) (見 `Singleton` 類別)
-
-主程式
-
-[src/SingletonSample.java](src/SingletonSample.java) (見 `TestSingleton` 類別)
+[src/SingletonSample.java](src/SingletonSample.java) 
 
 執行的結果
 
@@ -47,10 +54,13 @@ s2 的參考為：Singleton@1cc810
 s2 的值為：34
 ```
 
-
 有上述的例子可以看到，不如我們呼叫多少次 `Singleton.instance`，回傳的都是相同的物件。
 
 ## 13.3 有繼承樹的獨體
+
+如下圖，右方是有繼承數的獨體。
+
+<img src="https://i.imgur.com/SYp4vz2.png" width=500>
 
 ### 13.2.1 動機
 如果在一個繼承樹中只允許產生一個物件，該怎麼設計？
@@ -92,7 +102,7 @@ s2 的值為：34
 Singleton 設計模式在 Java API 中被廣泛應用於需要全局唯一存取點的資源管理、系統級服務和配置管理等場景。它可以有效地控制資源的使用，提高系統的效率和一致性。
 
 
-## 13.5 Check
+## 13.5 隨堂測驗
 
 1.  Singleton 的目的為
     A) 快速的為陣列內每一個類別產生一個物件

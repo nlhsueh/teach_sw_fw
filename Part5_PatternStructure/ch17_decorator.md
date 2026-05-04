@@ -11,7 +11,7 @@
 
 假設我們要做一個文字視窗(`TextView`)，並且提供各種不同的邊框(`border`)與捲軸(`scroll bar`)作為選擇。邊框的型態有：一般型(`Plain`)、3D型或花俏型(`Fancy`)，捲軸的型態有：無捲軸、水平型(`Horizontal`)、垂直型(`Vertical`)與水平垂直型。因此排列組合共有 `3*4=12` 種型別的文字視窗。
 
-<img src="https://i.imgur.com/UhKdMIR.png" width="500">
+<img src="img/ch17_textview.png" width="500">
 
 FIG: 由框和捲軸而成的 `TextView`
 
@@ -34,21 +34,8 @@ FIG: 由框和捲軸而成的 `TextView`
 
 我們可以透過 `Strategy` 樣式來解決這個問題，在 `TextView` 建立的時候帶入兩個參數，透過參數的組合來形成各種不同的 TextView。程式碼如下：
 
-```java 
-採用策略設計樣式的 TextView
-public class TextView { 
-    private Border border; 
-    private Scrollbar sb; 
-    public TextView(Border border, Scrollbar sb) { 
-        this.border = border; this.sb = sb; 
-    } 
-    public void draw() { 
-        border.draw(); 
-        sb.draw(); 
-        // Code to draw the TextView object itself. 
-   } 
-} 
-```
+[src/TextViewStrategy.java](src/TextViewStrategy.java)
+
 
 此方法的缺點是缺乏彈性，如果我們在增加新的維度（除了 border, scrollbar 以外的維度），勢必要修該 TextView 的程式碼。
 
@@ -56,53 +43,13 @@ public class TextView {
 
 如果我們使用 `Decorator` 設計樣式一切就會變的容易許多：對 `TextView` 而言，是否增加 `Border` 的功能或捲軸的功能都可以隨意增減，就像是裝飾品一般。新的架構如圖:
 
-![](https://i.imgur.com/Q3JIASW.png)
+![](img/ch17_logic.png)
 FIG: 使用 Decorator 來實作 `TextView`
 
 注意我們將各種`Border`與`Scrollbar`視為一種 `Decorator`，而每一個`Decorator`可包含一個以上的`Component`，如`BorderDecorator`可能可以包含有`3D Border`、`Fancy Border`和`Plain Border`等個別裝飾品物件，而 `ScrollDecorator` 可以包含有垂直、水平的 `Scroll Bar`。這樣的架構方式可以讓動態生成的搭配裝飾更多樣性。讓我們來看`Border Decorator`中 `PlainBorder` 的程式片段：
 
-```java
-// 採用 Decorator 樣式
-abstract class Decorator extends AbstractTextView {
-   AbstractTextView tv;
-   // decorator 一定會有一個主要物件
-   public Decorator(AbstractTextView tv) {
-      this.tv = tv
-   }
-   public void draw() {
-      tv.draw();
-   }
-}   
+[src/TextViewDecoratorExample.java](src/TextViewDecoratorExample.java)
 
-abstract class BorderDecorator extends Decorator {
-    public BorderDecorator (AbstractTextView c) {
-            super(c);
-    }
-    public void draw () {
-        super.draw(); //先讓 component 繪出主要功能
-        //做一些 border 的準備
-    }
-}
-
-class PlainBorder extends BorderDecorator{
-    public PlainBorder (AbstractTextView c) {
-            super(c);
-    }
-    public void draw ( ) {
-        super.draw( ); 
-        //以下繪出一般型(Plain)邊框
-    }
-}
-
-public class Client {
-    public static void main(String[] args) {
-        TextView data = new TextView();
-        AbstractTextView borderData = new FancyBorder(data);
-        AbstractTextView scrolledData = new VertScrollbar(data);
-        AbstractTextView borderAndScrolledData = new HorzScrollbar(borderData);
-    }
-}
-```
 
 `PlainBorder`的建構子將傳入一個 `AbstractTextView` 的變數，透過 `super(c)` 來設定其所包含的元件。在 `draw()` 時呼叫 `super.draw()` 會讓所包含的 `textview` 先做它的 `draw()` 再執行 `PlainBorder` 自身的繪圖。因此，當我們想要建立一個`PlainBorder`的`TextView`只要執行以下的命令：
 
@@ -122,7 +69,7 @@ VerticalScrollBar verticalPlainTextView = new VerticalScrollBar (plainTextView) 
 
 ## 17.3 結構與方法
 
-<img src="https://i.imgur.com/KIeMPxd.png" width="500">
+<img src="img/ch17_structure.png" width="500">
 FIG: Decorator
 
 ### 17.3.1 參與者
@@ -140,83 +87,13 @@ FIG: Decorator
 
 ### 17.3.3 程式樣板
 
-```java
-package decorator;
+[src/DecoratorTemplate.java](src/DecoratorTemplate.java)
 
-abstract class Component {
-	abstract void op();
-}
-
-class ConcreteComponent extends Component {
-	void op() {
-		System.out.println("Basic behavior");
-	}
-}
-```
-
-```java
-abstract class Decorator extends Component {
-	Component c;
-
-	public Decorator(Component c) {
-		this.c = c;
-	}
-
-	void op() {
-		c.op();
-	}
-}
-```
-
-```java
-class ConcreteDecorator1 extends Decorator {
-	public ConcreteDecorator1(Component c) {
-		super(c);
-	}
-
-	void op() {
-		super.op();
-		addedBehavior();
-	}
-
-	void addedBehavior() {
-		System.out.println("Added behavior 1");
-	}
-}
-```
-
-```java
-class ConcreteDecorator2 extends Decorator {
-	public ConcreteDecorator2(Component c) {
-		super(c);
-	}
-
-	void op() {
-		super.op();
-		addedBehavior();
-	}
-
-	void addedBehavior() {
-		System.out.println("Added behavior 2");
-	}
-}
-```
-
-```java
-public class DecoratorTemplate {
-	public static void main(String[] args) {
-		Component cc = new ConcreteComponent();
-		cc.op();
-		Component c1 = new ConcreteDecorator1(new ConcreteDecorator2(cc));
-		c1.op();
-	}
-}
-```
 
 
 執行結果如下：
 
-<img src="https://i.imgur.com/GawG0J8.png" width="250">
+<img src="img/ch17_result.png" width="250">
 
 
 如果我們有 Decorator 子類別 `D1`, `D2`, `D3`, `D4`, decorator 內的功能為 `op()`, 假設每個 `op()` 都是先執行 `super().op()`, 再執行自身的行為（分別為 $f_1-f_4$），ConcreteComponent 的類別為 `CC`。
@@ -233,7 +110,7 @@ public class DecoratorTemplate {
 
 熟悉 JAVA I/O 的讀者對 Decorator 應該有似曾相識的感覺吧！我們先看 Input Stream 的類別圖：
 
-![](https://i.imgur.com/FcVmyeV.png)
+![](img/ch17_io.png)
 FIG: Java IO- Using Decorator
 
 在 Java I/O 中，`InputStream` 和 `OutputStream` 都有 `BufferedStream`、`DataStream`、`PushbackStream` 的功能需求，其中：
@@ -248,37 +125,8 @@ FIG: Java IO- Using Decorator
 
 以下是一個簡單的 Java 範例，展示如何使用 `FileInputStream` 作為基礎 `InputStream`，並使用 `BufferedInputStream` 和 `DataInputStream` 進行裝飾：
 
-```java
-import java.io.FileInputStream;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
+[src/InputStreamDecoratorExample.java](src/InputStreamDecoratorExample.java)
 
-public class InputStreamExample {
-    public static void main(String[] args) {
-        try (
-            // 建立基礎的 FileInputStream
-            FileInputStream fileIn = new FileInputStream("example.txt");
-            // 使用 BufferedInputStream 裝飾，提供緩衝功能
-            BufferedInputStream bufferedIn = new BufferedInputStream(fileIn);
-            // 使用 DataInputStream 裝飾，提供讀取基本型態的功能
-            DataInputStream dataIn = new DataInputStream(bufferedIn)
-        ) {
-            // 從 DataInputStream 讀取資料
-            int intValue = dataIn.readInt();
-            double doubleValue = dataIn.readDouble();
-            String stringValue = dataIn.readUTF();
-
-            System.out.println("讀取的整數: " + intValue);
-            System.out.println("讀取的小數: " + doubleValue);
-            System.out.println("讀取的字串: " + stringValue);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}
-```
 
 在這個範例中：
 
@@ -339,13 +187,8 @@ public class InputStreamExample {
 - 同上，若以繼承的方法來設計，需要設計多少類別?
 - 同上，若改以 Strategy 設計樣式來設計，該如何設計？
 
-### 17.ex02
-聖誕樹 (`ChrismasTree`) 上面有許多的裝飾品，包含鈴鐺（`Bell`），糖果（`Candy`），與禮物（`Gift`），請用 `Decorator` 樣式設計之。所有的聖誕樹都會支援 `sing()` 的方法：
-    - `聖誕樹：I am a Chrismas tree`
-    - `有鈴鐺的聖誕樹：I have a bell, I am a Chrismas tree`
-    - `有糖果和鈴鐺的聖誕樹：I have a candy, I have a bell, I am a Chrismas tree`
+(見 [src/ChristmasTreeDecorator.java](src/ChristmasTreeDecorator.java))
 
-依此類推。請寫出完整可以執行的程式。
 
 ### 17.ex03
 
@@ -355,13 +198,8 @@ public class InputStreamExample {
 - `CommaFilter`: 遇到數字就加上千分號
 - `CountFilter`: 在每行字後面加上單字的個數
 	
-```java
-Writer w = new BufferredWriter(new FileWriter("test.txt"));
-Writer w2 = new LowerCaseFilter(w2);
-w2.write("THIS is A Test 12309092"); //印出 this is a test 12309092
-Writer w3 = new CommaFilter(w2);
-w3.write("THIS is A Test 12309092"); //印出 this is a test 12,309,092
-```	
+(見 [src/FilterDecorator.java](src/FilterDecorator.java))
+	
 
 ### 17.ex04
 泡咖啡了！我們有手工（`HandBlend`）、深度烘胚（`DarkRoast`）、低卡 `Decaf`、`Espresso` 等咖啡，而且每一種咖啡都可以加上 `Milk`, `Mocha`, `Soy`，當然每一個都是額外需要加費的。請用 Decorator 設計樣式設計之，注意 Coffee 是父類別，而我們需要 `cost()` 方法來回傳費用。畫出 UML 圖，寫出程式（請自己假設個別的價格）。

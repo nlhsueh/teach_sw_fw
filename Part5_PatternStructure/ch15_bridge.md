@@ -15,7 +15,7 @@
 例如，一個視窗可以有兩種不同的實作：`XWindow` 或是 `PMWindow`。當我們要把 `Window` 分成 `IconWindow` 和 `TransientWindow` 兩種不同的類別，那麼我們就需要設計 $2*2$ 個類別。同理，如果當實作方面又多一個 `MacWindow`, 抽象方面又多一個 `SquareWindow`, 那我們就需要 $3*3$ 個類別。類別會越來越多，有沒有可能簡化設計？
 
 
-<img src="https://i.imgur.com/yy2gbgE.png" width="500">
+<img src="img/ch15_no_bridge.png" width="500">
 
 FIG: Window 分類：沒有使用 Bridge 樣式
 
@@ -38,7 +38,7 @@ FIG: Window 分類：沒有使用 Bridge 樣式
 ### 15.2.1 結構
 
 
-<img src="https://i.imgur.com/n0Y7d6Z.png" width="500">
+<img src="img/ch15_structure.png" width="500">
 
 FIG: Bridge Structure
 
@@ -50,81 +50,8 @@ FIG: Bridge Structure
 
 ### 15.2.2 程式樣板
 
-```java
-package bridge;
+[src/BridgeTemplate.java](src/BridgeTemplate.java)
 
-interface Implementor {
-	public void m1();
-	public void m2();
-}
-
-class ConcreteImplA implements Implementor {
-	public void m1() {
-		// ...
-	}
-
-	public void m2() {
-		// ...
-	}
-}
-
-class ConcreteImplB implements Implementor {
-	public void m1() {
-		// ...
-	}
-
-	public void m2() {
-		// ...
-	}
-}
-
-abstract class Abstraction {
-	Implementor imp;
-
-	public Abstraction(Implementor imp) {
-		this.imp = imp;
-	}
-
-	protected void m1() {
-		imp.m1();
-	}
-
-	protected void m2() {
-		imp.m2();
-	}
-
-	abstract void operation();
-}
-
-class RefinedAbstraction1 extends Abstraction {
-	public RefinedAbstraction1(Implementor imp) {
-		super(imp);
-	}
-
-	// 每個 RefinedAbstraction 執行 operation 的方式可能不同。先 m1() 再 m2()
-	void operation() {
-		m1();
-		m2();
-		// ...
-	}
-}
-
-class RefinedAbstraction2 extends Abstraction {
-	public RefinedAbstraction2(Implementor imp) {
-		super(imp);
-	}
-
-	// 每個 RefinedAbstraction 執行 operation 的方式可能不同。先 m2() 再 m1()
-	void operation() {
-		m2();
-		m1();
-		// ...
-	}
-}
-```
-
-
-[Get the code] (https://github.com/nlhsueh/OOSE/blob/master/src/bridge/BridgeTemplate.java)
 
 
 > operation() 和 m1(), m2() 的差別是什麼？
@@ -133,116 +60,15 @@ class RefinedAbstraction2 extends Abstraction {
 
 ### 15.3.1 Shape
 
-```java
-abstract class Shape {
-	ShapeImp impl;
-	public Shape(ShapeImp impl) {
-		this.impl = impl;
-	}
-	
-	abstract void draw();
-	
-	public void drawLine(int x1, int y1, int x2, int y2) {
-		impl.drawLine(x1, y1, x2, y2);
-	}	
-}	
-```
+<img src="img/ch15_shape.png" width="300">
 
+[src/ShapeBridgeExample.java](src/ShapeBridgeExample.java)
 
-draw() 是由 drawLine() 所組成的方法，而 drawLine 的真實實作是委託給 impl 來做的。Rectangle 和 Triangle 都是形狀，其 draw() 各自不同，但都呼叫了 drawLine()。
-
-<img src="https://i.imgur.com/STs90cl.png" width="300">
 
 完整程式碼：
 
-```java
-public class Draw {
-	public static void main(String args[]) {
-		System.out.println("Rectangle, 2D");
-		Shape r1 = new Rectangle(1,1,2,3, new Draw2D());
-		r1.draw();
-		System.out.println("Rectangle, 3D");
-		Shape r2 = new Rectangle(1,1,2,3, new Draw3D());
-		r2.draw();
-			
-		System.out.println("Triangle, 3D");
-		Shape s1 = new Triangle(1,1,2,3,5,10,new Draw3D());
-		s1.draw();
+(完整程式碼見 [src/ShapeBridgeExample.java](src/ShapeBridgeExample.java))
 
-		System.out.println("Triangle, 3D");			
-		Shape s2 = new Triangle(1,1,2,3,5,10,new Draw2D());
-		s2.draw();
-	}
-}
-
-abstract class Shape {
-	ShapeImp impl;
-	public Shape(ShapeImp impl) {
-		this.impl = impl;
-	}
-	
-	abstract void draw();
-	
-	public void drawLine(int x1, int y1, int x2, int y2) {
-		impl.drawLine(x1, y1, x2, y2);
-	}	
-}	
-
-//相當於 RefinedAbstraction1
-class Rectangle extends Shape { 
-	int x, y, w, t;
-	
-	public Rectangle(int a, int b, int w, int t, ShapeImp imp) {
-		super(imp);
-		x=a; y=b; this.w=w; this.t=t;		
-	}
-
-	//Rectangle 知道如何利用 drawLine 畫出方形。但他並沒有綁真正的實作。
-	public void draw() { 
-		drawLine(x, y, x+w, y);
-		drawLine(x+w, y, x+w, y+t);
-		drawLine(x+w, y+t, x, y+t);
-		drawLine(x, y+t, x, y);
-	}
-}
-
-//相當於 RefinedAbstraction2
-class Triangle extends Shape {
-	int x1, x2, x3, y1, y2, y3;
-	
-	public Triangle(int x1, int y1, int x2, int y2, int x3, int y3, ShapeImp imp) {
-		super(imp);
-		this.x1 = x1;
-		this.x2 = x2;
-		this.x3 = x3;
-		this.y1 = y1;
-		this.y2 = y2;
-		this.y3 = y3;
-	}	
-	
-	public void draw() { 
-		drawLine(x1, y1, x2, y2);
-		drawLine(x2, y2, x3, y3);
-		drawLine(x3, y3, x1, y1);		
-	} 
-}
-
-interface ShapeImp {
-	public void drawLine(int x1, int y1, int x2, int y2);
-}
-
-class Draw2D implements ShapeImp {
-	public void drawLine(int x1, int y1, int x2, int y2) {
-	   System.out.println("2D "+String.valueOf(x1)+","+String.valueOf(y1)+","+String.valueOf(x2)+","+String.valueOf(y2));
-	}
-}
-
-class Draw3D implements ShapeImp {
-	public void drawLine(int x1, int y1, int x2, int y2) {
-	   System.out.println("3D"+String.valueOf(x1)+","+String.valueOf(y1)+","+String.valueOf(x2)+","+String.valueOf(y2));
-	}	
-}
-```
 
 - Draw2D 與 Draw3D 針對細微方法 drawLine() 有不同的實作方法; Shape 在繪製 drawLine() 時會委託給 這兩個物件來決定
 - 不同形狀的類別：Rectangle 或 Triangle 會有不同的 draw() 方法，但都會應用到 drawLine()
@@ -264,39 +90,34 @@ JDBC 使得用戶可以將具體的資料庫實現與操作隔離，允許開發
 **UML design**
 以下會出 Connection 的部分，省略 `Statement`, `ResultSet`:
 
-```plantuml
-@startuml
-interface Driver {
-  +connect(url: String): Connection
-}
-
-class MySQLDriver implements Driver {
-  +connect(url: String): Connection
-}
-
-class OracleDriver implements Driver {
-  +connect(url: String): Connection
-}
-
-interface Connection {
-  +createStatement(): Statement
-  +close(): void
-}
-
-class MySQLConnection implements Connection {
-  +createStatement(): Statement
-  +close(): void
-}
-
-class OracleConnection implements Connection {
-  +createStatement(): Statement
-  +close(): void
-}
-
-Driver <|.. MySQLDriver
-Driver <|.. OracleDriver
-Connection o-> Driver
-@enduml
+```mermaid
+classDiagram
+    class Driver {
+        <<interface>>
+        +connect(url String) Connection
+    }
+    class MySQLDriver {
+        +connect(url String) Connection
+    }
+    class OracleDriver {
+        +connect(url String) Connection
+    }
+    class Connection {
+        <<interface>>
+        +createStatement() Statement
+        +close() void
+    }
+    class MySQLConnection {
+        +createStatement() Statement
+        +close() void
+    }
+    class OracleConnection {
+        +createStatement() Statement
+        +close() void
+    }
+    Driver <|.. MySQLDriver
+    Driver <|.. OracleDriver
+    Connection o--> Driver
 ```
 
 **範例程式**
@@ -305,90 +126,8 @@ Connection o-> Driver
 
 #### 1. 驅動類（如 MySQL 驅動）
 
-```java
-public class MySQLDriver implements Driver {
-    @Override
-    public Connection connect(String url) {
-        try {
-            // 模擬 MySQL 連接
-            return new MySQLConnection();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-}
-```
+[src/JDBCBridgeExample.java](src/JDBCBridgeExample.java)
 
-#### 2. 連接類（如 MySQL 連接）
-
-```java
-public class MySQLConnection implements Connection {
-    @Override
-    public Statement createStatement() {
-        return new MySQLStatement();
-    }
-
-    @Override
-    public void close() {
-        System.out.println("Closing MySQL connection");
-    }
-}
-```
-
-#### 3. 語句類（如 MySQL 語句）
-
-```java
-public class MySQLStatement implements Statement {
-    @Override
-    public ResultSet executeQuery(String query) {
-        System.out.println("Executing MySQL query: " + query);
-        return new MySQLResultSet();
-    }
-}
-```
-
-#### 4. 結果集類（如 MySQL 結果集）
-
-```java
-public class MySQLResultSet implements ResultSet {
-    private int index = 0;
-    private String[] data = {"Row 1", "Row 2", "Row 3"};
-
-    @Override
-    public boolean next() {
-        if (index < data.length) {
-            index++;
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public String getString(String column) {
-        return data[index - 1];
-    }
-}
-```
-
-#### 5. 主程式
-
-```java
-public class JDBCExample {
-    public static void main(String[] args) {
-        Driver driver = new MySQLDriver();
-        Connection connection = driver.connect("jdbc:mysql://localhost:3306/mydb");
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM users");
-
-        while (resultSet.next()) {
-            System.out.println(resultSet.getString("name"));
-        }
-
-        connection.close();
-    }
-}
-```
 
 **總結**
 
@@ -418,7 +157,7 @@ public class JDBCExample {
 
 4. 把下圖改用 Bridge 重新設計。
 
-<img src="https://i.imgur.com/U7XTuDh.png" width="400">
+<img src="img/ch15_exercise_structure.png" width="400">
 
 Fig: 未使用 Bridge 的結構
 
@@ -427,65 +166,8 @@ Fig: 未使用 Bridge 的結構
 ### 15.5.1 Shape
 Shape 應用 `java.awt.Graphics` 來繪製圖，以下為部分程式碼：
 
-```java
-class BridgeSwingExample extends JFrame {
+[src/ShapeSwingBridge.java](src/ShapeSwingBridge.java)
 
-    private Shape square;
-
-    public BridgeSwingExample() {
-        super("Bridge Pattern in Swing");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(300, 300);
-        setLocationRelativeTo(null);
-
-        // 創建具體的實現
-        ShapeImpl lineDrawer = new LineDrawingShapeImpl();
-
-        // 創建 Refined Abstraction，並將具體實現橋接進來
-        square = new Square(lineDrawer, 50, 50, 100); // (50, 50) 為座標, 100 是邊長
-
-        JPanel panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                // 繪製正方形
-                square.draw(g);
-            }
-        };
-        add(panel);
-
-        setVisible(true);
-    }
-}
-```
-
-其中實線的做法：
-```java
-class LineDrawingShapeImpl implements ShapeImpl {
-    @Override
-    public void drawLine(Graphics g, int x1, int y1, int x2, int y2) {
-        g.drawLine(x1, y1, x2, y2);
-    }
-}
-```
-
-虛線的實踐方式：
-```java
-class DashedLineShapeImpl implements ShapeImpl {
-    private static final float[] DASH_PATTERN = {5.0f, 5.0f}; // 定義虛線的樣式 (線段長度, 空格長度)
-    private static final BasicStroke DASHED_STROKE = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, DASH_PATTERN, 0.0f);
-
-    @Override
-    public void drawLine(Graphics g, int x1, int y1, int x2, int y2) {
-        Graphics2D g2d = (Graphics2D) g.create(); // 創建一個 Graphics2D 的副本，避免影響原始 Graphics 物件
-        Stroke originalStroke = g2d.getStroke();
-        g2d.setStroke(DASHED_STROKE);
-        g2d.drawLine(x1, y1, x2, y2);
-        g2d.setStroke(originalStroke); // 恢復原始的 Stroke
-        g2d.dispose(); // 釋放 Graphics2D 資源
-    }
-}
-```
 
 請完成
 1. 實線正方形、虛線正方形

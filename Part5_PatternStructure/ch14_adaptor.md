@@ -197,52 +197,16 @@ Servlet API 中的 `HttpServletRequestWrapper` 和 `HttpServletResponseWrapper`
     C) 讓一個物件可以有很多的觀者者，物件變動時，其觀察者物件可以跟著變動
     D) 提供一個可以修改介面的介面，讓物件可以溝通
 
-<details>
-<summary>解答</summary>
-    **解答：A) 把兩個介面不相容的物件可以溝通合作**
-
-    **解說：** 轉接器模式的主要目的是將一個介面的請求轉換成另一個介面，使得原本由於介面不兼容而不能一起工作的類別可以一起工作。
-</details>
-
-
 2.  在 Adaptor 中，與 client 溝通的物件為
     A) Target
     B) Adaptee
-
-<details>
-<summary>解答</summary>
-    **解答：A) Target**
-
-    **解說：** 客戶端（Client）期望與符合 Target 介面的物件進行互動。轉接器（Adaptor）實現了 Target 介面，並在內部封裝了 Adaptee 物件，將客戶端的請求委派給 Adaptee。
-</details>
-
 
 3.  Object Adaptor 運用的技巧為
     A) 讓 Target 包含一個 Adaptor 的物件，轉而呼叫 Adaptee 的方法
     B) 設計一個 Target 的子類別 Adaptor，把 client 呼叫的方法轉而呼叫 Adaptee 的方法
     C) 設計一個 Adaptor 類別，呼叫 Target 與 Adaptee ，等於是作為兩者之間的中介，以降低耦合度
 
-<details>
-<summary>解答</summary>
-    **解答：B) 設計一個 Target 的子類別 Adaptor，把 client 呼叫的方法轉而呼叫 Adaptee 的方法**
-
-    **解說：** 這是 **Class Adaptor** 的描述。**Object Adaptor** 的技巧是讓 Adaptor 包含一個 Adaptee 的物件實例，然後在 Adaptor 的方法中調用 Adaptee 的相應方法。
-</details>
-
-
-4.  Adaptor 可分為 class adaptor 與 object adaptor。當 target 與 adaptee 都是類別（非介面）時，我們應該用哪一種？
-    A) class adaptor
-    B) object adaptor
-
-<details>
-<summary>解答</summary>
-    **解答：B) object adaptor**
-
-    **解說：** 當 Target 和 Adaptee 都是類別時，Class Adaptor 需要使用多重繼承，這在某些語言（例如 Java）中是不被允許的，或者會導致設計上的複雜性。Object Adaptor 通過物件組合的方式，將 Adaptee 物件包含在 Adaptor 內部，提供了更高的靈活性和更低的耦合度。
-</details>
-
-
-5.  當我們想要把 `A.m1()` 介面轉成 `B.op1()` 介面。回答問號 `?` 的程式碼
+4.  當我們想要把 `A.m1()` 介面轉成 `B.op1()` 介面。回答問號 `?` 的程式碼
 
 ```java
 class AdaptorA2B extends B {
@@ -263,38 +227,6 @@ class AdaptorA2B extends B {
 </details>
 
 
-6.  說明 物件轉接器 和類別轉接器 的差別
-
-<details>
-<summary>解答</summary>
-    * **物件轉接器 (Object Adaptor):**
-        * 使用**物件組合 (Object Composition)** 的方式實現。
-        * 轉接器類別持有一個 Adaptee 介面的實例。
-        * 轉接器的方法調用 Adaptee 實例的相應方法，完成介面轉換。
-        * 具有更高的靈活性，因為可以適配不同的 Adaptee 實例，並且可以在運行時動態改變。
-        * Adaptee 的任何子類別都可以被適配。
-
-    * **類別轉接器 (Class Adaptor):**
-        * 使用**類別繼承 (Class Inheritance)** 的方式實現。
-        * 轉接器類別同時繼承 Target 介面和 Adaptee 類別。
-        * 轉接器的方法直接調用父類別（Adaptee）的方法。
-        * 耦合度較高，因為轉接器與特定的 Adaptee 類別綁定。
-        * 在某些不支援多重繼承的語言中無法直接實現。
-        * 只能適配特定的 Adaptee 類別，無法適配其子類別（如果轉接器沒有覆寫相關方法）。
-</details>
-
-
-7.  說明 Client, Target, Adaptor, Adaptee 的關係
-
-<details>
-<summary>解答</summary>
-    * **Client (客戶端):** 是需要使用某個功能的角色，它期望與符合 **Target** 介面的物件進行互動。
-    * **Target (目標):** 是客戶端期望使用的介面。它定義了客戶端所理解和調用的方法。
-    * **Adaptee (被適配者):** 是一個已經存在的類別，它的介面與客戶端期望的 Target 介面不兼容。
-    * **Adaptor (轉接器):** 是一個中間件，它實現了 Target 介面，並在內部封裝了 Adaptee 的實例。當客戶端調用 Adaptor 的 Target 介面方法時，Adaptor 會將這個調用轉換成對 Adaptee 相應方法的調用，從而使得客戶端可以使用 Adaptee 的功能，而無需關心其不兼容的介面。
-</details>
-
-
 ## 14.5 Exercise
 
 ### 14.5.1 雙向轉換器
@@ -302,7 +234,6 @@ class AdaptorA2B extends B {
 請設計一個 `A` 到 `B`, `B` 到 `A` 的雙向 Adaptor
 
 [src/BiDirectionalAdapter.java](src/BiDirectionalAdapter.java)
-
 
 ### 14.5.2 Grade average
 有一類別 School, 內有方法 `getAverage(Iterator<Integer>)`  會把 iterator 內的成績加總平均。有一個 Vector 物件 group 內含一些 Grade，但 Vector 無法回傳 `iterator` 物件，只能回傳 `Enumeration` 物件。我們想用 School 來計算 group 的平均，請利用 adapter 來解決此問題。

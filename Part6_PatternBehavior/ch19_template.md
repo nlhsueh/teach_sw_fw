@@ -9,12 +9,12 @@
 
 樣板樣式讓子類別重新定義一個演算法的部分細節，但不變更演算法的結構。整體演算法不變是「剛」，部分可以改是「柔」，所以說 `Template Method` 是一個剛中帶柔的方式。多半我們翻譯成樣板，或是樣板方法。
 
-![](https://i.imgur.com/qoMOcOZ.png)
+![](img/ch19_template_diag.png)
 
 
 就像我們買了一間毛胚屋，大部分的架構都已經好了：你不需要去擔心電線的位置，馬桶如何連結，你所要考慮的是買怎麼的電燈或電器，選什麼牌子的馬桶，然後將它裝上去。一旦完成，「半成品」的毛胚屋就變成一個成品。
 
-![](https://i.imgur.com/JpeExKq.png)
+![](img/ch19_template_house.png)
 
 
 軟體的框架也是如此，框架定義好了固定的骨幹，例如一些複雜的資訊安全問題，或是一些企業規定的演算規則，你（應用程式開發者），只需要繼承這個框架，補充上部分的程式碼，程式就會在框架和應用程式中流動，完成所交辦的任務。這樣的好處是：應用程式開發者少去了很多框架的討論工作，公司也可以確保一定的品質。
@@ -76,31 +76,7 @@ AbstractClass <|-- ConcreteClass
 
 ### 程式樣板
 
-```java=
-abstract class AbsApp {
-    public final void tm() {           // Template Method
-        pm01();
-        pm02();
-        pm03();
-    }
-
-    abstract void pm01();              // Primitive Method
-    abstract void pm02();              // Primitive Method
-    abstract void pm03();              // Primitive Method
-}
-
-class App extends AbsApp {
-    void pm01() {
-        // ...
-    }
-    void pm02() {
-        // ...
-    }
-    void pm03() {
-        // ...
-    }
-}
-```
+[src/AbsAppTemplate.java](src/AbsAppTemplate.java)
 
 使用方式：
 
@@ -112,88 +88,14 @@ app.tm();
 ## 19.4 範例
 
 ### 19.4.1 Open Document
-```java
-class DocApp {
-   // TEMPLATE METHOD
-   final void openDocument (String name) { 
-      if (!canOpenDocument(name)) {
-          // cannot handle this document return;
-      }
-      Document doc = doCreateDocument(); 
-      if (doc) {
-          docs.addDocument(doc); 
-          aboutToOpenDocument(doc); 
-          doc.open();
-          doc.doRead();
-       } 
-    }
-    abstract boolean canOpenDocument(String); // PRIMITIVE METHOD
-    abstract aboutToOpenDocument(Document); // PRIMITIVE METHOD
-    abstract Document doCreateDocument(); // PRIMITIVE METHOD
-}
-```
+[src/DocAppExample.java](src/DocAppExample.java)
 
 
 ### 19.4.2 Chess Game
 
 設計一個通用的遊戲，`playOneGame()` 是一個 `Template Method`。
 
-```java
-abstract class Game {
-   protected int playersCount; 
-
-   // TEMPLATE METHOD
-   final void playOneGame(int playersCount) {
-      this.playersCount = playersCount; 
-      initializeGame();
-      int j = 0;
-      while (!endOfGame()) {
-         makePlay(j);
-         j = (j + 1) % playersCount; 
-      }
-      printWinner(); 
-   }
-   abstract void initializeGame(); // PRIMITIVE METHOD
-   abstract void makePlay(int player); // PRIMITIVE METHOD
-   abstract boolean endOfGame();  // PRIMITIVE METHOD
-   abstract void printWinner();  // PRIMITIVE METHOD
-}
-```
-
-
-大富翁 (`Monopoly`) 或是象棋遊戲 (`ChessGame`) 都繼承 Game, 修改了部分的程式碼。
-
-```java
-class Monopoly extends Game { 
-   void initializeGame() {
-      // ... 
-   }
-   void makePlay(int player) { 
-      // ...
-   }
-   boolean endOfGame() {
-      // ... 
-   }
-   void printWinner() { 
-      // ...
-   } 
-}
-
-class ChessGame extends Game { 
-   void initializeGame() {
-      // ... 
-   }
-   void makePlay(int player) { 
-      // ...
-   }
-   boolean endOfGame() {
-      // ... 
-   }
-   void printWinner() { 
-      // ...
-   } 
-}
-```
+[src/GameExample.java](src/GameExample.java)
 
 ### 19.4.3  ArrayList
 
@@ -366,35 +268,7 @@ TestRunner <|-- UserTestClass
 
 實際範例（JUnit 5）
 
-```java
-class MyTest {
-
-    @BeforeAll
-    static void setupAll() {
-        System.out.println("Before all tests");
-    }
-
-    @BeforeEach
-    void setup() {
-        System.out.println("Before each test");
-    }
-
-    @Test
-    void testExample() {
-        System.out.println("Running test...");
-    }
-
-    @AfterEach
-    void teardown() {
-        System.out.println("After each test");
-    }
-
-    @AfterAll
-    static void teardownAll() {
-        System.out.println("After all tests");
-    }
-}
-```
+[src/JUnitExample.java](src/JUnitExample.java)
 
 ## 19.5 比較
 

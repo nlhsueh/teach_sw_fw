@@ -65,16 +65,77 @@ FIG: Bridge Structure
 [src/ShapeBridgeExample.java](src/ShapeBridgeExample.java)
 
 
-完整程式碼：
+### 15.3.2 Swing 上的實作
+Shape 應用 `java.awt.Graphics` 來繪製圖，以下為部分程式碼：
 
-(完整程式碼見 [src/ShapeBridgeExample.java](src/ShapeBridgeExample.java))
+[src/ShapeSwingBridge.java](src/ShapeSwingBridge.java)
 
+#### 程式描述
 
-- Draw2D 與 Draw3D 針對細微方法 drawLine() 有不同的實作方法; Shape 在繪製 drawLine() 時會委託給 這兩個物件來決定
-- 不同形狀的類別：Rectangle 或 Triangle 會有不同的 draw() 方法，但都會應用到 drawLine()
-- Reactangle, Triange 等形狀物件在生成時，必須決定其實作的物件-- construction injection!
+**ShapeSwingBridge** 展示了 Bridge 設計模式在 Swing 圖形繪製中的應用。它將**形狀的定義**（抽象）與**線條的繪製方式**（實現）分離，使得兩者可以獨立變化。
 
-> 畫出此範例的 UML 圖
+**核心思想**：
+- `Square` 類（具體形狀）內部包含 `ShapeImpl` 介面的引用
+- 當繪製正方形時，不直接呼叫 Java Graphics，而是透過 `ShapeImpl` 的實現來繪製
+- 這樣可以動態選擇用**實線**或**虛線**繪製，無需修改 `Square` 類
+
+**優點**：
+- 要增加新的線條樣式（如點線、粗線），只需新增 `ShapeImpl` 的實現類
+- 要增加新的形狀（如圓形、三角形），只需新增 `Shape` 的子類
+- 兩者獨立擴展，不會互相影響
+
+#### UML 圖
+
+```mermaid
+classDiagram
+    class Shape {
+        <<abstract>>
+        -impl: ShapeImpl
+        +Shape(impl: ShapeImpl)
+        +draw(g: Graphics)*
+    }
+    
+    class Square {
+        -x: int
+        -y: int
+        -size: int
+        +Square(impl: ShapeImpl, x: int, y: int, size: int)
+        +draw(g: Graphics)
+    }
+    
+    class ShapeImpl {
+        <<interface>>
+        +drawLine(g: Graphics, x1: int, y1: int, x2: int, y2: int)*
+    }
+    
+    class LineDrawingShapeImpl {
+        +drawLine(g: Graphics, x1: int, y1: int, x2: int, y2: int)
+    }
+    
+    class DashedLineShapeImpl {
+        -DASH_PATTERN: float[]
+        -DASHED_STROKE: BasicStroke
+        +drawLine(g: Graphics, x1: int, y1: int, x2: int, y2: int)
+    }
+    
+    Shape <|-- Square
+    Shape o-- ShapeImpl
+    ShapeImpl <|.. LineDrawingShapeImpl
+    ShapeImpl <|.. DashedLineShapeImpl
+```
+
+**執行流程示例**：
+```java
+ShapeImpl impl = new LineDrawingShapeImpl();  // 選擇實線實現
+Square square = new Square(impl, 50, 50, 100);
+square.draw(graphics);  // 透過橋接調用實線繪製
+```
+
+要改用虛線，只需換一行：
+```java
+ShapeImpl impl = new DashedLineShapeImpl();  // 改為虛線
+// 其餘代碼完全不變！
+```
 
 ### 15.3.2 JDBC
 
@@ -134,7 +195,7 @@ classDiagram
 - **Bridge Design Pattern** 使得 JDBC 可以在不修改高層介面的情況下，輕鬆地切換不同的資料庫驅動實現。這樣的設計增加了系統的靈活性，並減少了維護成本。
 - 透過抽象出來的 `Connection`、`Statement` 和 `ResultSet` 類，我們可以輕鬆地替換底層的資料庫實現，而不會影響到上層的邏輯。
 
-## 15.4 Check
+## 15.4 隨堂測驗
 
 1. Bridge 的目的為
 	- 把抽象和實作抽離開來，使得兩者可以獨立的變化
@@ -161,18 +222,43 @@ classDiagram
 
 Fig: 未使用 Bridge 的結構
 
-## 15.5 Exercise
+## 15.5 練習
 
-### 15.5.1 Shape
-Shape 應用 `java.awt.Graphics` 來繪製圖，以下為部分程式碼：
+### 15.5.1 Shape 圖形擴展練習
 
-[src/ShapeSwingBridge.java](src/ShapeSwingBridge.java)
+基於 15.3.2 的 ShapeSwingBridge 範例，請使用 Bridge 設計模式來擴展功能：
 
+在現有的 `Square`（正方形）和 `LineDrawingShapeImpl`（實線）、`DashedLineShapeImpl`（虛線）的基礎上，請完成以下功能：
 
-請完成
-1. 實線正方形、虛線正方形
-2. 虛線正方形、虛線正方形
+**第一部分：增加新的形狀**
+1. 實作 `Circle` 類（圓形），可用實線或虛線繪製
+2. 實作 `Triangle` 類（三角形），可用實線或虛線繪製
+3. 新增的形狀應遵循同樣的 Bridge 模式，不修改 `ShapeImpl` 介面
 
+**第二部分：增加新的線條樣式**
+1. 實作 `DottedLineShapeImpl`（點線：3.0f 實線間隔，2.0f 空白間隔）
+2. 實作 `ThickLineShapeImpl`（粗線：寬度為 3.0f）
+3. 驗證可以無縫組合：任意形狀 + 任意線條樣式
+
+**第三部分：整合測試**
+1. 建立 ShapeSwingBridge 的改進版本，在同一個 JFrame 中繪製多個圖形：
+   - 實線正方形 + 虛線圓形 + 點線三角形
+   - 粗線正方形 + 實線三角形
+2. 驗證 Bridge 模式的優勢：添加新形狀或新線條樣式時，不需修改現有代碼
+
+**預期結果**
+
+```
+圖形種類: Square, Circle, Triangle（3 種）
+線條樣式: Solid, Dashed, Dotted, Thick（4 種）
+實現類別數量: 3 個形狀 + 4 個線條實現 = 7 個具體類別
+（不使用 Bridge 則需要 3 × 4 = 12 個類別）
+```
+
+**提示**
+- 在 `Circle` 中使用 `g2d.drawOval()` 繪製圓形（視為正方形的外接圓）
+- 在 `Triangle` 中使用 `g2d.drawPolygon()` 繪製三角形
+- 所有新的 `ShapeImpl` 實現類應包含相同的簽名：`drawLine(Graphics g, int x1, int y1, int x2, int y2)`
 
 ### 15.5.2 訊息傳遞系統
 

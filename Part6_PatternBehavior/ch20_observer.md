@@ -103,49 +103,7 @@ Java 已經針對這個設計樣式設計了一個API, 其中 [Observable](https
 
 Java 從第九版以後取消了 `Observable` 和 `Observer`, 所以以下程式需要下載 JDK 8 來執行。
 
-```java
-package observer;
-
-import java.util.Observable;
-
-public class ObserverTemplate {
-
-  public static void main(String[] args) {
-     Subject s = new Subject();
-
-     View1 v1 = new View1();
-     View2 v2 = new View2();
-     s.addObserver(v1);
-     s.addObserver(v2);
-  }
-}
-
-class Subject extends java.util.Observable {
-   int data;
-
-   public Subject() {
-     data = 0;
-   }
-
-   public void setData(int newValue) {
-     data = newValue;
-     this.setChanged();
-     this.notifyObservers();
-   }
-}
-
-class View1 implements java.util.Observer {
-   public void update(Observable arg0, Object arg1) {
-      // update the view
-   }
-}
-
-class View2 implements java.util.Observer {
-   public void update(Observable o, Object arg) {
-    // update the view
-}
-}
-```
+[src/ObserverTemplate.java](src/ObserverTemplate.java)
 
 **優點**
 
@@ -155,28 +113,7 @@ class View2 implements java.util.Observer {
 
 ### 20.3.1 `Observable` 的應用
 
-```java
-// SUBJECT
-public class Fruit extends Observable {
-    private String name;
-    private float price;
-
-    public Fruit(String name, float price) {
-       this.name = name;
-       this.price = price;
-       System.out.println("Fruit created: " + name + " at " + price);
-    }
-
-    public String getName() {return name;}
-    public float getPrice() {return price;}
-
-    public void setPrice(float price) { //SETSTATE
-       this.price = price;
-       setChanged();
-       notifyObservers(new Float(price)); //NOTIFYOBSERVER()
-    }
- }
-```
+[src/FruitExample.java](src/FruitExample.java)
 
 為何需要先 `setChanged()` 再呼叫 `notifyObserver()`? 因為 `notifyObserver` 是 `public` 的，外部物件可以呼叫 `notifyObserver`，但物件的狀態可能沒有變化。`notifyObserver()` 會先檢查是否 `hasChanged()`, 如果有才會呼叫 `update()`。`Fruit` 自己可以確定狀態改變時執行 `setChanged()` 以保證 `update()` 的執行。`notifyObservers()` 內部在執行完 `update()` 後也會呼叫 `clearChanged()`。有時候我們會變更一連串的狀態後才會 `setChanged()`, 允許通知其他的 `Observers`。
 
@@ -274,75 +211,9 @@ public void notifyObservers(Object newValue) {
 
 如果 `ConcreteSubject` 已經有繼承了另一個類別了，無法繼承 `Observable` 那該怎麼辦？我們可以用委託的方式把 `observable` 委託給 `delegatedObservable`。
 
-```java
-// 水果是植物
-public class Fruit extends Plant {
-    private String name;
-    private float price;
-    private DelegatedOBS observable;
+[src/FruitDelegationExample.java](src/FruitDelegationExample.java)
 
-    public Fruit(String name, float price) {
-       this.name = name;
-       this.price = price;
-       System.out.println("Fruit created: " + name + " at " + price);
-       observable = new DelegatedOBS();
-    }
-
-    public String getName() {return name;}
-    public float getPrice() {return price;}
-
-    public void setPrice(float price) {
-       this.price = price;
-       observable.setChanged();
-       observable.notifyObservers(new Float(price));
-    }
-    public Observable getObservable() {
-       return observable;
-    }
-}    
-```
-
-`DelegatedOBS` 是一個 `Observable` 的子類別：
-
-```java
-// A subclass of Observable that allows delegation.
-public class DelegatedOBS extends Observable {
-    // from PROTECTED to PUBLIC
-    public void clearChanged() {
-        super.clearChanged();
-    }
-
-    // from PROTECTED to PUBLIC
-    public void setChanged() {
-        super.setChanged();
-    }
-}
-```
-
-大家會不會覺得奇怪，為什麼不直接委給 `Observable`，而是在宣告一個 `DelegatedOBS`, 然後委給 `DelegatedOBS`？原來 `Observable.setChanged()` 被設定為 `protected`，如果沒有透過繼承是無法呼叫的，因此我們將之繼承後再開放為 `public`。
-
-> 想一下：為什麼 setChanged() 要宣告成 protected? 
-
-```java
-public class TestObservers2 {
-   public static void main(String args[]) {
-      // Create the Subject and Observers.
-      Fruit s = new Fruit("Grape", 1.29f);
-      Monkey jj = new Monkey();
-      WineMaker wm = new WineMaker();
-
-      // Add those Observers!
-      s.getObservable().addObserver(jj);
-      s.getObservable().addObserver(wm);
-
-       //make changes to the Subject.
-       s.setPrice(4.57f);
-       s.setPrice(9.22f);
-    }
- }
-```
-
-![](https://hackmd.io/_uploads/HJauIA443)
+![](img/ch20_observer_delegation.png)
 
 FIG: `Observer` with delegation
 
@@ -369,36 +240,7 @@ JAVA 的 event model 與 Observer 的架構類似。
 
 其中的 `AbstractButton` 就相當於 `Observer` 中的 `Observable`，而向它註冊的就是那些監聽事件發生的類別，也就是實作 `ActionListener` 的物件 (Event Handler)。由於 `JButton` 本身已是 `AbstractButton` 的子類別，我們只要直接在 `JButton` 的實作中加入事件監聽者即可：
 
-```java
-public class TestEventModel extends JFrame{
-     private JButton b1;
-     public TestEventModel() {
-        b1 =  new JButton("Button");
-        getContentPane().add(b1);
-
-        //相當於 ADDOBSERVER()
-        b1.addActionListener(new Listener1());
-        b1.addActionListener(new Listener2());
-        ...
-     }
-}
-
-// OBSERVER
-class Listener1 implements ActionListener {
-    // UPDATE()
-    public void actionPerformed(ActionEvent e) {
-        System.out.println("Event happen");
-    }
-}
-
-// OBSERVER
-class Listener2 implements ActionListener {
-    // UPDATE()
-    public void actionPerformed(ActionEvent e) {
-        System.out.println("Hello world");
-    }
-}
-```
+[src/EventModelExample.java](src/EventModelExample.java)
 
 `AbstractButton` 內的 `fireActionPerformed()` 相當於 `Observable` 內的 `notifyObservers()`，但我們不需要去呼叫它，因為當我們按下 `Button` 時會直接呼叫 `fireActionPerformed()`，進而呼叫所有的 `ActionListener` 內的 `actionPerformed()`。
 
@@ -433,58 +275,11 @@ public interface Consumer<T> {
 
 步驟 1：建立 Subject
 
-```java
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
-public class WeatherStation {
-    private List<Consumer<Double>> observers = new ArrayList<>();
-
-    public void addObserver(Consumer<Double> observer) {
-        observers.add(observer);
-    }
-
-    public void removeObserver(Consumer<Double> observer) {
-        observers.remove(observer);
-    }
-
-    public void setTemperature(double temperature) {
-        System.out.println("Temperature changed to: " + temperature);
-        notifyObservers(temperature);
-    }
-
-    private void notifyObservers(double temperature) {
-        for (Consumer<Double> observer : observers) {
-            observer.accept(temperature);
-        }
-    }
-}
-```
+[src/WeatherStationConsumer.java](src/WeatherStationConsumer.java)
 
 步驟 2：加入觀察者（Observers）
 
-```java
-public class Main {
-    public static void main(String[] args) {
-        WeatherStation station = new WeatherStation();
-
-        // 加入觀察者 1：印出溫度
-        station.addObserver(temp -> System.out.println("Observer A: Temperature is " + temp));
-
-        // 加入觀察者 2：根據溫度做反應
-        station.addObserver(temp -> {
-            if (temp > 30) {
-                System.out.println("Observer B: It's too hot!");
-            }
-        });
-
-        // 模擬溫度變化
-        station.setTemperature(28.5);
-        station.setTemperature(35.0);
-    }
-}
-```
+(見 [src/WeatherStationConsumer.java](src/WeatherStationConsumer.java))
 
 ## 20.CHK
 
@@ -585,100 +380,4 @@ class Stock extends Observable {
 - 因為 Observable 內的 setChanged() 是 protected, 外部不能直接呼叫。 
 - as below:
 
-```java
-package observer.stock;
-
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Observable;
-import java.util.Random;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
-public class ObserverStockDemo extends JFrame implements ActionListener {
-	Stock s;
-	CurrentPriceBoard priceBoard;
-
-	public ObserverStockDemo() {
-		super();
-
-		s = new Stock(100);
-		priceBoard = new CurrentPriceBoard();
-		s.addObserver(priceBoard);
-
-		this.setLayout(new GridLayout(2, 2));
-		add(this.priceBoard);
-		JButton startBtn = new JButton("Change");
-		startBtn.addActionListener(this);
-		add(startBtn);
-		setSize(300, 200);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-
-	public void actionPerformed(ActionEvent e) {
-		Random r = new Random();
-		double diff = (r.nextDouble() * 0.07);
-		boolean positive = r.nextBoolean();
-		double newPrice;
-		if (positive)
-			newPrice = s.getPrice() * (1.0 + diff);
-		else
-			newPrice = s.getPrice() * (1.0 - diff);
-		s.setPrice(Math.round(newPrice));
-	}
-
-	public static void main(String[] args) {
-		ObserverStockDemo demo = new ObserverStockDemo();
-		demo.setVisible(true);
-	}
-
-}
-
-class Stock extends java.util.Observable {
-	double yesdayPrice;
-	double currentPrice;
-	int currentAmount;
-
-	public Stock(int yesterday) {
-		this.yesdayPrice = yesterday;
-		this.currentPrice = this.yesdayPrice;
-		this.setChanged();
-		this.notifyObservers();
-	}
-
-	void setPrice(double p) {
-		this.currentPrice = p;
-		this.setChanged();
-		this.notifyObservers();
-	}
-
-	double getPrice() {
-		return this.currentPrice;
-	}
-
-	void setAmount(int a) {
-		this.currentAmount = a;
-		this.setChanged();
-		this.notifyObservers();
-	}
-}
-
-class CurrentPriceBoard extends JPanel implements java.util.Observer {
-	JTextField price = new JTextField(10);
-
-	public CurrentPriceBoard() {
-		super();
-		add(new JLabel("Current price"));
-		add(price);
-	}
-
-	public void update(Observable arg0, Object arg1) {
-		double p = ((Stock) arg0).getPrice();
-		price.setText(Double.toString(p));
-	}
-}
-``` -->
+[src/ObserverStockDemo.java](src/ObserverStockDemo.java) -->

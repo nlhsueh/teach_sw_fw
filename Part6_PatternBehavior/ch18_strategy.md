@@ -14,53 +14,12 @@
 
 Solution: 使用strategy 設計樣式，將各種不同的排序抽象出來：
 
-![](https://i.imgur.com/uunWiwO.png)
+![](img/ch18_strategy_diag.png)
 FIG: `Strategy` 
 
 ### 18.1.2 Sort
 
-```java
-interface SortStrategy {
-    public int[] sort(int [] d);
-}
-
-class SortArray {
-    int[] d;
-    private SortStrategy sortStrategy;
-    public SortArray(SortStrategy s) {
-        this.sortStrategy = s;
-    }
-    public int[] doSort() {
-        return this.sortStrategy.sort(d);
-    }
-}
-
-class QuickSort implements SortStrategy {
-    public int[] sort(int[] d) {
-        //do ....
-        return ...
-    }
-}
-
-class SelectionSort implements SortStrategy {
-    public int[] sort(int[] d) {
-        //do ....
-        return ...
-    }
-}
-
-//main program to test
-class StrategyExample {
-    public static void main(String[] args) {
-        SortArray context;
-        context = new SortArray(new QuickSort());
-        int[] resultA = context.doSort();
-
-        context = new SortArray(new SelectionSort());
-        int[] resultB = context.doSort();
-    }
-}
-```
+[src/SortStrategyExample.java](src/SortStrategyExample.java)
 
 [gugu- `Strategy`](https://refactoring.guru/design-patterns/strategy)
 
@@ -68,57 +27,18 @@ class StrategyExample {
 
 ### 18.2.1 結構
 
-![](https://i.imgur.com/nT6YLwh.png)
+![](img/ch18_strategy_structure.png)
 FIG: `Strategy` Structure
 
 
 ### 18.2.2 程式樣板
 
 
-```java
-package strategy;
-
-class Context {
-	Strategy s;
-	
-	public Context(Strategy s) {
-		this.s = s;
-	}
-	public void doIt() {
-		System.out.println("Doing something");
-		s.execute();
-	}
-}
-
-class Strategy1 implements Strategy {
-	public void execute() {
-		System.out.println("Using strategy 1");
-	}
-}
-
-class Strategy2 implements Strategy {
-	public void execute() {
-		System.out.println("Using strategy 2");
-	}
-}
-
-interface Strategy{
-	public void execute();
-}
-
-public class StrategyTemplate {
-
-	public static void main(String[] args) {
-		Strategy s1 = new Strategy1();
-		Context context = new Context(s1);
-		context.doIt();
-	}
-}
-```
+[src/StrategyTemplate.java](src/StrategyTemplate.java)
 
 執行結果如下：
 
-<img src="https://i.imgur.com/uMvFJWe.png" width="200">
+<img src="img/ch18_strategy_result.png" width="200">
 
 
 #### 優點
@@ -138,112 +58,7 @@ public class StrategyTemplate {
 
 Java 的 GUI 容器物件也是利用策略設計樣式來改變它的排版的。
 
-```java
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-public class LayoutDemo extends JFrame implements ActionListener {
-
-    private JPanel contentPanel;
-    private JComboBox<String> layoutSelector;
-    private JButton button1;
-    private JButton button2;
-    private JButton button3;
-    private JLabel label;
-    private JTextField textField;
-
-    public LayoutDemo() {
-        setTitle("Layout Demo");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // 初始化主要內容面板
-        contentPanel = new JPanel();
-        getContentPane().add(contentPanel, BorderLayout.CENTER);
-
-        // 初始化元件
-        button1 = new JButton("Button 1");
-        button2 = new JButton("Button 2");
-        button3 = new JButton("Longer Button");
-        label = new JLabel("A Label");
-        textField = new JTextField("Text Field", 10);
-
-        // 初始化下拉式選單
-        String[] layoutOptions = {"FlowLayout", "BorderLayout", "GridLayout", "BoxLayout (X_AXIS)", "BoxLayout (Y_AXIS)"};
-        layoutSelector = new JComboBox<>(layoutOptions);
-        layoutSelector.addActionListener(this);
-        getContentPane().add(layoutSelector, BorderLayout.NORTH);
-
-        // 初始版面配置
-        switchLayout("FlowLayout");
-
-        pack();
-        setLocationRelativeTo(null); // 視窗置中
-        setVisible(true);
-    }
-
-    private void switchLayout(String layoutName) {
-        contentPanel.removeAll(); // 移除所有現有元件
-        contentPanel.setLayout(null); // 先設定為 null，以便後續設定新的 LayoutManager
-
-        switch (layoutName) {
-            case "FlowLayout":
-                contentPanel.setLayout(new FlowLayout());
-                break;
-            case "BorderLayout":
-                contentPanel.setLayout(new BorderLayout());
-                break;
-            case "GridLayout":
-                contentPanel.setLayout(new GridLayout(2, 2, 5, 5)); // 2 行 2 列，間距 5
-                break;
-            case "BoxLayout (X_AXIS)":
-                contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.X_AXIS));
-                break;
-            case "BoxLayout (Y_AXIS)":
-                contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-                break;
-        }
-
-        // 重新將元件加入到面板中
-        if (contentPanel.getLayout() instanceof BorderLayout) {
-            contentPanel.add(button1, BorderLayout.NORTH);
-            contentPanel.add(button2, BorderLayout.SOUTH);
-            contentPanel.add(button3, BorderLayout.EAST);
-            contentPanel.add(label, BorderLayout.WEST);
-            contentPanel.add(textField, BorderLayout.CENTER);
-        } else if (contentPanel.getLayout() instanceof GridLayout) {
-            contentPanel.add(button1);
-            contentPanel.add(button2);
-            contentPanel.add(button3);
-            contentPanel.add(label);
-            contentPanel.add(textField); // GridLayout 會自動排列，多餘的會被忽略
-        } else { // FlowLayout 和 BoxLayout
-            contentPanel.add(button1);
-            contentPanel.add(button2);
-            contentPanel.add(button3);
-            contentPanel.add(label);
-            contentPanel.add(textField);
-        }
-
-        contentPanel.revalidate(); // 重新驗證版面配置
-        contentPanel.repaint();    // 重新繪製介面
-        pack(); // 重新調整視窗大小以適應內容
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == layoutSelector) {
-            String selectedLayout = (String) layoutSelector.getSelectedItem();
-            switchLayout(selectedLayout);
-        }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(LayoutDemo::new);
-    }
-}
-```
+[src/LayoutDemo.java](src/LayoutDemo.java)
 
 ### 18.3.1 Validator/Verifier
 
@@ -255,54 +70,7 @@ myTextField.setInputVerifier(new MyInputVerifier());
 
 我們自己擴充 [`InputVerifier`](https://docs.oracle.com/javase/7/docs/api/javax/swing/InputVerifier.html)：
 
-```java
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-
-public class VerifierTest extends JFrame {
-    JTextField tf1 = new JTextField("Type \"pass\" here");
-    JTextField tf2 = new JTextField("TextField2");
-
-    public VerifierTest() {
-        setLayout(new BorderLayout());
-        getContentPane().add(tf1, BorderLayout.NORTH);
-        getContentPane().add(tf2, BorderLayout.SOUTH);
-
-        tf1.setInputVerifier(new PassVerifier());
-
-        WindowListener l = new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
-            }
-        };
-        addWindowListener(l);
-
-        pack();
-        setVisible(true);
-    }
-
-    class PassVerifier extends InputVerifier {
-        @Override
-        public boolean verify(JComponent input) {
-            JTextField tf = (JTextField) input;
-            return "pass".equals(tf.getText());
-        }
-
-        @Override
-        public boolean shouldYieldFocus(JComponent input) {
-            boolean isValid = verify(input);
-            if (!isValid) {
-                JOptionPane.showMessageDialog(null, "密碼必須是 'pass'", "錯誤", JOptionPane.ERROR_MESSAGE);
-            }
-            return isValid;
-        }
-    }
-
-    public static void main(String[] args) {
-        new VerifierTest();
-    }
-} ```
+[src/VerifierTest.java](src/VerifierTest.java)
 
 ## 18.4 討論
 
@@ -380,71 +148,5 @@ class ?
 擴充 Java `InputVerifier` 設計一個台灣身分證的 `SSNVerifier`。並應用這個 `Verifier` 在一個簡單應用程式。
 
 <!-- 
-package org.example;
-
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
-import javax.swing.JTextField;
-import javax.swing.JOptionPane;
-
-public class SSNVerifier extends InputVerifier {
-
-    private static final String TAIWAN_ID_REGEX = "^[A-Z][12]\\d{8}$";
-    private static final int[] WEIGHT = {1, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-    private static final String LETTERS = "ABCDEFGHJKLMNPQRSTUVXYWZIO";
-    private static final int[] VALUES = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35};
-
-    @Override
-    public boolean verify(JComponent input) {
-        JTextField textField = (JTextField) input;
-        String id = textField.getText().trim().toUpperCase();
-
-        if (!id.matches(TAIWAN_ID_REGEX)) {
-            return false;
-        }
-
-        int letterValue = VALUES[LETTERS.indexOf(id.charAt(0))];
-        int sum = (letterValue / 10) * WEIGHT[0] + (letterValue % 10) * WEIGHT[1];
-
-        for (int i = 1; i < 10; i++) {
-            sum += Character.getNumericValue(id.charAt(i)) * WEIGHT[i + 1];
-        }
-
-        return (sum % 10 == 0);
-    }
-
-    @Override
-    public boolean shouldYieldFocus(JComponent input) {
-        boolean valid = verify(input);
-        if (!valid) {
-            JOptionPane.showMessageDialog(input, "台灣身分證字號格式不正確！", "錯誤", JOptionPane.ERROR_MESSAGE);
-            ((JTextField) input).selectAll();
-        }
-        return valid;
-    }
-
-    public static void main(String[] args) {
-        javax.swing.JFrame frame = new javax.swing.JFrame("身分證驗證應用程式");
-        frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new java.awt.FlowLayout());
-
-        javax.swing.JLabel label = new javax.swing.JLabel("請輸入台灣身分證字號：");
-        javax.swing.JTextField textField = new javax.swing.JTextField(10);
-        textField.setInputVerifier(new SSNVerifier());
-
-        javax.swing.JButton submitButton = new javax.swing.JButton("驗證");
-        submitButton.addActionListener(e -> {
-            if (textField.getInputVerifier().verify(textField)) {
-                JOptionPane.showMessageDialog(frame, "身分證字號格式正確！", "成功", JOptionPane.INFORMATION_MESSAGE);
-            }
-        });
-
-        frame.add(label);
-        frame.add(textField);
-        frame.add(submitButton);
-
-        frame.setSize(300, 150);
-        frame.setVisible(true);
-    }
-}
+[src/SSNVerifier.java](src/SSNVerifier.java)
  -->

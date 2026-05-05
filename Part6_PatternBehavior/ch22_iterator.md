@@ -19,12 +19,12 @@
 ## 22.3 結構與方法
 
 
-![](https://hackmd.io/_uploads/H1HHwJSE3.png)
+![](img/ch22_iterator_diag.png)
 FIG: Iterator 
 
 不同結構的 Aggregate 需要不同的 Iterator 來瀏覽，因此可以運用 factory method 來依據不同型態的複合物件產生不同的瀏覽物件。例如MapCollection 需要的瀏覽器是 MapIterator、ListCollection 需要的是 ListIterator。Collection 並沒有決定要產生哪一個 Iterator。如此的結構是為 Polymorphic Iterator, 也是較為普遍的使用方法。
 
-![](https://hackmd.io/_uploads/SyjPw1HE3.png)
+![](img/ch22_iterator_polymorphic.png)
 
 FIG: Polymorphic iterator
 
@@ -59,55 +59,9 @@ while (it.hasNext()) {
 
 在 Java1.2 之後已經將 Iterator 的方法納入其中了，包含 Vector, ArrayList, HashMap 的瀏覽方法，如下：
 
-```java
-package iterator;
+[src/IterationDemo.java](src/IterationDemo.java)
 
-import java.util.*;
-
-public class IterationDemo {
-
-	public static void main(String[] args) {
-		// Vector並且增加內容
-		Vector<String> v = new Vector<String>();
-		v.addElement(new String("Hello"));
-		v.addElement(new String("Taichung"));
-		v.addElement(new String("Have a nice day"));
-		// 瀏覽 Vector內的內容
-		Iterator<String> it1 = v.iterator();
-		System.out.print("Vector 內的內容為:");
-		traverse(it1);
-
-		// ArrayList
-		ArrayList<String> v2 = new ArrayList<String>();
-		v2.add(new String("Hello"));
-		v2.add(new String("Taipei"));
-		v2.add(new String("Good morning"));
-		// 瀏覽 ArrayList 內的內容
-		Iterator<String> it2 = v2.iterator();
-		System.out.print("\nArrayList 內的內容為:");
-		traverse(it2);
-
-		// HashMap
-		HashMap<String, Integer> v3 = new HashMap<String, Integer>();
-		v3.put("John", new Integer(172));
-		v3.put("Mary", new Integer(168));
-		v3.put("Nick", new Integer(180));
-		// 瀏覽 HashMap 的 Key
-		Iterator<String> it3 = v3.keySet().iterator();
-		System.out.print("\nHashMap 內的內容為:");
-		traverse(it3);
-	}
-
-	static void traverse(Iterator<String> e) {
-		while (e.hasNext()) {
-			System.out.print(e.next() + ", ");
-		}
-	}
-
-}
-```
-
-![](https://hackmd.io/_uploads/rJwBO1S43.png)
+![](img/ch22_iterator_result.png)
 
 
 [Get the code](\codeURL/iterator/IterationDemo.java)
@@ -150,41 +104,11 @@ double getAverage(Iterator<Student> iterator) {
      ?
 }   
 ```
+[src/IteratorQuestion.java](src/IteratorQuestion.java)
 
 ## 22.EX
 
 ### 22.ex01
 請完成以下程式
 
-```java
-class Student {...}
-
-class Course {
-   HashMap<Student, Integer> gradeBook; // store all grade of students
-      
-   // 取得成績的瀏覽物件
-   public ? getGradeIterator() {
-      ? // Hint: 查看 API, HashMap 如何取得 value 的 iterator?
-   }  
-   void addGrade(Student s, int grade) {
-      ?
-   }
-}
-
-class GradeComputer {
-   void computeAverage(Course c) {   
-       ?
-       System.out.println(averageGrade);
-   }
-}
-
-public class MainApp {
-   public static void man(Strings[] a) {
-      Course math = new Course();
-      // add some students and their grade to the course
-      ?
-      GradeComputer gc = new GradeComputer();
-      gc.computerAverage(?);
-   }
-}      
-```
+[src/CourseIteratorExample.java](src/CourseIteratorExample.java)

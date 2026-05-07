@@ -5,7 +5,8 @@
 ## 17.1 目的與動機
 
 > 可以動態的為一個物件加上功能(責任)。**Decorator** 提供一種除了繼承以外，有彈性的方法來擴充功能。 
->> *Attach additional responsibilities to an object dynamically. Decorators provide a flexible alternative to subclassing for extending functionality*. 
+
+> *Attach additional responsibilities to an object dynamically. Decorators provide a flexible alternative to subclassing for extending functionality*. 
 
 ## 17.2 動機
 
@@ -153,7 +154,7 @@ FIG: Java IO- Using Decorator
 
 > Composite 和 Decorator 有何異同？
 
-## 17.CHK
+## 17.5 隨堂測驗
 
 1. Java 的 `FileInputStream` 用了 Decorator 設計樣式，其中 `FilterInputStream` 相當於此樣式中的
 
@@ -163,24 +164,39 @@ FIG: Java IO- Using Decorator
     D) Component
     E) ConcreteComponent
 
+    <details>
+    <summary>參考解答</summary>
+
+    答案：**B) `Decorator`**
+    </details>
+
 2. 關於 Decorator pattern, 下列何者為錯
 
     A) Decorator 可以包含一個 Decorator 物件
     B) Decorator 和 ConcreteComponent 有部分共同的方法，宣告在 Component 中
     C) Decorator 和 ConcreteComponent 都可以包含 Component
 
+    <details>
+    <summary>參考解答</summary>
+
+    答案：**C) `Decorator` 和 `ConcreteComponent` 都可以包含 `Component`**
+    
+    **說明：** `ConcreteComponent` 通常是核心元件（裝飾鏈的終點），它負責實作基本行為，不會去包含其他 `Component`。只有 `Decorator` 才會包含一個 `Component` 的參考，以便將請求委派給被裝飾的物件。
+    </details>
+
 
 3. 請說明 Strategy 和 Decorator 設計樣式的異同。
 
-**簡答:** 
+    <details>
+    <summary>參考解答</summary>
 
-1. B) `Decorator`
+    * **相同點：** 兩者都提倡「多用組合，少用繼承」，可以在執行時期動態改變物件的行為或功能。
+    * **相異點：** 
+        * **Decorator (裝飾者模式)：** 著重於**擴充**物件的功能，就像是在物件外面包上一層又一層的包裝（外表/皮膚）。裝飾者和被裝飾者有相同的介面，對客戶端是透明的。
+        * **Strategy (策略模式)：** 著重於**替換**物件內部的演算法或邏輯（內臟/骨架）。客戶端需要知道並主動選擇要使用哪一種策略。
+    </details>
 
-
-2. C) `Decorator` 和 `ConcreteComponent` 都可以包含 `Component`
-
-
-## 17.EX
+## 17.練習題
 
 ### 17.ex01 
 有一個物件 A 其基本的功能為 `Basic`，可以從兩方面去擴充，分別為 `X`, `Y`。假設 `X` 方面可以有 `X1`, `X2` 兩種選項，`Y` 有 `Y1`, `Y2`, `Y3` 三種選項。 (1) 若以 Decorator 設計樣式來設計，該如何設計？請畫出 UML 設計圖。(2) 若要產一個具備 `Basic`, `X1`, `Y1` 功能的物件，該如何宣告生成此物件？

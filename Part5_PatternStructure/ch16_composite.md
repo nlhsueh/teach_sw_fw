@@ -6,7 +6,8 @@
 
 
 > 複合設計樣式的目的是要單元物件與複合物件一視同仁, 以降低程式的複雜度。所謂的複合物件就是它可以包含其他的複合物件或單元物件。
->> *To **compose** objects into tree structures to represent part-whole hierarchies. Implementing the composite pattern lets clients treat individual objects and compositions uniformly*
+
+> *To **compose** objects into tree structures to represent part-whole hierarchies. Implementing the composite pattern lets clients treat individual objects and compositions uniformly*
 
 容器，可以裝東西。也可以被裝。下面的圖形就是一個典型的複合物件，其中有顏色的圖示是一個基礎元件，而圓角矩型是一個容器，可以放圖示，也可以被放在一個個大的容器中。
 
@@ -158,83 +159,93 @@ if (c instanceOf Composite) {
 
 在這個例子中，`DefaultMutableTreeNode` 實作了 `TreeNode` 介面。`root`、`parent1` 和 `parent2` 是 Composite 節點，因為它們包含其他的 `TreeNode`。`child1`、`child2` 和 `child3` 是 Leaf 節點，因為在這個簡單的例子中它們沒有子節點。`JTree` 可以統一地處理這些節點，例如在展開 `parent1` 時，它會顯示其子節點 `child1` 和 `child2`。
 
-## 16.5 Check
+## 16.5 隨堂測驗
 
 1. 在 Composite 設計樣式中，不包含哪一個角色
 	- component 
 	- leaf 
 	- composite 
 	- decorator
+
+	<details>
+	<summary>參考解答</summary>
+
+	答案：**- decorator**
+
+	Decorator 設計模式是另一種結構型模式，它動態地給一個物件添加額外的職責。它與 Composite 模式的概念和目的不同。
+	</details>
+
 2. 在 Composite 設計樣式中，Composite 角色（複選）
 	- 是 Component 的子類別
 	- 可以包含許多 Component
 	- 具備 addComponent() 的功能
 	- 收到 client 請求後，通常會將請求轉送給他所包含的物件
+
+	<details>
+	<summary>參考解答</summary>
+
+	答案：
+	* **- 是 Component 的子類別**
+	* **- 可以包含許多 Component**
+	* **- 具備 addComponent() 的功能**
+	* **- 收到 client 請求後，通常會將請求轉送給他所包含的物件**
+
+	**說明：**
+
+	* Composite 繼承自 Component，因此可以被視為 Component 的一種。
+	* Composite 的核心功能是管理其子 Component，因此可以包含多個 Component 實例。
+	* 為了管理子 Component，Composite 通常會提供 `addComponent()`（以及 `removeComponent()`、`getChild()` 等）方法。
+	* Composite 收到客戶端的請求時，通常會將這個請求委派給它所包含的子 Component 進行處理，或者在自身處理一部分後再委派給子 Component。
+	</details>
+
 3. 若 Component 有 addComponent() 等元件管理等功能，此方法稱為 
 	- Transparent 
 	- Safe	
+
+	<details>
+	<summary>參考解答</summary>
+
+	答案：**- Transparent**
+
+	**說明：**
+
+	* **Transparent Interface:** 指的是 Component 介面中定義了所有管理子節點的方法（例如 `addComponent()`、`removeComponent()`、`getChild()`）。這樣做的好處是，無論是 Leaf 還是 Composite 物件，都具有相同的介面，用戶端無需區分對待。但缺點是 Leaf 節點可能不需要這些管理子節點的方法，導致介面臃腫。
+	* **Safe Interface:** 指的是只有 Composite 介面中定義了管理子節點的方法，而 Leaf 介面中沒有。這樣做的好處是介面更清晰，Leaf 物件不會有不適用的方法。但缺點是用戶端在操作時需要判斷物件是 Leaf 還是 Composite，增加了複雜性。
+	</details>
+
 4. 關於 Composite, 何者對？
 	- 對於 client, 複合物件與單元物件具備共通性，因此偶合力低
 	- 不論是複合物件與單元物件都可以透過 addComponent() 加入元件 
 	- 複合物件可以包含單元物件，不可包含複合物件
 	- 其觀念與遞迴概念相仿
+
+	<details>
+	<summary>參考解答</summary>
+
+	答案：**- 對於 client, 複合物件與單元物件具備共通性，因此偶合力低**
+	答案：**- 其觀念與遞迴概念相仿**
+
+	**說明：**
+
+	* **對於 client, 複合物件與單元物件具備共通性，因此偶合力低：** 這是 Composite 模式的核心優點。由於 Leaf 和 Composite 都實現了 Component 介面，用戶端可以以一致的方式操作它們，無需關心具體類型，從而降低了耦合度。
+	* **不論是複合物件與單元物件都可以透過 addComponent() 加入元件：** 這是 Transparent Interface 的特性，並非 Composite 模式的必要條件。在 Safe Interface 的情況下，只有 Composite 物件才有 `addComponent()` 等方法。
+	* **複合物件可以包含單元物件，不可包含複合物件：** 這是錯誤的。Composite 物件可以遞迴地包含其他的 Composite 物件，形成樹狀結構。
+	* **其觀念與遞迴概念相仿：** Composite 模式在實現某些操作時（例如遍歷整個結構、執行某個操作），常常會使用遞迴的方式處理 Composite 節點及其子節點。
+	</details>
+
 5. 若 Component 內的方法為 update()，寫出 Composite 內的 update()
 
-(見 [src/CompositeUpdateExample.java](src/CompositeUpdateExample.java))
+	(見 [src/CompositeUpdateExample.java](src/CompositeUpdateExample.java))
 
+	<details>
+	<summary>參考解答</summary>
 
-**參考解答**
+	[src/CompositeUpdateExample.java](src/CompositeUpdateExample.java)
 
-**1. 在 Composite 設計樣式中，不包含哪一個角色**
+	**說明：**
 
-答案：**- decorator**
-
-Decorator 設計模式是另一種結構型模式，它動態地給一個物件添加額外的職責。它與 Composite 模式的概念和目的不同。
-
-**2. 在 Composite 設計樣式中，Composite 角色（複選）**
-
-答案：
-* **- 是 Component 的子類別**
-* **- 可以包含許多 Component**
-* **- 具備 addComponent() 的功能**
-* **- 收到 client 請求後，通常會將請求轉送給他所包含的物件**
-
-**說明：**
-
-* Composite 繼承自 Component，因此可以被視為 Component 的一種。
-* Composite 的核心功能是管理其子 Component，因此可以包含多個 Component 實例。
-* 為了管理子 Component，Composite 通常會提供 `addComponent()`（以及 `removeComponent()`、`getChild()` 等）方法。
-* Composite 收到客戶端的請求時，通常會將這個請求委派給它所包含的子 Component 進行處理，或者在自身處理一部分後再委派給子 Component。
-
-**3. 若 Component 有 addComponent() 等元件管理等功能，此方法稱為**
-
-答案：**- Transparent**
-
-**說明：**
-
-* **Transparent Interface:** 指的是 Component 介面中定義了所有管理子節點的方法（例如 `addComponent()`、`removeComponent()`、`getChild()`）。這樣做的好處是，無論是 Leaf 還是 Composite 物件，都具有相同的介面，用戶端無需區分對待。但缺點是 Leaf 節點可能不需要這些管理子節點的方法，導致介面臃腫。
-* **Safe Interface:** 指的是只有 Composite 介面中定義了管理子節點的方法，而 Leaf 介面中沒有。這樣做的好處是介面更清晰，Leaf 物件不會有不適用的方法。但缺點是用戶端在操作時需要判斷物件是 Leaf 還是 Composite，增加了複雜性。
-
-**4. 關於 Composite, 何者對？**
-
-答案：**- 對於 client, 複合物件與單元物件具備共通性，因此偶合力低**
-答案：**- 其觀念與遞迴概念相仿**
-
-**說明：**
-
-* **對於 client, 複合物件與單元物件具備共通性，因此偶合力低：** 這是 Composite 模式的核心優點。由於 Leaf 和 Composite 都實現了 Component 介面，用戶端可以以一致的方式操作它們，無需關心具體類型，從而降低了耦合度。
-* **不論是複合物件與單元物件都可以透過 addComponent() 加入元件：** 這是 Transparent Interface 的特性，並非 Composite 模式的必要條件。在 Safe Interface 的情況下，只有 Composite 物件才有 `addComponent()` 等方法。
-* **複合物件可以包含單元物件，不可包含複合物件：** 這是錯誤的。Composite 物件可以遞迴地包含其他的 Composite 物件，形成樹狀結構。
-* **其觀念與遞迴概念相仿：** Composite 模式在實現某些操作時（例如遍歷整個結構、執行某個操作），常常會使用遞迴的方式處理 Composite 節點及其子節點。
-
-**5. 若 Component 內的方法為 update()，寫出 Composite 內的 update()**
-
-[src/CompositeUpdateExample.java](src/CompositeUpdateExample.java)
-
-
-**說明：**
-
-在 `Composite` 類別中，`update()` 方法會遍歷其包含的所有子 `Component`，並對每個子 `Component` 呼叫其自身的 `update()` 方法。這樣就實現了將更新操作遞迴地應用到整個 Composite 結構中。Composite 本身在遍歷子節點前後也可以包含一些自身的更新邏輯。
+	在 `Composite` 類別中，`update()` 方法會遍歷其包含的所有子 `Component`，並對每個子 `Component` 呼叫其自身的 `update()` 方法。這樣就實現了將更新操作遞迴地應用到整個 Composite 結構中。Composite 本身在遍歷子節點前後也可以包含一些自身的更新邏輯。
+	</details>
 
 
 ## 16.6 Exercise

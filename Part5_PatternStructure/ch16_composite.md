@@ -288,14 +288,4 @@ MLB
 
 ---
 
-提示：
-
-Composite 典型架構是：
-
-[src/MLBTreeExample.java](src/MLBTreeExample.java)
-(完整參考解答見 [src/ch16_mlb.md](src/ch16_mlb.md))
-
-思考：
-* 為什麼 `MLBComponent` 中的 `add()`, `remove()`, `getChild()` 要拋出例外
-
 

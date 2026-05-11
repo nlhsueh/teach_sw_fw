@@ -142,6 +142,38 @@ FIG: Java IO- Using Decorator
 
 透過這種方式，我們將不同的功能（檔案讀寫、緩衝、基本型態讀寫）以裝飾者（Decorator）的方式動態疊加在一起。當我們呼叫最外層的方法時，實際上是觸發了一連串的裝飾者呼叫，最終由最底層的檔案串流完成實際的位元讀寫。
 
+
+## AOP 與 Decorator 的異同？
+
+在 Java 或 Spring 框架中，我們常看到用 `@` (Annotation，註解) 來標記一個 method（例如 `@Transactional`、`@Log`）。這引出了一個非常經典的問題：**這算不算是 AOP？它與 Decorator 樣式有關嗎？**
+
+答案是：**它們在概念與實現上息息相關！**
+
+### 1. `@` (註解) 與 AOP 的關係
+- `@` 本身只是 Java 的 **Metadata (元資料)**，它就像是一個「標籤」，本身並沒有任何程式邏輯。
+- **AOP (Aspect-Oriented Programming，剖面導向程式設計)** 則是一套程式典範。在 Spring 中，AOP 引擎會去掃描這些 `@` 標籤。當它發現某個方法被貼上了 `@Transactional` 時，AOP 就會介入，在該方法執行前後加上事務管理的邏輯。
+- 所以，`@` 是 AOP 的**觸發條件或標記**，而 AOP 是實際去實現橫切關注點（Cross-cutting concerns）的機制。
+
+### 2. AOP 與 Decorator 的關係
+- **AOP 是「概念」，Decorator（或其近親 Proxy）是「實現手法」**。
+- 在 Spring 中，AOP 預設是透過 **Dynamic Proxy (動態代理)** 來實現的，而代理模式（Proxy）與裝飾者模式（Decorator）在結構上幾乎是一樣的（都是包裝原物件並共享介面）。
+- **傳統 Decorator**：我們手動寫一個 `Decorator` 類別，持有 `Component`，並在方法中疊加功能（如：`BufferedInputStream`）。
+- **Spring AOP**：我們只要在方法上加上 `@Transactional`，Spring 就會在**執行期 (Runtime)** 動態為我們生成一個「代理物件（裝飾者）」，把我們的業務物件包起來。當外部呼叫該方法時，實際上是先呼叫了 Spring 的裝飾者（負責開啟事務），裝飾者再去呼叫我們的業務方法，最後裝飾者再負責關閉事務。
+
+### 3. 異同比較
+
+| 特性 | Decorator 模式 | Spring AOP (基於代理模式) |
+| :--- | :--- | :--- |
+| **本質** | 設計樣式 (Design Pattern) | 程式典範 (Programming Paradigm) |
+| **實現時間** | 開發者在程式碼中明確撰寫 (手動包裝) | 執行時期 (Runtime) 由框架動態生成包裝 |
+| **侵入性** | 需要建立特定的 Decorator 類別與介面 | 零侵入，只需在方法上貼一個 `@` 標籤 |
+| **適用場景** | 針對特定物件、特定維度的功能疊加 | 針對跨多個類別的橫切關注點 (如：權限、日誌、事務) |
+
+**總結**：我們在方法上看到的 `@` 註解，是 AOP 的標記；而 Spring AOP 的底層，正是運用了類似 Decorator 的動態包裝技術，在不修改原程式碼的情況下，為物件「動態加上功能」！符合了 Decorator 的精神。
+
+
+
+
 ### 比較
 
 * **Strategy 換骨，Decorator 換皮：**
@@ -241,7 +273,7 @@ FIG: Java IO- Using Decorator
 
 ## 17.練習題
 
-### 17.ex01 
+### 17.ex01 多維度功能擴充
 有一個物件 A 其基本的功能為 `Basic`，可以從兩方面去擴充，分別為 `X`, `Y`。假設 `X` 方面可以有 `X1`, `X2` 兩種選項，`Y` 有 `Y1`, `Y2`, `Y3` 三種選項。 (1) 若以 Decorator 設計樣式來設計，該如何設計？請畫出 UML 設計圖。(2) 若要產一個具備 `Basic`, `X1`, `Y1` 功能的物件，該如何宣告生成此物件？
 - 同上，若以繼承的方法來設計，需要設計多少類別?
 - 同上，若改以 Strategy 設計樣式來設計，該如何設計？
@@ -255,7 +287,7 @@ FIG: Java IO- Using Decorator
 
 依此類推。請寫出完整可以執行的程式。
 
-### 17.ex03
+### 17.ex03 自訂 FilterWriter
 
 可作輸出，`FilterWriter` 是一個 `Decorator` 的物件。設計以下的 `Filter`:	
 - `LowerCaseFilter`:  每個英文字都改成小寫
@@ -263,8 +295,8 @@ FIG: Java IO- Using Decorator
 - `CommaFilter`: 遇到數字就加上千分號
 - `CountFilter`: 在每行字後面加上單字的個數
 		
-### 17.ex04
+### 17.ex04 咖啡計價系統
 泡咖啡了！我們有手工（`HandBlend`）、深度烘胚（`DarkRoast`）、低卡 `Decaf`、`Espresso` 等咖啡，而且每一種咖啡都可以加上 `Milk`, `Mocha`, `Soy`，當然每一個都是額外需要加費的。請用 Decorator 設計樣式設計之，注意 Coffee 是父類別，而我們需要 `cost()` 方法來回傳費用。畫出 UML 圖，寫出程式（請自己假設個別的價格）。
 
-### 17.ex05
+### 17.ex05 象棋系統應用思考
 象棋系統中，可否應用 Decorator 設計樣式？試說明之。

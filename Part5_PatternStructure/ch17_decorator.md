@@ -273,12 +273,15 @@ FIG: Java IO- Using Decorator
 
 ## 17.練習題
 
-### 17.ex01 多維度功能擴充
+### 17.ex01 結構繪製
+在不看講義的情況下，應用 UML 的工具畫出該設計樣式的結構。
+
+### 17.ex02 多維度功能擴充
 有一個物件 A 其基本的功能為 `Basic`，可以從兩方面去擴充，分別為 `X`, `Y`。假設 `X` 方面可以有 `X1`, `X2` 兩種選項，`Y` 有 `Y1`, `Y2`, `Y3` 三種選項。 (1) 若以 Decorator 設計樣式來設計，該如何設計？請畫出 UML 設計圖。(2) 若要產一個具備 `Basic`, `X1`, `Y1` 功能的物件，該如何宣告生成此物件？
 - 同上，若以繼承的方法來設計，需要設計多少類別?
 - 同上，若改以 Strategy 設計樣式來設計，該如何設計？
 
-### 17.ex02 聖誕樹裝飾
+### 17.ex03 聖誕樹裝飾
 
 聖誕樹 (`ChrismasTree`) 上面有許多的裝飾品，包含鈴鐺（`Bell`），糖果（`Candy`），與禮物（`Gift`），請用 `Decorator` 樣式設計之。所有的聖誕樹都會支援 `sing()` 的方法：
     - `聖誕樹：I am a Chrismas tree`
@@ -287,7 +290,7 @@ FIG: Java IO- Using Decorator
 
 依此類推。請寫出完整可以執行的程式。
 
-### 17.ex03 自訂 FilterWriter
+### 17.ex04 自訂 FilterWriter
 
 可作輸出，`FilterWriter` 是一個 `Decorator` 的物件。設計以下的 `Filter`:	
 - `LowerCaseFilter`:  每個英文字都改成小寫
@@ -295,8 +298,8 @@ FIG: Java IO- Using Decorator
 - `CommaFilter`: 遇到數字就加上千分號
 - `CountFilter`: 在每行字後面加上單字的個數
 		
-### 17.ex04 咖啡計價系統
+### 17.ex05 咖啡計價系統
 泡咖啡了！我們有手工（`HandBlend`）、深度烘胚（`DarkRoast`）、低卡 `Decaf`、`Espresso` 等咖啡，而且每一種咖啡都可以加上 `Milk`, `Mocha`, `Soy`，當然每一個都是額外需要加費的。請用 Decorator 設計樣式設計之，注意 Coffee 是父類別，而我們需要 `cost()` 方法來回傳費用。畫出 UML 圖，寫出程式（請自己假設個別的價格）。
 
-### 17.ex05 象棋系統應用思考
+### 17.ex06 象棋系統應用思考
 象棋系統中，可否應用 Decorator 設計樣式？試說明之。

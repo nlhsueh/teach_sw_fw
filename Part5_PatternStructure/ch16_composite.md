@@ -250,13 +250,16 @@ if (c instanceOf Composite) {
 
 ## 16.6 Exercise
 
-### 16.6.1 目錄與檔案
+### 16.6.1 結構繪製
+在不看講義的情況下，應用 UML 的工具畫出該設計樣式的結構。
+
+### 16.6.2 目錄與檔案
 目錄（Folder）與檔案（File）可以用 Composite 來設計，每一個 File 檔案有檔案大小（size），每一個 Folder 可以加上很多 Folder 或是 File，其檔案大小為其所包含的檔案大小之總和。FileManager 可以對 AbstractFile 詢問其檔案總大小（如下）。請撰寫程式實驗之。
 
 [src/FileFolderComposite.java](src/FileFolderComposite.java)
 
 
-### 16.6.2 MLB 棒球大聯盟
+### 16.6.3 MLB 棒球大聯盟
 
 用 Composite 設計模式實作 MLB 聯盟與球隊結構。
 

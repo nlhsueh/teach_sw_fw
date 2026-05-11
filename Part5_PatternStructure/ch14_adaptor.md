@@ -330,13 +330,16 @@ Servlet API 中的 `HttpServletRequestWrapper` 和 `HttpServletResponseWrapper`
 
 ## 14.5 Exercise
 
-### 14.5.1 雙向轉換器
+### 14.5.1 結構繪製
+在不看講義的情況下，應用 UML 的工具畫出該設計樣式的結構。
+
+### 14.5.2 雙向轉換器
 
 請設計一個 `A` 到 `B`, `B` 到 `A` 的雙向 Adaptor
 
 [src/BiDirectionalAdapter.java](src/BiDirectionalAdapter.java)
 
-### 14.5.2 Grade average
+### 14.5.3 Grade average
 有一類別 School, 內有方法 `getAverage(Iterator<Integer>)`  會把 iterator 內的成績加總平均。有一個 Vector 物件 group 內含一些 Grade，但 Vector 無法回傳 `iterator` 物件，只能回傳 `Enumeration` 物件。我們想用 School 來計算 group 的平均，請利用 adapter 來解決此問題。
 
 [src/GradeAverageExercise.java](src/GradeAverageExercise.java)

@@ -307,7 +307,10 @@ classDiagram
 
 ## 15.5 練習
 
-### 15.5.1 Shape 圖形擴展練習
+### 15.5.1 結構繪製
+在不看講義的情況下，應用 UML 的工具畫出該設計樣式的結構。
+
+### 15.5.2 Shape 圖形擴展練習
 
 基於 15.3.2 的 `ShapeSwingBridge` 範例，請使用 Bridge 設計模式來擴展功能：
 
@@ -343,9 +346,9 @@ classDiagram
 - 在 `Triangle` 中使用 `g2d.drawPolygon()` 繪製三角形
 - 所有新的 `ShapeImpl` 實現類應包含相同的簽名：`drawLine(Graphics g, int x1, int y1, int x2, int y2)`
 
-### 15.5.2 訊息傳遞系統
+### 15.5.3 訊息傳遞系統
 
 請設計一個訊息傳遞系統（UML diagram），訊息傳遞有多種形態：簡單的 (`SimpleNotification`)、緊急的 (`EmergencyNofication`)、排程的（`ScheduledNotification`）。訊息傳遞有多個方法，例如透過 Email（`EmailSender`）或是 即時訊息傳遞（`IMAppSender`），這些傳遞都具備 `send()`, `setTime()`, `setPriority()` 等方法。請透過 `Bridge` 設計樣式來模擬設計此系統，注意緊急的通知是可以設定緊急程度的，排程的通知是可以設定排程週期的。
 
-### 15.5.3 報表系統
+### 15.5.4 報表系統
 請設計一個報表系統(UML diagram)，報表可以分為銷售報表、員工績效報表與年度營收報表等; 需要對報表進行格式的轉換以因應不同的用途，可以轉換為 PDF, HTML, 與 Markdown 等格式，這些格式都具備 `convertTable()`, `convertImage()`, `setTitle(int size)` 等功能。銷售報表的 title size 要最大，且先轉 table, 再轉 image。年度營收則 title 小一點，先轉 image 再轉 table。請用 Bridge 來實踐。

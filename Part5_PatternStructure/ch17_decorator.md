@@ -44,7 +44,7 @@ FIG: 由框和捲軸而成的 `TextView`
 
 如果我們使用 `Decorator` 設計樣式一切就會變的容易許多：對 `TextView` 而言，是否增加 `Border` 的功能或捲軸的功能都可以隨意增減，就像是裝飾品一般。新的架構如圖:
 
-![](img/ch17_logic.png)
+<img src="img/ch17_logic.png" width="500">
 FIG: 使用 Decorator 來實作 `TextView`
 
 注意我們將各種`Border`與`Scrollbar`視為一種 `Decorator`，而每一個`Decorator`可包含一個以上的`Component`，如`BorderDecorator`可能可以包含有`3D Border`、`Fancy Border`和`Plain Border`等個別裝飾品物件，而 `ScrollDecorator` 可以包含有垂直、水平的 `Scroll Bar`。這樣的架構方式可以讓動態生成的搭配裝飾更多樣性。讓我們來看`Border Decorator`中 `PlainBorder` 的程式片段：
@@ -129,13 +129,18 @@ FIG: Java IO- Using Decorator
 [src/InputStreamDecoratorExample.java](src/InputStreamDecoratorExample.java)
 
 
-在這個範例中：
+在這個範例中，我們分為兩個部分來展示：
 
-1.  我們首先建立一個 `FileInputStream` 物件 `fileIn`，它負責從檔案 "example.txt" 讀取原始位元資料。
-2.  接著，我們使用 `BufferedInputStream` 包裹 `fileIn`，建立 `bufferedIn`。`BufferedInputStream` 在內部維護一個緩衝區，可以減少實際的檔案 I/O 次數，提高讀取效率。
-3.  然後，我們再使用 `DataInputStream` 包裹 `bufferedIn`，建立 `dataIn`。`DataInputStream` 提供了方便的方法來讀取 Java 的基本型態資料（如 `int`、`double`、`String` 等），而不需要手動處理位元轉換。
+**Part 1: 基礎功能展示**
+1. **寫入檔案**：我們使用 `FileOutputStream` 作為基礎，外部包裹了 `BufferedOutputStream` 來提供緩衝功能，最外層再包裹 `DataOutputStream`。這使得我們可以使用 `writeUTF()` 方法直接寫入一個字串 `"I love design pattern"`。
+2. **讀取檔案**：同樣地，我們使用 `FileInputStream` 作為基礎，經過 `BufferedInputStream` 裝飾，最後用 `DataInputStream` 包裹。這賦予了我們直接呼叫 `readUTF()` 讀取強型別字串的能力。
 
-透過這種方式，我們將不同的功能（檔案讀取、緩衝、基本型態讀取）以裝飾者的方式疊加在一起，每個裝飾者都增強了底層 `InputStream` 的功能，而不需要修改原始的 `FileInputStream` 類別。當我們呼叫 `dataIn` 的讀取方法時，實際上是觸發了一連串的呼叫，最終由最底層的 `FileInputStream` 完成實際的位元讀取。
+**Part 2: 效能對比（展現 Buffered 的威力）**
+1. 我們設計了一個迴圈，連續寫入 100,000 筆整數。
+2. 在**沒有**使用 `BufferedOutputStream` 的情況下，每次 `writeInt()` 都會直接對硬碟進行 I/O 操作，耗時較長。
+3. 在**有**使用 `BufferedOutputStream` 的情況下，資料會先暫存在記憶體緩衝區中，滿了才一次寫入硬碟。執行結果會顯示速度提升了數倍，這真實地展現了 `Buffered` 這個裝飾者所帶來的效能優勢。
+
+透過這種方式，我們將不同的功能（檔案讀寫、緩衝、基本型態讀寫）以裝飾者（Decorator）的方式動態疊加在一起。當我們呼叫最外層的方法時，實際上是觸發了一連串的裝飾者呼叫，最終由最底層的檔案串流完成實際的位元讀寫。
 
 ### 比較
 
@@ -154,47 +159,85 @@ FIG: Java IO- Using Decorator
 
 > Composite 和 Decorator 有何異同？
 
+<details>
+<summary>解答</summary>
+`Composite` (組合模式) 和 `Decorator` (裝飾者模式) 在結構圖上看起來非常相似（都包含一個指向 Component 介面的關聯），但它們的**目的**與**應用場景**有很大的不同：
+
+**相同點**：
+- **共享介面**：兩者都讓包裝者（Composite 或 Decorator）與被包裝的物件實作相同的介面，這使得客戶端可以一致地對待它們。
+- **遞迴委託**：兩者都透過組合（Composition）來持有 Component 的引用，並在方法中將請求「委託」給持有的物件。
+
+**不同點**：
+1. **設計目的（Intent）**：
+   - `Composite`：旨在**表示部分與整體的階層結構**（Part-Whole hierarchies）。例如：檔案系統（資料夾可以包含檔案，也可以包含子資料夾）。
+   - `Decorator`：旨在**不改變原類別的情況下，動態地為物件加上新的功能或責任**。
+2. **持有的物件數量**：
+   - `Composite`：通常會持有**一個集合**（List/Set）的子物件，用來形成樹狀結構。
+   - `Decorator`：通常只持有**剛好一個**被裝飾的物件（一對一的包裝），用來形成鏈狀結構（裝飾者鏈）。
+3. **加乘效果 vs 樹狀聚合**：
+   - `Decorator` 的精神在於「疊加功能」（如：A 包裹 B，B 再包裹 C），每個裝飾者都為核心物件增添一點超能力。
+   - `Composite` 的精神在於「一致性處理」，不論是單一樹葉還是整棵樹，操作起來都一樣。
+</details>
+
 ## 17.5 隨堂測驗
 
-1. Java 的 `FileInputStream` 用了 Decorator 設計樣式，其中 `FilterInputStream` 相當於此樣式中的
+1. **Java 的 I/O 體系中，`FilterInputStream` 在 Decorator 樣式中扮演什麼角色？** (涵蓋 17.4)
+   A) Client (客戶端)
+   B) Decorator (裝飾者抽象類別)
+   C) ConcreteDecorator (具體裝飾者)
+   D) Component (抽象元件)
+   E) ConcreteComponent (具體元件)
+   
+   <details>
+   <summary>參考解答</summary>
+   答案：**B) `Decorator`**  
+   解析：在 Java I/O 中，`InputStream` 是 Component，`FileInputStream` 是 ConcreteComponent。而 `FilterInputStream` 繼承自 `InputStream` 且內部持有一個 `InputStream` 的引用，它是所有具體裝飾者（如 `BufferedInputStream`、`DataInputStream`）的父類別，因此它扮演的是 **Decorator** 的角色。
+   </details>
 
-    A) Client
-    B) Decorator
-    C) ConcreteDecorator
-    D) Component
-    E) ConcreteComponent
+2. **在 `TextView` 的例子中，如果我們有 3 種邊框和 4 種捲軸，採用「傳統繼承（Subclassing）」的方式來提供所有組合，會遇到什麼問題？** (涵蓋 17.1/17.2)
+   A) 類別爆炸（Class Explosion），需要建立 12 個子類別，且難以維護
+   B) 缺乏多型（Polymorphism）支援
+   C) 執行時期無法動態生成
+   D) 以上皆是
+   
+   <details>
+   <summary>參考解答</summary>
+   答案：**A**  
+   解析：採用繼承會因為笛卡兒積（3 * 4 = 12）導致類別數量急遽增加，這就是所謂的「類別爆炸」或「組合爆炸」。
+   </details>
 
-    <details>
-    <summary>參考解答</summary>
+3. **關於 Decorator pattern，下列何者為錯？** (涵蓋 17.3)
+   A) Decorator 可以包含一個 Decorator 物件
+   B) Decorator 和 ConcreteComponent 有部分共同的方法，宣告在 Component 中
+   C) Decorator 和 ConcreteComponent 都可以包含 Component
+   
+   <details>
+   <summary>參考解答</summary>
+   答案：**C) `Decorator` 和 `ConcreteComponent` 都可以包含 `Component`**  
+   解析：`ConcreteComponent` 通常是核心元件（裝飾鏈的終點），它負責實作基本行為，不會去包含其他 `Component`。只有 `Decorator` 才會包含一個 `Component` 的參考，以便將請求委派給被裝飾的物件。
+   </details>
 
-    答案：**B) `Decorator`**
-    </details>
+4. **在 Java I/O 的應用中，若我們連續呼叫 `DataOutputStream.writeInt()` 100,000 次，有包裹 `BufferedOutputStream` 會比沒有包裹快上許多。請問這是因為 `BufferedOutputStream` 發揮了什麼裝飾效果？** (涵蓋 17.4)
+   A) 它把資料轉換成人類看得懂的文字
+   B) 它在記憶體中開闢了緩衝區，暫存多筆小資料後才一次寫入硬碟，大幅減少了耗時的硬碟 I/O 次數
+   C) 它負責將檔案開啟並進行底層的 byte 寫入
+   D) 它提供了 `writeInt` 這個方法
+   
+   <details>
+   <summary>參考解答</summary>
+   答案：**B**  
+   解析：`BufferedOutputStream` 這個裝飾者的唯一職責就是提供緩衝（Buffering），它不改變資料內容，只改變寫入的「效率」。
+   </details>
 
-2. 關於 Decorator pattern, 下列何者為錯
-
-    A) Decorator 可以包含一個 Decorator 物件
-    B) Decorator 和 ConcreteComponent 有部分共同的方法，宣告在 Component 中
-    C) Decorator 和 ConcreteComponent 都可以包含 Component
-
-    <details>
-    <summary>參考解答</summary>
-
-    答案：**C) `Decorator` 和 `ConcreteComponent` 都可以包含 `Component`**
-    
-    **說明：** `ConcreteComponent` 通常是核心元件（裝飾鏈的終點），它負責實作基本行為，不會去包含其他 `Component`。只有 `Decorator` 才會包含一個 `Component` 的參考，以便將請求委派給被裝飾的物件。
-    </details>
-
-
-3. 請說明 Strategy 和 Decorator 設計樣式的異同。
-
-    <details>
-    <summary>參考解答</summary>
-
-    * **相同點：** 兩者都提倡「多用組合，少用繼承」，可以在執行時期動態改變物件的行為或功能。
-    * **相異點：** 
-        * **Decorator (裝飾者模式)：** 著重於**擴充**物件的功能，就像是在物件外面包上一層又一層的包裝（外表/皮膚）。裝飾者和被裝飾者有相同的介面，對客戶端是透明的。
-        * **Strategy (策略模式)：** 著重於**替換**物件內部的演算法或邏輯（內臟/骨架）。客戶端需要知道並主動選擇要使用哪一種策略。
-    </details>
+5. **請說明 Strategy 和 Decorator 設計樣式的異同。** (涵蓋 17.2.2)
+   
+   <details>
+   <summary>參考解答</summary>
+   * **相同點：** 兩者都提倡「多用組合，少用繼承」，可以在執行時期動態改變物件的行為或功能。
+   * **相異點：** 
+     * **Decorator (裝飾者模式)：** 著重於**擴充**物件的功能，就像是在物件外面包上一層又一層的包裝。裝飾者和被裝飾者有相同的介面，對客戶端是透明的。
+     * **Strategy (策略模式)：** 著重於**替換**物件內部的演算法或邏輯。客戶端需要知道並主動選擇要使用哪一種策略。
+   </details>
 
 ## 17.練習題
 
@@ -203,8 +246,14 @@ FIG: Java IO- Using Decorator
 - 同上，若以繼承的方法來設計，需要設計多少類別?
 - 同上，若改以 Strategy 設計樣式來設計，該如何設計？
 
-(見 [src/ChristmasTreeDecorator.java](src/ChristmasTreeDecorator.java))
+### 17.ex02 聖誕樹裝飾
 
+聖誕樹 (`ChrismasTree`) 上面有許多的裝飾品，包含鈴鐺（`Bell`），糖果（`Candy`），與禮物（`Gift`），請用 `Decorator` 樣式設計之。所有的聖誕樹都會支援 `sing()` 的方法：
+    - `聖誕樹：I am a Chrismas tree`
+    - `有鈴鐺的聖誕樹：I have a bell, I am a Chrismas tree`
+    - `有糖果和鈴鐺的聖誕樹：I have a candy, I have a bell, I am a Chrismas tree`
+
+依此類推。請寫出完整可以執行的程式。
 
 ### 17.ex03
 
@@ -213,10 +262,7 @@ FIG: Java IO- Using Decorator
 - `UpperCaseFilter`：每個英文字都改成大寫
 - `CommaFilter`: 遇到數字就加上千分號
 - `CountFilter`: 在每行字後面加上單字的個數
-	
-(見 [src/FilterDecorator.java](src/FilterDecorator.java))
-	
-
+		
 ### 17.ex04
 泡咖啡了！我們有手工（`HandBlend`）、深度烘胚（`DarkRoast`）、低卡 `Decaf`、`Espresso` 等咖啡，而且每一種咖啡都可以加上 `Milk`, `Mocha`, `Soy`，當然每一個都是額外需要加費的。請用 Decorator 設計樣式設計之，注意 Coffee 是父類別，而我們需要 `cost()` 方法來回傳費用。畫出 UML 圖，寫出程式（請自己假設個別的價格）。
 

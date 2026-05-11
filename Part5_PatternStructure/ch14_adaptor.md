@@ -74,6 +74,46 @@ FIG: 應用 Adaptor- Copyable
 
 (見 [src/VectorUtilityExample.java](src/VectorUtilityExample.java))
 
+#### 💡 隨堂練習：實作 StudentAdapter
+
+我們有 `VectorUtility.copy()` 可以複製實作了 `Copyable` 的物件。現在我們有 `Student` 類別，它沒有實作 `Copyable`，請利用 **物件轉接器 (Object Adapter)** 的概念，填空完成 `StudentAdapter`：
+
+```java
+// 轉接器：讓 Student 也能符合 Copyable 的要求
+class StudentAdapter implements ________ { // (1) 填入轉接器需要實作的介面
+    private Student student; // 被轉接的對象 (Adaptee)
+
+    public StudentAdapter(Student student) {
+        this.student = student;
+    }
+
+    @Override
+    public StudentAdapter copy() {
+        if (student.________()) { // (2) 填入判斷 Student 是否可複製的方法
+            // (3) 建立一個新的 Student (深拷貝) 並用 StudentAdapter 包裝起來
+            return new StudentAdapter(new Student(________, ________, ________));
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean isCopyable() {
+        // (4) 將判斷委託給 Student 的哪個方法？
+        return student.________(); 
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+}
+```
+
+**提示：**
+1. `VectorUtility` 要求傳入的物件必須實作 `Copyable` 介面。
+2. `Student` 類別中，判斷是否有效的方法是 `isValid()`。
+3. `Student` 的建構子為 `Student(String name, int age, boolean valid)`，你可以透過 `student.getName()`, `student.getAge()`, `student.isValid()` 來取得舊物件的資料。
+
 
 ### 14.3.3 StreamReader
 
@@ -191,40 +231,101 @@ Servlet API 中的 `HttpServletRequestWrapper` 和 `HttpServletResponseWrapper`
 
 ## 14.4 隨堂測驗
 
-1.  Adaptor 的目的:
-    A) 把兩個介面不相容的物件可以溝通合作
-    B) 讓一個類別只能產生一個物件
-    C) 讓一個物件可以有很多的觀者者，物件變動時，其觀察者物件可以跟著變動
-    D) 提供一個可以修改介面的介面，讓物件可以溝通
+1. **Adaptor (轉接器) 模式的主要目的為何？** (涵蓋 14.1)
+   A) 把兩個介面不相容的物件可以溝通合作
+   B) 讓一個類別只能產生一個物件
+   C) 讓一個物件可以有很多的觀察者，物件變動時，其觀察者物件可以跟著變動
+   D) 提供一個可以修改介面的介面，讓物件可以溝通
+   
+   <details>
+   <summary>解析與答案</summary>
+   **答案：A**  
+   解析：Adapter 的核心目的就是轉換類別的介面成另一個介面所預期的樣式，讓不相容的介面能夠一起合作。
+   </details>
 
-2.  在 Adaptor 中，與 client 溝通的物件為
-    A) Target
-    B) Adaptee
+2. **在 Adaptor 模式中，通常代表「Client 預期使用的介面（也就是轉接器要實現的介面）」的是哪一個角色？** (涵蓋 14.2)
+   A) Target
+   B) Adaptee
+   C) Client
+   D) SpecificRequest
+   
+   <details>
+   <summary>解析與答案</summary>
+   **答案：A**  
+   解析：Client 呼叫的是 Target 介面，Adaptor 實作 Target 介面，並在內部呼叫 Adaptee（被轉接者）的實際方法。
+   </details>
 
-3.  Object Adaptor 運用的技巧為
-    A) 讓 Target 包含一個 Adaptor 的物件，轉而呼叫 Adaptee 的方法
-    B) 設計一個 Target 的子類別 Adaptor，把 client 呼叫的方法轉而呼叫 Adaptee 的方法
-    C) 設計一個 Adaptor 類別，呼叫 Target 與 Adaptee ，等於是作為兩者之間的中介，以降低耦合度
+3. **關於 Object Adaptor (物件轉接器) 與 Class Adaptor (類別轉接器) 的敘述，下列何者正確？** (涵蓋 14.2)
+   A) Class Adaptor 使用「組合 (Composition)」的技巧
+   B) Object Adaptor 使用「多重繼承 (Multiple Inheritance)」的技巧
+   C) Object Adaptor 內部會持有 Adaptee 的實例，並透過「委託 (Delegation)」來達成轉接
+   D) Class Adaptor 比 Object Adaptor 更彈性，因為 Java 支援多重繼承
+   
+   <details>
+   <summary>解析與答案</summary>
+   **答案：C**  
+   解析：Object Adaptor 使用委託（持有一個 Adaptee 物件），而 Class Adaptor 通常使用繼承來達成轉接。
+   </details>
 
-4.  當我們想要把 `A.m1()` 介面轉成 `B.op1()` 介面。回答問號 `?` 的程式碼
+4. **在 `VectorUtility` 範例中，我們建立了 `StudentAdapter`。為什麼我們不直接修改 `Student` 類別讓它實作 `Copyable` 介面就好？** (涵蓋 14.3.2)
+   A) 因為修改 `Student` 會破壞封裝性
+   B) 模擬 `Student` 可能是第三方套件提供的類別，或是我們不想/無法修改其原始碼的情境
+   C) 因為 Java 不允許一個類別實作多個介面
+   D) 因為 `Student` 類別不能有 `isValid()` 以外的方法
+   
+   <details>
+   <summary>解析與答案</summary>
+   **答案：B**  
+   解析：Adapter 模式非常適用於「無法修改現有類別原始碼」或「不想為了特定需求而改動穩定類別」的情境。
+   </details>
 
-```java
-class AdaptorA2B extends B {
-    A a;
-    public Adaptor(A a) {
-        ?1
-    }
-    public void op1() {
-        ?2
-    }
-}
-```
+5. **Java 中的 `InputStreamReader` 是轉接器模式的經典應用。它是將什麼轉接為什麼？** (涵蓋 14.3.3)
+   A) 將 `Reader` 轉接為 `InputStream`
+   B) 將 `InputStream` (Byte Stream) 轉接為 `Reader` (Character Stream)
+   C) 將 `File` 轉接為 `Socket`
+   D) 將 `String` 轉接為 `Array`
+   
+   <details>
+   <summary>解析與答案</summary>
+   **答案：B**  
+   解析：`InputStreamReader` 接收一個 `InputStream`，並將其包裝、轉接為 `Reader` 介面，讓 Client 可以用字元流的方式讀取位元流。
+   </details>
 
-<details>
-<summary>解答</summary>
-    * `?1` 為 `this.a = a;` (在建構子中將傳入的 `A` 物件賦值給成員變數 `a`)
-    * `?2` 為 `a.m1();` (在 `op1()` 方法中呼叫 `A` 物件的 `m1()` 方法，完成介面轉換)
-</details>
+6. **在 Java AWT 中，`WindowAdapter` 被稱為「預設轉接器 (Default Adapter)」，其主要解決什麼問題？** (涵蓋 14.3.4)
+   A) 解決介面不相容的問題
+   B) 避免開發者為了實作一個包含多個方法的介面（如 `WindowListener`），而必須寫出一堆空白的 method 實作
+   C) 提供視窗元件的深拷貝功能
+   D) 負責將滑鼠事件轉換為鍵盤事件
+   
+   <details>
+   <summary>解析與答案</summary>
+   **答案：B**  
+   解析：`WindowAdapter` 預設空實作了 `WindowListener` 的所有方法，讓開發者只需繼承它並覆寫需要的方法即可，這是一種方便的「介面適配」變體。
+   </details>
+
+7. **關於 `Arrays.asList()` 的敘述，下列何者「錯誤」？** (涵蓋 14.3.5)
+   A) 它將陣列 (Array) 轉接為 `List` 介面
+   B) 透過它產生的 List，其長度是固定的，不能進行 `add` 或 `remove`
+   C) 它會建立一個全新的、與原陣列完全獨立的 `java.util.ArrayList` 物件
+   D) 修改轉接後的 List 內容，會直接反應到原陣列上
+   
+   <details>
+   <summary>解析與答案</summary>
+   **答案：C**  
+   解析：`Arrays.asList()` 回傳的是 `Arrays` 內部的私有 `ArrayList` 轉接器，它直接包裹著原陣列，並非獨立複製一份全新的 `java.util.ArrayList`。
+   </details>
+
+8. **在 Web 開發中，`HttpServletRequestWrapper` 常用於過濾器（Filter）中，它體現了什麼設計模式的概念？** (涵蓋 14.3.6)
+   A) 它是 Wrapper（可視為 Decorator 或 Adapter 的變體），允許我們攔截並修改 Request 的行為（如過濾 XSS），而未覆寫的方法則自動委託給原始 Request
+   B) 它純粹是一個 Factory 模式，用來建立 Request
+   C) 它是一個 Singleton，確保整個應用程式只有一個 Request
+   D) 它是一個 Observer，用來監聽 Request 的屬性變化
+   
+   <details>
+   <summary>解析與答案</summary>
+   **答案：A**  
+   解析：`HttpServletRequestWrapper` 是一個典型的 Wrapper 應用，透過繼承它並覆寫特定方法（如 `getParameter`），我們可以輕鬆修改輸入內容，其他方法則委託給原 Request。
+   </details>
 
 
 ## 14.5 Exercise
@@ -238,10 +339,8 @@ class AdaptorA2B extends B {
 ### 14.5.2 Grade average
 有一類別 School, 內有方法 `getAverage(Iterator<Integer>)`  會把 iterator 內的成績加總平均。有一個 Vector 物件 group 內含一些 Grade，但 Vector 無法回傳 `iterator` 物件，只能回傳 `Enumeration` 物件。我們想用 School 來計算 group 的平均，請利用 adapter 來解決此問題。
 
-Hint
-* 誰是 target? `Iterator`
-* 誰是 Adaptee? `Enumeration`
-* Google java api 了解 `Vector`, `Enumeration`, `Iteration` 如何應用
+[src/GradeAverageExercise.java](src/GradeAverageExercise.java)
 
-<!-- [Hint](https://github.com/nlhsueh/oose24/blob/main/demo/src/adapter/School.java) -->
+
+
 

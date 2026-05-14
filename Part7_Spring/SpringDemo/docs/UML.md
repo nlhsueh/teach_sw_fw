@@ -210,7 +210,11 @@ classDiagram
 
 ## 6. Spring 中的設計模式應用 (Design Patterns in Spring)
 
-從這個框架與應用程式，可以看到以下的設計樣式被應用（以 **大學 University** 系統為例）：
+從這個框架與應用程式，可以看到以下的設計樣式被應用（以 **大學 University** 系統為例）。
+
+> [!NOTE]
+> 本節著重於透過 Mermaid 設計圖來講述模式概念。關於 `SpringUniversity` 專案實際程式碼的詳細原則與模式分析，請參閱 [設計原則與模式深度解析](design.md)。
+
 
 ### 1. 單例模式 (Singleton Pattern)
 *   **Spring 應用**：Spring 中的 Bean 預設都是單例的（Singleton Scope）。

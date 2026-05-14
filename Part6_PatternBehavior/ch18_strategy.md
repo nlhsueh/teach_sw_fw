@@ -6,7 +6,8 @@
 ## 18.1 目的與動機
 
 > 定義一群演算法，將每一個封裝成一個類別且使之可互換。使用 `Strategy` 讓演算法獨立於使用者。
->> Define a **family of algorithms**, encapsulate each one, and make them **interchangeable**. `Strategy` lets the algorithm vary independently from clients that use it.
+
+> Define a **family of algorithms**, encapsulate each one, and make them **interchangeable**. `Strategy` lets the algorithm vary independently from clients that use it.
 
 ### 18.1.1 動機
 

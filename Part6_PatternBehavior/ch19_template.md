@@ -5,7 +5,8 @@
 ## 19.1 目的與動機 
 
 > 定義一個演算法的骨幹，把部分的步驟延遲到子類別來決定。
->> To define the skeleton of an algorithm in an operation, deferring some steps to subclasses.
+
+> To define the skeleton of an algorithm in an operation, deferring some steps to subclasses.
 
 樣板樣式讓子類別重新定義一個演算法的部分細節，但不變更演算法的結構。整體演算法不變是「剛」，部分可以改是「柔」，所以說 `Template Method` 是一個剛中帶柔的方式。多半我們翻譯成樣板，或是樣板方法。
 
@@ -25,12 +26,13 @@
 
 ### 架構
 
-```plantuml
-@startuml
-abstract class AbstractClass {
-    +templateMethod() <<template method>>
-    -primitiveOperation1() <<primitive>>
-    -primitiveOperation2() <<primitive>>
+```mermaid
+classDiagram
+class AbstractClass {
+    <<abstract>>
+    +templateMethod()
+    -primitiveOperation1()
+    -primitiveOperation2()
 }
 
 class ConcreteClass {
@@ -39,7 +41,6 @@ class ConcreteClass {
 }
 
 AbstractClass <|-- ConcreteClass
-@enduml
 ```
 
 
@@ -138,28 +139,28 @@ public boolean addAll(int index, Collection<? extends E> c) {
 | AbstractList | `add()`, `get()`, `set()` 等 | Primitive Method            |
 | ArrayList    | 實作了 `get()`, `add()` 等   | Primitive Method 的具體實作 |
 
-```plantuml
-@startuml
-abstract class AbstractList<E> {
-    +int size()
-    +boolean addAll(int index, Collection<? extends E> c) <<Template Method>>
-    +boolean equals(Object o) <<Template Method>>
-    +E get(int index) <<Primitive Method>>
-    +E set(int index, E element) <<Primitive Method>>
-    +void add(int index, E element) <<Primitive Method>>
-    +E remove(int index) <<Primitive Method>>
+```mermaid
+classDiagram
+class AbstractList~E~ {
+    <<abstract>>
+    +size() int
+    +addAll(int index, Collection~E~ c) boolean
+    +equals(Object o) boolean
+    +get(int index) E
+    +set(int index, E element) E
+    +add(int index, E element) void
+    +remove(int index) E
 }
 
-class ArrayList<E> {
-    +int size()
-    +E get(int index)
-    +E set(int index, E element)
-    +void add(int index, E element)
-    +E remove(int index)
+class ArrayList~E~ {
+    +size() int
+    +get(int index) E
+    +set(int index, E element) E
+    +add(int index, E element) void
+    +remove(int index) E
 }
 
 AbstractList <|-- ArrayList
-@enduml
 ```
 
 ---
@@ -203,14 +204,15 @@ public class MyServlet extends HttpServlet {
 ```
 架構圖：
 
-```plantuml
-@startuml
-abstract class HttpServlet {
-    +service(req, resp) <<template method>>
-    #doGet(req, resp) <<primitive>>
-    #doPost(req, resp) <<primitive>>
-    #doPut(req, resp) <<primitive>>
-    #doDelete(req, resp) <<primitive>>
+```mermaid
+classDiagram
+class HttpServlet {
+    <<abstract>>
+    +service(req, resp)
+    #doGet(req, resp)
+    #doPost(req, resp)
+    #doPut(req, resp)
+    #doDelete(req, resp)
 }
 
 class MyServlet {
@@ -218,7 +220,6 @@ class MyServlet {
 }
 
 HttpServlet <|-- MyServlet
-@enduml
 ```
 
 ### 19.4.5 JUnit
@@ -243,27 +244,27 @@ JUnit 控制執行順序：
 | **ConcreteClass**          | 使用者寫的測試類別         | 實作具體測試步驟               |
 
 
-```plantuml
-@startuml
-abstract class TestRunner {
-    +runTests() <<template method>>
-    -beforeAll() <<primitive>>
-    -beforeEach() <<primitive>>
-    -runTestMethod() <<primitive>>
-    -afterEach() <<primitive>>
-    -afterAll() <<primitive>>
+```mermaid
+classDiagram
+class TestRunner {
+    <<abstract>>
+    +runTests()
+    -beforeAll()
+    -beforeEach()
+    -runTestMethod()
+    -afterEach()
+    -afterAll()
 }
 
 class UserTestClass {
-    +@BeforeAll beforeAll()
-    +@BeforeEach beforeEach()
-    +@Test testSomething()
-    +@AfterEach afterEach()
-    +@AfterAll afterAll()
+    +beforeAll()
+    +beforeEach()
+    +testSomething()
+    +afterEach()
+    +afterAll()
 }
 
 TestRunner <|-- UserTestClass
-@enduml
 ```
 
 實際範例（JUnit 5）

@@ -43,3 +43,11 @@
 - `GET /api/school/courses`: 取得所有課程。
 - `POST /api/school/enroll`: 學生選課。
 - `POST /api/school/grade`: 老師評分。
+
+---
+
+## 相關文檔
+為了更深入了解本專案的設計，請參閱以下文檔：
+- [設計原則與模式深度解析](docs/design.md) - 詳細探討本專案如何應用 SOLID 原則與設計樣式。
+- [系統架構與 UML 圖檔](docs/UML.md) - 透過 Mermaid 圖表講述系統架構、時序圖與模式應用。
+- [Spring 基礎概念複習](../Spring.md) - 返回上一層閱讀 Spring IoC/DI 的基本介紹。

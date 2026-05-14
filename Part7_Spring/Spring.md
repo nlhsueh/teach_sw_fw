@@ -104,3 +104,9 @@ public class StudentController {
 
 ## 4. 結語：為什麼學 Spring Boot？
 學習 Spring Boot 不僅是學習一個框架，更是學習如何將基礎的物件導向知識（封裝、繼承、多型）應用在複雜的企業級系統中。透過 IoC 與 DI，我們能寫出低耦合、易測試且高品質的代碼。
+
+---
+
+## 5. 完整專案實作
+本教材配有完整的專案實作 **Spring University**，展示了如何將上述觀念落實於 Web 系統中。
+請移步至專案目錄閱讀 [Spring University 專案 README](SpringDemo/README.md)。

@@ -46,18 +46,18 @@ Spring 最核心的機制是 **IoC (Inversion of Control，控制反轉)** 與 *
 
 * **Factory method**: 
   - **Spring 框架應用**：Spring 的 `BeanFactory` 是工廠模式的典型應用，負責建立與管理 Bean。
-  - **University 系統**：當我們在 [SchoolController.java](../src/main/java/com/example/demo/controller/SchoolController.java) 中使用 `@Autowired` 進行依賴注入時，底層即是工廠模式在運作。
+  - **University 系統**：當我們在 [SchoolController.java](../src/main/java/com/example/demo/controller/SchoolController.java) 中使用 `@Autowired` 進行依賴注入時，底層即是工廠模式在運作。詳細 UML 圖請參閱 [UML.md#2-工廠模式-factory-pattern](UML.md#2-工廠模式-factory-pattern)。
 * **Abstract factory**: 
   - **Spring 框架應用**：`ApplicationContext` 整合了多種工廠與服務，可視為大型的抽象工廠。
   - **University 系統**：**無**在業務邏輯中直接實作，完全依賴 Spring 容器。
 * **Singleton**: 
   - **Spring 框架應用**：Spring Bean 預設皆為 Singleton。
-  - **University 系統**：系統中的 [SchoolService.java](../src/main/java/com/example/demo/service/SchoolService.java) 在 Spring 管理下是單例，確保全系統共用同一份實例與記憶體內的資料。
+  - **University 系統**：系統中的 [SchoolService.java](../src/main/java/com/example/demo/service/SchoolService.java) 在 Spring 管理下是單例，確保全系統共用同一份實例與記憶體內的資料。概念圖請參閱 [UML.md#1-單例模式-singleton-pattern](UML.md#1-單例模式-singleton-pattern)。
 
 ### Part 5: 結構型模式 (Structural Patterns)
 
 * **Adapter**: 
-  - **University 系統**：透過 Adapter 與既存的 Web API（如舊教務系統）建立連結，並提供統一的介面供 Spring 應用程式呼叫（目前系統中尚未實作此轉接器，若未來需要，可由 [SchoolService.java](../src/main/java/com/example/demo/service/SchoolService.java) 呼叫）。
+  - **University 系統**：透過 Adapter 與既存的 Web API（如舊教務系統）建立連結，並提供統一的介面供 Spring 應用程式呼叫（目前系統中尚未實作此轉接器，若未來需要，可由 [SchoolService.java](../src/main/java/com/example/demo/service/SchoolService.java) 呼叫）。概念圖請參閱 [UML.md#8-轉接器模式-adapter-pattern](UML.md#8-轉接器模式-adapter-pattern)。
   - **Spring 框架應用**：Spring MVC 的 `HandlerAdapter` 也是經典應用。
 * **Bridge**: 
   - **Spring 框架應用**：Java 的 JDBC API 本身就是 Bridge 模式，將抽象的資料庫操作與各家廠商的具體驅動程式解耦。
@@ -65,12 +65,12 @@ Spring 最核心的機制是 **IoC (Inversion of Control，控制反轉)** 與 *
 * **Composite**: 
   - **University 系統**：若「系所」有子系所或組織階層結構，可應用此模式以一致方式處理。以目前扁平結構來看為**無**。
 * **Decorator**: 
-  - **Spring 框架應用**：Spring 的 AOP（剖面導向程式設計）與 `@Transactional`（事務管理）機制，本質上就是 Decorator（或 Proxy）概念的應用。
+  - **Spring 框架應用**：Spring 的 AOP（剖面導向程式設計）與 `@Transactional`（事務管理）機制，本質上就是 Decorator（或 Proxy）概念的應用。詳細 UML 圖請參閱 [UML.md#3-代理模式-proxy-pattern](UML.md#3-代理模式-proxy-pattern) 或 [UML.md#7-裝飾者模式-decorator-pattern](UML.md#7-裝飾者模式-decorator-pattern)。
   - **University 系統**：若我們未來在 [SchoolService.java](../src/main/java/com/example/demo/service/SchoolService.java) 的方法上加上事務或自訂日誌註解，Spring 就會動態為我們的物件「裝飾」上這些功能。
 
 ### 其他模式 (Part 6 行為型模式)
 
-* **Strategy**: 將不同的成績計算邏輯封裝成不同的 Strategy 物件，讓系統可以根據不同的需求選擇不同的成績計算邏輯。
-* **Template Method**: 定義一個通用的課程建立流程，並將部分實作交由子類別。
-* **Observer**: 建立一對多的相依關係，自動通知狀態更新。
+* **Strategy**: 將不同的成績計算邏輯封裝成不同的 Strategy 物件，讓系統可以根據不同的需求選擇不同的成績計算邏輯。概念圖請參閱 [UML.md#6-策略模式-strategy-pattern](UML.md#6-策略模式-strategy-pattern)。
+* **Template Method**: 定義一個通用的課程建立流程，並將部分實作交由子類別。概念圖請參閱 [UML.md#4-範本方法模式-template-method-pattern](UML.md#4-範本方法模式-template-method-pattern)。
+* **Observer**: 建立一對多的相依關係，自動通知狀態更新。概念圖請參閱 [UML.md#5-觀察者模式-observer-pattern](UML.md#5-觀察者模式-observer-pattern)。
 * **Chain of Responsibility**: 可用於過濾請求（例如 Spring Security 的過濾器鏈）。

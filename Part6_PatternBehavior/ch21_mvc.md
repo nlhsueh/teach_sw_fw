@@ -1,5 +1,3 @@
-###### tags: `OOSE`
-@nlhsueh 
 
 # Ch21 三足鼎立：MVC
 

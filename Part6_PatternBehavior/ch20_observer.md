@@ -99,6 +99,8 @@ Java 從第九版以後取消了 `Observable` 和 `Observer`, 所以以下程式
 
 分離了資料模組與呈現模組使得溝通能夠更容易廣泛的被應用，當資料變更不需觀察者做出更新動作才能更新，保持資料呈現的一致性。
 
+[gugu](https://refactoring.guru/design-patterns/observer)
+
 ## 20.3 範例
 
 ### 20.3.1 `Observable` 的應用
@@ -203,6 +205,9 @@ public void notifyObservers(Object newValue) {
 
 [src/FruitDelegationExample.java](src/FruitDelegationExample.java)
 
+![](img/ch20_observer_delegation.png)
+
+<!-- 
 ```mermaid
 classDiagram
     class Plant
@@ -224,7 +229,8 @@ classDiagram
     Plant <|-- Fruit
     Fruit *-- Observable : delegates to
     Observable ..> Observer : notifies
-```
+``` 
+-->
 
 FIG: `Observer` with delegation
 

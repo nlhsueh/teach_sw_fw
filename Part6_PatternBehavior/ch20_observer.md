@@ -43,7 +43,8 @@ class Stock {
 
 ## 20.2 結構與方法
 
-<!-- ![](https://hackmd.io/_uploads/HJc4U0VEn.png) -->
+![](img/ch20_mvc_hackmd_img.png)
+
 ###  20.2.1 結構
 ```mermaid
 classDiagram
@@ -73,9 +74,9 @@ classDiagram
     Observer <|.. ConcreteObserver
     Subject --> Observer
 
-    note for Subject "notifyObservers()\nfor all obs in Observer\nobs.update()"
-    note for ConcreteSubject "setState() 會改變狀態;\n呼叫 notifyObservers()"
-    note for ConcreteObserver "update():\n實作改變呈現的方法"
+    note for Subject "notifyObservers()<br/>for all obs in Observer<br/>obs.update()"
+    note for ConcreteSubject "setState() 會改變狀態;<br/>呼叫 notifyObservers()"
+    note for ConcreteObserver "update():<br/>實作改變呈現的方法"
 ```
 
 FIG: `Observer` Structure
@@ -202,7 +203,28 @@ public void notifyObservers(Object newValue) {
 
 [src/FruitDelegationExample.java](src/FruitDelegationExample.java)
 
-![](img/ch20_observer_delegation.png)
+```mermaid
+classDiagram
+    class Plant
+    class Observable {
+        +addObserver(o: Observer)
+        +notifyObservers()
+    }
+    
+    class Fruit {
+        -observable: Observable
+        +addObserver(o: Observer)
+    }
+    
+    class Observer {
+        <<interface>>
+        +update(o: Observable, arg: Object)
+    }
+    
+    Plant <|-- Fruit
+    Fruit *-- Observable : delegates to
+    Observable ..> Observer : notifies
+```
 
 FIG: `Observer` with delegation
 

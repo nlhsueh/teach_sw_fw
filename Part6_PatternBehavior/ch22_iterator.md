@@ -70,19 +70,33 @@ while (it.hasNext()) {
 ## 22.3.3 練習
 
 
-## 22.CHK
+## 隨堂測驗
 
 1. 要取得一個集合物件內所有物件的，為何不直接從此集合物件取值？還需要先取得其瀏覽物件 (iterator)？
 	A) 瀏覽物件的功能較為強大
 	B) 瀏覽物件是 View, 透過如此可以將 Model 與 View 分離
 	C) 可以避免修改到集合物件的內容
 	D) 避免傳遞過多的資料，速度較快
+
+	<details>
+	<summary>解答</summary>
+	
+	**C) 可以避免修改到集合物件的內容**
+	說明：透過 Iterator 可以依序取得集合內的元素，而不必暴露集合物件的內部結構，這樣可以保護集合內的資料不被不當修改。
+	</details>
 	
 2. Polymorphic iterator 是結合哪兩個樣式？(選兩個)
 	A) iterator
 	B) mediator
 	C) decorator
 	D) factory method
+
+	<details>
+	<summary>解答</summary>
+	
+	**A) iterator 與 D) factory method**
+	說明：Polymorphic iterator 通常會用 factory method 模式讓集合物件動態決定要產生哪一種具體的 Iterator。
+	</details>
 
 3. 下列的程式會計算一群學生的平均成績，你覺得有什麼問題？可以怎麼改善？
 ```java
@@ -98,17 +112,39 @@ class GradeComputer {
 }
 ```
 
+	<details>
+	<summary>解答</summary>
+	
+	傳入 `ArrayList<Student>` 會暴露了儲存學生的具體資料結構，增加了耦合度。若未來改成用 `Vector` 或陣列來儲存學生，這裡的程式碼就必須修改。
+	改善方法是將參數改成傳入 `Iterator<Student>`，這樣 `GradeComputer` 就不需要知道學生集合是如何被儲存的。
+	</details>
+
 4. 同上，如果我們用 Iterator 來做，第二行的「?」部分為何？
 ```java
 double getAverage(Iterator<Student> iterator) {
      ?
 }   
 ```
+
+	<details>
+	<summary>解答</summary>
+	
+```java
+    int sum = 0;
+    int count = 0;
+    while(iterator.hasNext()){
+        sum += iterator.next().getScore();
+        count++;
+    }
+    return count == 0 ? 0 : (double)sum/count;
+```
+	</details>
+
 [src/IteratorQuestion.java](src/IteratorQuestion.java)
 
-## 22.EX
+## 練習
 
-### 22.ex01
+### EX01
 請完成以下程式
 
 [src/CourseIteratorExample.java](src/CourseIteratorExample.java)

@@ -278,7 +278,7 @@ TestRunner <|-- UserTestClass
 > * 比較 `Template Method` 和 `factory method` 的異同
 > * 比較 `Template Method` 和 `strategy` 的異同
 
-## 19.CHK
+## 隨堂測驗
 
 1. `Template Method` 的目的為？
    A) 把兩個介面不相容的物件可以溝通合作
@@ -286,27 +286,62 @@ TestRunner <|-- UserTestClass
    C) 讓一個物件可以有很多的觀察者，物件變動時，其觀察者物件可以跟著變動
    D) 定義一個演算法的架構，讓細部的做法延遲到子類別做決定
 
+   <details>
+   <summary>解答</summary>
+
+   **D) 定義一個演算法的架構，讓細部的做法延遲到子類別做決定**
+   說明：`Template Method` 定義演算法骨架，細節交給子類別決定
+   </details>
+
 2. 在 `Template Method` 中，`Template Method` 通常宣告為？
    A) final
    B) static
    C) interface
    D) generic type
 
+   <details>
+   <summary>解答</summary>
+
+   **A) final**
+   說明：通常設為 final，以避免子類別改變流程順序
+   </details>
+
 3. `Template Method` 運用的技巧為？
    A) 把要延遲的程式碼定義為 final，讓子類別去定義
    B) 把要延遲的程式碼包裝成方法，讓子類別去定義
    C) 把要延遲的程式碼定義為 final，不讓子類別修改
+
+   <details>
+   <summary>解答</summary>
+
+   **B) 把要延遲的程式碼包裝成方法，讓子類別去定義**
+   說明：可變部分設計成可覆寫方法讓子類別提供實作
+   </details>
 
 4. `Template Method` 和 Factory Method 有點類似，以下哪一項正確？
    A) 前者會生成演算法，後者會生成物件
    B) 前者運用多型，後者運用委託
    C) 兩者都是延遲方法到子類別，前者延遲某方法的細部方法，後者延遲物件生成方法
 
+   <details>
+   <summary>解答</summary>
+
+   **C) 兩者都是延遲方法到子類別，前者延遲某方法的細部方法，後者延遲物件生成方法**
+   說明：兩者都是延遲到子類別，不同在演算法 vs 物件生成
+   </details>
+
 5. 以下程式哪一個方法可能是 `Template Method`？
    A) `m1()`
    B) `m2()`
    C) `m3()`
    D) `m4()`
+
+   <details>
+   <summary>解答</summary>
+
+   **A) `m1()`**
+   說明：m1 是固定流程，包含對抽象方法的呼叫，是 `Template Method`
+   </details>
 
 ```java
 class A {
@@ -323,22 +358,12 @@ class A {
 }
 ```
 
----
+## 練習
 
-**答案與簡要說明：**
-
-1. D — `Template Method` 定義演算法骨架，細節交給子類別決定
-2. A — 通常設為 final，以避免子類別改變流程順序
-3. B — 可變部分設計成可覆寫方法讓子類別提供實作
-4. C — 兩者都是延遲到子類別，不同在演算法 vs 物件生成
-5. A — m1 是固定流程，包含對抽象方法的呼叫，是 `Template Method`
-
-## 19.EX
-
-### 19.ex01 sort
+### EX01 sort
 應用 `Arrays.sort(Object[], Comparator)`  把一群學生（Student）依據他們的身高做排序。討論：`Arrays.sort` 有應用到 Template 樣式嗎？有什麼好處？
 
-### 19.ex02 playGame
+### EX02 playGame
 某一類遊戲的演法算法大概的邏輯如下。其中第 a, c, f 步驟在每個遊戲略有不同，由遊戲本身定義。請用 `Template Method` 定義 `playGame()` 方法。
     a. 初始化遊戲
     b. 等待玩家加入
@@ -353,5 +378,5 @@ public ?1 void playGame() {
 }
 ```
 
-### 19.ex03 Coffee
+### EX03 Coffee
 煮咖啡囉！咖啡沖泡法：1. 把水煮沸（boilWater）; 2. 用沸水沖泡咖啡（brewCoffeeGrinds）; 3. 把咖啡倒到杯子（pourInCup）; 4. 加糖和奶精（addSugarAndMilk）。茶沖泡法：1. 把水煮沸（）; 2. 用沸水浸泡茶葉（steerTeaBag）; 3. 把茶倒到杯子（pourInCup）; 4. 加檸檬（addLemon）。請利用 `Template Method` 達到重用性的設計。

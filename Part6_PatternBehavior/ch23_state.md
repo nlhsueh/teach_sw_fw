@@ -320,58 +320,75 @@ public class Game {
 }
 ```
 
-```plantuml
-@startuml
-interface MarioState {
-    +obtainMushroom(context)
-    +obtainFireFlower(context)
-    +meetEnemy(context)
-    +getName()
-}
+```mermaid
+classDiagram
+    class MarioState {
+        <<interface>>
+        +obtainMushroom(context)
+        +obtainFireFlower(context)
+        +meetEnemy(context)
+        +getName()
+    }
 
-class SmallMarioState
-class SuperMarioState
-class FireMarioState
-class MarioContext
+    class SmallMarioState
+    class SuperMarioState
+    class FireMarioState
+    class MarioContext {
+        +obtainMushroom()
+        +obtainFireFlower()
+        +meetEnemy()
+        +getStateName()
+    }
 
-SmallMarioState ..|> MarioState
-SuperMarioState ..|> MarioState
-FireMarioState ..|> MarioState
-MarioContext o- MarioState : state
-
-MarioContext : +obtainMushroom()
-MarioContext : +obtainFireFlower()
-MarioContext : +meetEnemy()
-MarioContext : +getStateName()
-
-MarioState <|.. SmallMarioState
-MarioState <|.. SuperMarioState
-MarioState <|.. FireMarioState
-@enduml
+    MarioState <|.. SmallMarioState
+    MarioState <|.. SuperMarioState
+    MarioState <|.. FireMarioState
+    MarioContext o-- MarioState : state
 ```
 
-## 23.CHK
+## 隨堂測驗
 
 1. State 樣式中，保存物件狀態的類別為
-	 - Context 
-	 - Observer 
-	 - Strategy 
-	 - Proxy	
+	A) Context 
+	B) Observer 
+	C) Strategy 
+	D) Proxy	
+
+	<details>
+	<summary>解答</summary>
+	
+	**A) Context**
+	說明：Context 類別負責保存目前的狀態物件，並將與狀態相關的請求委託給該狀態物件處理。
+	</details>
 
 2. 為何 State.handle() 需要帶 Context 參數？
-	- state 需要觀看 context 物件的值 
-	- state 需要設定 context 的新狀態 
-	- state 需要讀取 context 的狀態值	
+	A) state 需要觀看 context 物件的值 
+	B) state 需要設定 context 的新狀態 
+	C) state 需要讀取 context 的狀態值	
+
+	<details>
+	<summary>解答</summary>
+	
+	**B) state 需要設定 context 的新狀態**
+	說明：State 物件在處理完請求後，通常需要改變 Context 的狀態，所以必須傳入 Context 物件以呼叫其 `setState()`。
+	</details>
 
 3. 關於 State 樣式，何者錯誤？
-	- Context 把改變物件狀態的動作延遲到其子類別
-	- State 內所宣告的方法為可能改變狀態的方法 
-	- 若有 n 種可能狀態則會宣告 n 個 concrete state 類別 
-	- Context 把狀態改變的工作委託給 State 物件
+	A) Context 把改變物件狀態的動作延遲到其子類別
+	B) State 內所宣告的方法為可能改變狀態的方法 
+	C) 若有 n 種可能狀態則會宣告 n 個 concrete state 類別 
+	D) Context 把狀態改變的工作委託給 State 物件
 
-## 23.EX
+	<details>
+	<summary>解答</summary>
+	
+	**A) Context 把改變物件狀態的動作延遲到其子類別**
+	說明：Context 主要是把狀態相關的操作「委託」給 State 物件處理，而不是延遲到自己的子類別，這是 Template Method 的做法。
+	</details>
 
-### 23.ex01
+## 練習
+
+### EX01
 有一個物件 A，當它接受到訊息 request $r$ ，所表現出來的行為取決於他目前的狀態 s1, s2, s3。狀態轉移如下：
     - s1--> s2
     - s2--> s3

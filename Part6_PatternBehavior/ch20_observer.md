@@ -45,48 +45,37 @@ class Stock {
 
 <!-- ![](https://hackmd.io/_uploads/HJc4U0VEn.png) -->
 ###  20.2.1 結構
-```plantuml
-@startuml
-interface Observer {
-    +update(subj: Subject)
-}
+```mermaid
+classDiagram
+    class Observer {
+        <<interface>>
+        +update(subj: Subject)
+    }
 
-abstract class Subject {
-    -obs: list(Observer)
-    #addObserver(ob: Observer)
-    #removeObserver(ob: Observer)
-    +notifyObservers()
-}
+    class Subject {
+        <<abstract>>
+        -obs: List~Observer~
+        #addObserver(ob: Observer)
+        #removeObserver(ob: Observer)
+        +notifyObservers()
+    }
 
-class ConcreteSubject {
-    -state: int
-    +setState(state: int)
-}
+    class ConcreteSubject {
+        -state: int
+        +setState(state: int)
+    }
 
-class ConcreteObserver {
-    +update(subj: Subject)
-}
+    class ConcreteObserver {
+        +update(subj: Subject)
+    }
 
-Subject <|-- ConcreteSubject
-Observer <|-- ConcreteObserver
-Subject -> Observer
+    Subject <|-- ConcreteSubject
+    Observer <|.. ConcreteObserver
+    Subject --> Observer
 
-note left of Subject::notifyObservers
-   for all obs in Observer
-      obs.update()
-end note
-
-note left of ConcreteSubject
-   setState() 會改變狀態;
-   呼叫 notifyObservers()
-end note
-
-note bottom of ConcreteObserver
-   update():
-      實作改變呈現的方法
-end note
-
-@enduml
+    note for Subject "notifyObservers()\nfor all obs in Observer\nobs.update()"
+    note for ConcreteSubject "setState() 會改變狀態;\n呼叫 notifyObservers()"
+    note for ConcreteObserver "update():\n實作改變呈現的方法"
 ```
 
 FIG: `Observer` Structure
@@ -281,37 +270,72 @@ public interface Consumer<T> {
 
 (見 [src/WeatherStationConsumer.java](src/WeatherStationConsumer.java))
 
-## 20.CHK
+## 隨堂測驗
 
 1. `Observer` 設計樣式主要有兩個物件：`Subject` 與 `Observer`: 
-     - 一個 `Subject`，會有多個 `Observer` 與之關聯
-     - 一個 `Observer`，會有多個 `Subject` 與之關聯
-     - 一個 `Observer` 只能對應一個 `Subject` 
-     - `Subject` 與 `Observer` 之間的關聯式多對多的關聯
+   A) 一個 `Subject`，會有多個 `Observer` 與之關聯
+   B) 一個 `Observer`，會有多個 `Subject` 與之關聯
+   C) 一個 `Observer` 只能對應一個 `Subject` 
+   D) `Subject` 與 `Observer` 之間的關聯式多對多的關聯
+
+   <details>
+   <summary>解答</summary>
+   
+   **A) 一個 `Subject`，會有多個 `Observer` 與之關聯**
+   說明：`Observer` 樣式定義了一對多的關係，當 `Subject` 改變時，會通知多個關聯的 `Observer`。
+   </details>
 
 2. 關於 `Observer` 樣式，何者為真：
-    - `Observer` 變動時，`Subject` 被通知 
-    - `Observer` 定時查詢 `Subject` 狀態 
-    - `Subject` 定期查詢 `Observer` 狀態 
-    - `Subject` 變動時，`Observer` 會被通知     
+   A) `Observer` 變動時，`Subject` 被通知 
+   B) `Observer` 定時查詢 `Subject` 狀態 
+   C) `Subject` 定期查詢 `Observer` 狀態 
+   D) `Subject` 變動時，`Observer` 會被通知     
+
+   <details>
+   <summary>解答</summary>
+   
+   **D) `Subject` 變動時，`Observer` 會被通知**
+   說明：被觀察者（`Subject`）狀態改變時，會主動推播（Push）或通知所有的觀察者（`Observer`）。
+   </details>
 
 3. java API  中實踐 Subject 的類別為 
-    - `Object`
-    - `Subject`
-    - `Observable`
-    - `Observer` 
-    
+   A) `Object`
+   B) `Subject`
+   C) `Observable`
+   D) `Observer` 
+   
+   <details>
+   <summary>解答</summary>
+   
+   **C) `Observable`**
+   說明：Java API 中使用 `java.util.Observable` 類別來作為被觀察者的基底類別（雖然現在已被標示為 Deprecated）。
+   </details>
+
 4. Java 的 Swing 架構使用 `Observer`，其中 `ActionListener` 相當於 `Observer` 樣式中的？
-    - `Subject `
-    - `Observer` 
-    - `Concrete Observer`
-    - `Concrete Subject`
+   A) `Subject `
+   B) `Observer` 
+   C) `Concrete Observer`
+   D) `Concrete Subject`
+
+   <details>
+   <summary>解答</summary>
+   
+   **B) `Observer`**
+   說明：`ActionListener` 是一個介面，負責接收並處理事件通知，扮演 `Observer` 的角色。
+   </details>
 
 5. 同上，像 `JButton` 這一類的元件，相當於 `Observer` 樣式的？
-    - `Subject`
-    - `Observer` 
-    - `Concrete Observer` 
-    - `Concrete Subject`
+   A) `Subject`
+   B) `Observer` 
+   C) `Concrete Observer` 
+   D) `Concrete Subject`
+
+   <details>
+   <summary>解答</summary>
+   
+   **D) `Concrete Subject`**
+   說明：`JButton` 是實際產生事件並通知監聽者的元件，扮演具體被觀察者（`Concrete Subject`）的角色。
+   </details>
 
 6. 請寫出 `java.util.Observer` 此介面。注意參數的正確。
 
@@ -320,6 +344,16 @@ interface Observer {
   ?
 }
 ```
+
+   <details>
+   <summary>解答</summary>
+   
+```java
+interface Observer {
+    void update(Observable o, Object arg);
+}
+```
+   </details>
 
 7. 以下 `View1` 是一個 `Observer`, `?1` 和 `?2` 為何
 
@@ -330,6 +364,13 @@ class View1 implements Observer {
   }
 }
 ```
+
+   <details>
+   <summary>解答</summary>
+   
+   `?1` 是 `Observable`
+   `?2` 是 `Object`
+   </details>
 
 8. `Stock` 是一個 `Subject`, 價格改變時會通知所有的 `observer`, 以下 `?` 為何
 
@@ -343,9 +384,15 @@ class Stock extends Observable {
 }
 ```
 
-## 20.EX
+   <details>
+   <summary>解答</summary>
+   
+   `notifyObservers();` 或 `notifyObservers(price);`
+   </details>
 
-### 20.ex01a Stock
+## 練習
+
+### EX01a Stock
 股票（`Stock`）物件內包含上次價格、現價與成交量三個屬性，現價與成交量每個2秒變動一次（請隨機產生在 7%, 10% 內的價格與成交量），請應用 `Observer` 設計樣式設計以下三個呈現：
    - `CurrentPriceBoard`: 呈現昨日價格 (`Y`)、目前價格 (`C`)、及波動百分比 (`(C-Y)/C`)。
    - `AmountBoard`: 呈現現價、成交量。

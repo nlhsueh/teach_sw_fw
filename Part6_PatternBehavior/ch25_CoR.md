@@ -545,19 +545,42 @@ public class OrderProcessingChainClient {
 
 ## 練習
 
-## 選擇/簡答
-- Chain of responsibility 的目的為何？
-    - 把物件串連起來，生成時一起生成。
-    - 把事件的請求者與處理者抽離開來，降低彼此的耦合度。
-    - 把事件處理的責任順序是先定義好，以便後續的層層處理。
-    - 設定一個事件的代理者，先由代理者處理，無法處理時在由真正的物件處理。
-- 關於 CoR 以下和者錯誤？
-	- 每一個 Handler 生成時都需要指定一個後繼者。
-	- 所有的 Hanlder 會實作同一個介面。
-	- 不同型態的 Handler 不可相互成為後繼者。
-- CoR 和 Composite 看起來都一樣，都是有一個繼承、一個包含，兩者有和差異？
+## 隨堂測驗
 
-## 設計
+1. Chain of responsibility 的目的為何？
+    A) 把物件串連起來，生成時一起生成。
+    B) 把事件的請求者與處理者抽離開來，降低彼此的耦合度。
+    C) 把事件處理的責任順序是先定義好，以便後續的層層處理。
+    D) 設定一個事件的代理者，先由代理者處理，無法處理時在由真正的物件處理。
+
+    <details>
+    <summary>解答</summary>
+    
+    **B) 把事件的請求者與處理者抽離開來，降低彼此的耦合度。**
+    說明：請求者不需要知道具體是哪個處理者處理了請求，只需將請求發送到鏈上即可。
+    </details>
+
+2. 關於 CoR 以下何者錯誤？
+	A) 每一個 Handler 生成時都需要指定一個後繼者。
+	B) 所有的 Hanlder 會實作同一個介面。
+	C) 不同型態的 Handler 不可相互成為後繼者。
+
+    <details>
+    <summary>解答</summary>
+    
+    **C) 不同型態的 Handler 不可相互成為後繼者。**
+    說明：只要它們實作相同的 Handler 介面，不同型態（具體類別）的 Handler 就可以互相設定為後繼者。
+    </details>
+
+3. CoR 和 Composite 看起來都一樣，都是有一個繼承、一個包含，兩者有何差異？
+
+    <details>
+    <summary>解答</summary>
+    
+    Composite 有分為 composite 和 leaf 之差別，後者是不能加元素的，CoR 並沒有這樣的差異。Composite 通常包含多個元素，CoR 包含的只有一個後繼者。Composite 只是把動作轉交給所包含的元素去做，包含者本身不做什麼，CoR 則需要做一些判斷後才會決定自己處理或交給後繼者來做。
+    </details>
+
+## 練習
 
 - 公司內有若干不同的角色，當遇到技術問題時解決的順序是：programmer, designer, architect。遇到管理問題的解決順序是：programmer, analyzer, manager, CEO。請利用 chain of responsibility 的方式來解決此問題。
 
@@ -676,10 +699,7 @@ class Designer implements Handler {
 ```
 
 
-<!-- - (B)
-- C
-- Composite 有分為 composite 和 leaf 之差別，後者是不能加元素的，CoR 並沒有這樣的差異。Composite 通常包含多個元素，CoR 包含的只有一個後繼者。Composite 只是把動作轉交給所包含的元素去做，包含者本身不做什麼, CoR 則需要做一些判斷後才會交給後繼者來做。
- -->
+
 <!-- \begin{figure}[h]
 \begin{center}
 \includegraphics[width=0.6\columnwidth]{dp/CoRCompanyStr.png}

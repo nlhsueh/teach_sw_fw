@@ -161,77 +161,76 @@ class Colleague2 extends Colleague {
 | **彈性擴充** | 要新增新按鈕或功能，只需修改或擴充 mediator，而非所有按鈕。 |
 
 
-```plantuml
-@startuml
+```mermaid
+classDiagram
+    class Command {
+        <<interface>>
+        +execute()
+    }
 
-interface Command {
-  +execute()
-}
+    class IMediator {
+        <<interface>>
+        +book()
+        +view()
+        +search()
+        +registerView(v: BtnView)
+        +registerSearch(s: BtnSearch)
+        +registerBook(b: BtnBook)
+        +registerDisplay(d: LblDisplay)
+    }
 
-interface IMediator {
-  +book()
-  +view()
-  +search()
-  +registerView(v: BtnView)
-  +registerSearch(s: BtnSearch)
-  +registerBook(b: BtnBook)
-  +registerDisplay(d: LblDisplay)
-}
+    class BookStoreMediator {
+        -btnView: BtnView
+        -btnSearch: BtnSearch
+        -btnBook: BtnBook
+        -show: LblDisplay
+        +book()
+        +view()
+        +search()
+        +registerView(v: BtnView)
+        +registerSearch(s: BtnSearch)
+        +registerBook(b: BtnBook)
+        +registerDisplay(d: LblDisplay)
+    }
 
-class BookStoreMediator {
-  -btnView: BtnView
-  -btnSearch: BtnSearch
-  -btnBook: BtnBook
-  -show: LblDisplay
-  +book()
-  +view()
-  +search()
-  +registerView(v: BtnView)
-  +registerSearch(s: BtnSearch)
-  +registerBook(b: BtnBook)
-  +registerDisplay(d: LblDisplay)
-}
+    class BtnView {
+        +execute()
+    }
 
-class BtnView {
-  +execute()
-}
+    class BtnSearch {
+        +execute()
+    }
 
-class BtnSearch {
-  +execute()
-}
+    class BtnBook {
+        +execute()
+    }
 
-class BtnBook {
-  +execute()
-}
+    class LblDisplay {
+    }
 
-class LblDisplay {
-}
+    class BookStoreDemo {
+        +actionPerformed(ae: ActionEvent)
+        +main(args: String[])
+    }
 
-class BookStoreDemo {
-  +actionPerformed(ae: ActionEvent)
-  +main(args: String[])
-}
+    BookStoreMediator ..|> IMediator
 
-BookStoreMediator ..|> IMediator
+    BtnView ..|> Command
+    BtnView --> IMediator
 
-BtnView ..|> Command
-BtnView --> IMediator
+    BtnSearch ..|> Command
+    BtnSearch --> IMediator
 
-BtnSearch ..|> Command
-BtnSearch --> IMediator
+    BtnBook ..|> Command
+    BtnBook --> IMediator
 
-BtnBook ..|> Command
-BtnBook --> IMediator
+    LblDisplay --> IMediator
 
-LblDisplay --> IMediator
-
-BookStoreDemo --> IMediator : uses
-BookStoreDemo --> BtnView
-BookStoreDemo --> BtnSearch
-BookStoreDemo --> BtnBook
-BookStoreDemo --> LblDisplay
-
-@enduml
+    BookStoreDemo --> IMediator : uses
+    BookStoreDemo --> BtnView
+    BookStoreDemo --> BtnSearch
+    BookStoreDemo --> BtnBook
+    BookStoreDemo --> LblDisplay
 ```
 以下為程式碼
 
@@ -417,27 +416,56 @@ class LblDisplay extends JLabel {
 }
 ```
 
-## 24.CHK 
+## 隨堂測驗 
 
-1. Medicator 的目的為何？
-	- 作為一群物件溝通的橋樑，藉此降低彼此的耦合度
-	- Mediator 作為代理物件，藉此降低網路負擔，提昇效能
-	- 一群物件不需要特別觀察其他物件的狀態，Mediator 會自動的通知
-	- 統整相關物件的介面為唯一，藉此提昇 client 設計的簡潔性		
+1. Mediator 的目的為何？
+	A) 作為一群物件溝通的橋樑，藉此降低彼此的耦合度
+	B) Mediator 作為代理物件，藉此降低網路負擔，提昇效能
+	C) 一群物件不需要特別觀察其他物件的狀態，Mediator 會自動的通知
+	D) 統整相關物件的介面為唯一，藉此提昇 client 設計的簡潔性		
 
-2. 關於 Medicator 何者正確
-	- Medicator 與所有的 Colleague 有 bi-direction 的 navigation 的關係
-	- Colleague 彼此的關係是密切的，但透過 Medicator 的仲介，耦合度降低了
-	- Medicator 透過委託的方式把訊息傳給其他 Colleague 物件處理事件
-	- 塔台的運作可視為是一種 Mediator- 所有的交通工具與塔台溝通，而非彼此相乎溝通。	
+	<details>
+	<summary>解答</summary>
+	
+	**A) 作為一群物件溝通的橋樑，藉此降低彼此的耦合度**
+	說明：Mediator 將物件之間的網狀多對多關係轉化為星狀關係，讓物件只與中介者互動，降低直接耦合。
+	</details>
 
-3. 如果某個 Medicator 收到訊息後都必須通知其他所有的 Colleague, 那們 Medicator 的角色和 Observer 樣式中的 Observable 是不是一樣？有何差異？ Colleague 和 Observer 有何差異？
+2. 關於 Mediator 何者正確？
+	A) Mediator 與所有的 Colleague 有 bi-direction 的 navigation 的關係
+	B) Colleague 彼此的關係是密切的，但透過 Mediator 的仲介，耦合度降低了
+	C) Mediator 透過委託的方式把訊息傳給其他 Colleague 物件處理事件
+	D) 塔台的運作可視為是一種 Mediator - 所有的交通工具與塔台溝通，而非彼此互相溝通。	
+
+	<details>
+	<summary>解答</summary>
+	
+	**D) 塔台的運作可視為是一種 Mediator**
+	說明：飛機（Colleague）不會直接互相通訊，而是統一透過塔台（Mediator）來協調起降。
+	</details>
+
+3. 如果某個 Mediator 收到訊息後都必須通知其他所有的 Colleague, 那們 Mediator 的角色和 Observer 樣式中的 Observable 是不是一樣？有何差異？ Colleague 和 Observer 有何差異？
+
+	<details>
+	<summary>解答</summary>
+	
+	**差異：**
+	* **Observer** 是一對多的依賴關係，主體（Observable）狀態改變時，單向通知所有觀察者。
+	* **Mediator** 則是多對多的互動關係被封裝在一個中介者中，同事物件（Colleague）可能都會互相影響，由 Mediator 集中協調這些複雜互動。
+	</details>
 
 4. 在一個專案系統中，客戶、系統分析師、軟體工程師、系統維護工程師、使用者需要常常溝通，但彼此又不知道該與誰溝通，溝通的技巧為何。如何解決這個問題？哪一個設計樣式比較適合解決這個問題？樣式的角色對應為何？
 
-## 24.EX
+	<details>
+	<summary>解答</summary>
+	
+	**Mediator 樣式。**
+	說明：可以指派一位專案經理（PM）作為 Mediator。客戶、系統分析師等各種角色對應為 Colleague。任何人有需求或問題都向 PM 提出，由 PM 負責協調與轉達給對應的負責人。
+	</details>
 
-### 24.ex01 Chess
+## 練習
+
+### EX01 Chess
 
 設計一個象棋操作介面，使用 Mediator 設計模式來協調按鈕與狀態顯示的行為。畫面包含以下元件：
 

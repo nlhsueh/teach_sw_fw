@@ -145,7 +145,7 @@ Model 2 中通常根據 URL樣式（urlPatterns）決定哪個 Controller 要接
 
 可以看得出來，此模組主要是 HTML 的呈現，加上適當的資料呈現。
 
-### 21.CHK
+## 隨堂測驗
 
 1. Observer 樣式中的 Subject 和 Observer 分別是 MVC 中的？
 	A) Controller-Model
@@ -153,13 +153,27 @@ Model 2 中通常根據 URL樣式（urlPatterns）決定哪個 Controller 要接
 	C) Model-View
 	D) View-Model	
 
+	<details>
+	<summary>解答</summary>
+	
+	**C) Model-View**
+	說明：Model 維護資料狀態並在改變時通知 View，就像 Subject 通知 Observer 一樣。
+	</details>
+
 2. 關於 MVC，何者錯誤
 	A) Model 不應該相依於 Controller 與 View
 	B) View 會被 Model 通知狀態的改變，也可能會去讀取 Model 的狀態
 	C) Controller 過濾及轉換訊息，把修改的指令給 Model，讓 Model 變更狀態
 	D) Model 雖不可相依於 View, 但可相依於 Controller
 
-### 21.EX
+	<details>
+	<summary>解答</summary>
+	
+	**D) Model 雖不可相依於 View, 但可相依於 Controller**
+	說明：Model 應該獨立於 View 和 Controller，不應該相依於它們，以保持高重用性和低耦合度。
+	</details>
 
-### 21.ex01
+## 練習
+
+### EX01
 應用 MVC 架構改寫象棋系統

@@ -78,7 +78,7 @@ myTextField.setInputVerifier(new MyInputVerifier());
 > `Strategy` 是換骨，`Decorator` 是換皮；為什麼？
 
 
-## 18.CHK
+## 隨堂測驗
 
 1.  關於 `Strategy` 設計樣式是把策略：
     A) 延遲到子類別決定
@@ -86,6 +86,12 @@ myTextField.setInputVerifier(new MyInputVerifier());
     C) 包裝成一個複合物件
     D) 限制只能產生一份演算法
 
+    <details>
+    <summary>解答</summary>
+
+    **B) 委託給另一個物件**
+    說明：`Strategy` 模式的重點在於將演算法的實作委託給獨立的策略物件，讓 `Context` 物件可以彈性地切換和使用不同的策略。
+    </details>
 
 2.  在 `Strategy` 中，若我們要擴充一個新的演算法：
     A) 新增一個 `Strategy` 介面
@@ -93,6 +99,12 @@ myTextField.setInputVerifier(new MyInputVerifier());
     C) 在方法中新增一個 `Strategy` 參數
     D) 宣告一個 `static` 方法
 
+    <details>
+    <summary>解答</summary>
+
+    **B) 新增一個實踐 `Strategy` 介面的類別**
+    說明：擴充新的演算法需要創建一個新的 `Concrete Strategy` 類別，該類別實作了 `Strategy` 介面定義的行為。
+    </details>
 
 3.  `Swing` 的排版設計採用了 `Strategy` 的設計，其中 `BorderLayout` 相對於 `Strategy` 樣式中的哪一個角色？
     A) `Context`
@@ -100,39 +112,33 @@ myTextField.setInputVerifier(new MyInputVerifier());
     C) `Concrete strategy`
     D) `execute()`
 
+    <details>
+    <summary>解答</summary>
+
+    **A) Context**
+    簡單解釋：`BorderLayout` 就像 `Strategy` 模式中的 `Context`，它持有並使用不同的排版策略（例如 `FlowLayout`、`GridLayout` 等）來管理元件的佈局。
+    </details>
+
 4.  關於 `InputVerifier`, 以下何者錯誤：
     A) 採用了 `Strategy` 來提升檢查欄位的彈性，降低修改程式的範圍
     B) 透過新增 `InputVerifier` 的子類別來產生新的檢查器
     C) `TextField` 透過 `setInputVerifier()` 來設定不同的檢查器
     D) `TextField` 一旦設定了檢查器，就不可更換
 
----
+    <details>
+    <summary>解答</summary>
 
-參考答案：
-
-1.  關於 `Strategy` 設計樣式是把策略：
-    **B) 委託給另一個物件**
-    說明：`Strategy` 模式的重點在於將演算法的實作委託給獨立的策略物件，讓 `Context` 物件可以彈性地切換和使用不同的策略。
-
-2.  在 `Strategy` 中，若我們要擴充一個新的演算法：
-    **B) 新增一個實踐 `Strategy` 介面的類別**
-    說明：擴充新的演算法需要創建一個新的 `Concrete Strategy` 類別，該類別實作了 `Strategy` 介面定義的行為。
-
-3.  `Swing` 的排版設計採用了 `Strategy` 的設計，其中 `BorderLayout` 相對於 `Strategy` 樣式中的哪一個角色？
-    **A) Context**
-    簡單解釋：`BorderLayout` 就像 `Strategy` 模式中的 `Context`，它持有並使用不同的排版策略（例如 `FlowLayout`、`GridLayout` 等）來管理元件的佈局。
-
-4.  關於 `InputVerifier`, 以下何者錯誤：
     **D) `TextField` 一旦設定了檢查器，就不可更換**
     說明：`JTextField` 的 `setInputVerifier()` 方法可以讓你隨時設定或更換不同的 `InputVerifier` 物件，提供了動態切換驗證策略的能力。
+    </details>
 
 
-## 18.EX
+## 練習
 
-### 18.ex01 QuizApp
+### EX01 QuizApp
 線上考試系統，選擇題的出題方式可以分為 (1) 按照原來項目順序出題 (2) 隨機把項目打亂出題 (3) 依據困難度排序。請問是否適合用 `Strategy` 設計？為什麼？該如何設計？
 
-### 18.ex02 GradeBook
+### EX02 GradeBook
 class GradeBook 需要排序，如何應用 `Strategy` 讓排序演算法靈活變更？
 
 ```java
@@ -145,7 +151,7 @@ interface ?
 class ?
 ```
 
-### 18.ex03 SSNVerifier
+### EX03 SSNVerifier
 擴充 Java `InputVerifier` 設計一個台灣身分證的 `SSNVerifier`。並應用這個 `Verifier` 在一個簡單應用程式。
 
 <!-- 

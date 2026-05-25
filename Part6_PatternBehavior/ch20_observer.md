@@ -515,94 +515,15 @@ class Stock extends Observable {
    - `AmountBoard`: 呈現現價、成交量。
    - `GreenRedBoard`: 最近三次的價格，如果連三漲，背景設為綠色，如果連三跌，背景設為紅色。否則維持原色（白色）。
 
+執行畫面如下：
+
+![](img/ch20_stock_demo.png)
+
 <details>
 <summary>參考解答</summary>
 
 可執行的完整 Java Swing GUI 程式碼請參閱：[src/ObserverStockDemo.java](src/ObserverStockDemo.java)
 
-**核心程式碼結構與 Observer 實作示範：**
-
-```java
-// Subject (Model)
-class Stock extends Observable {
-    private double yesterdayPrice;
-    private double currentPrice;
-    private int currentAmount;
-
-    public void updateStock() {
-        this.yesterdayPrice = this.currentPrice; 
-        
-        Random r = new Random();
-        double changePercent = 0.07 + (r.nextDouble() * 0.03); 
-        boolean up = r.nextBoolean();
-        this.currentPrice = up ? this.currentPrice * (1.0 + changePercent) : this.currentPrice * (1.0 - changePercent);
-        this.currentAmount = (int)(this.currentAmount * (0.9 + r.nextDouble() * 0.2));
-        
-        setChanged();
-        notifyObservers();
-    }
-}
-
-// 呈現 1：價格看板 (CurrentPriceBoard)
-class CurrentPriceBoard extends JPanel implements Observer {
-    private JLabel lblYesterday = new JLabel("昨日價格: ");
-    private JLabel lblCurrent = new JLabel("目前價格: ");
-    private JLabel lblPercent = new JLabel("波動比率: ");
-
-    @Override
-    public void update(Observable o, Object arg) {
-        if (o instanceof Stock) {
-            Stock s = (Stock) o;
-            double y = s.getYesterdayPrice();
-            double c = s.getCurrentPrice();
-            double percent = (c - y) / y * 100;
-            lblYesterday.setText(String.format("昨日價格 (Y): %.2f", y));
-            lblCurrent.setText(String.format("目前價格 (C): %.2f", c));
-            lblPercent.setText(String.format("波動百分比: %.2f%%", percent));
-        }
-    }
-}
-
-// 呈現 2：量能看板 (AmountBoard)
-class AmountBoard extends JPanel implements Observer {
-    private JLabel lblPrice = new JLabel("目前價格: ");
-    private JLabel lblAmount = new JLabel("成交量: ");
-
-    @Override
-    public void update(Observable o, Object arg) {
-        if (o instanceof Stock) {
-            Stock s = (Stock) o;
-            lblPrice.setText(String.format("目前價格: %.2f", s.getCurrentPrice()));
-            lblAmount.setText("成交數量: " + s.getCurrentAmount());
-        }
-    }
-}
-
-// 呈現 3：紅綠燈看板 (GreenRedBoard)
-class GreenRedBoard extends JPanel implements Observer {
-    private List<Double> priceHistory = new ArrayList<>();
-
-    @Override
-    public void update(Observable o, Object arg) {
-        if (o instanceof Stock) {
-            Stock s = (Stock) o;
-            double c = s.getCurrentPrice();
-            priceHistory.add(c);
-            if (priceHistory.size() > 3) priceHistory.remove(0);
-            
-            if (priceHistory.size() == 3) {
-                double p1 = priceHistory.get(0);
-                double p2 = priceHistory.get(1);
-                double p3 = priceHistory.get(2);
-                
-                if (p3 > p2 && p2 > p1) setBackground(Color.GREEN); // 連三漲
-                else if (p3 < p2 && p2 < p1) setBackground(Color.RED); // 連三跌
-                else setBackground(Color.WHITE);
-            }
-        }
-    }
-}
-```
 </details>
 	
 ### EX02b Stock    

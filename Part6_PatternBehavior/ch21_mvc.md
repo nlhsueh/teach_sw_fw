@@ -177,7 +177,7 @@ Model 2 中通常根據 URL樣式（urlPatterns）決定哪個 Controller 要接
 在不看講義的情況下，應用 UML 的工具畫出該設計樣式的結構。
 
 ### EX02 象棋系統
-應用 MVC 架構改寫象棋系統，並使用 Java 8 的 `Consumer` 函數式介面取代傳統的 `Observable` 與 `Observer` 類別來實作被觀察者與觀察者之間的事件通知。
+應用 MVC 架構改寫象棋系統，並使用 Java 8 的 `Consumer` 函數式介面來實作。
 
 執行畫面如下：
 
@@ -186,9 +186,8 @@ Model 2 中通常根據 URL樣式（urlPatterns）決定哪個 Controller 要接
 <details>
 <summary>參考解答與練習引導</summary>
 
-未完成的 Java Swing GUI 學生練習樣板與 `TODO` 提示，請參閱：[src/MVCChessGameDemo.java](src/MVCChessGameDemo.java)
+請參閱：[src/MVCChessGameDemo.java](src/MVCChessGameDemo.java)
 
-請引導學生完成以下關鍵步驟：
 1. 在 `ChessGameModel` 中宣告一個 `List<Consumer<ChessGameModel>>` 儲存觀察者。
 2. 實作註冊方法 `addObserver()` 與通知方法 `notifyObservers()`。
 3. 在 `startGame()`, `makeMove()`, `endGame()`, `resetGame()` 等狀態變更方法中，加入呼叫 `notifyObservers()` 的程式碼。

@@ -14,6 +14,19 @@
 s2 時收到 op1() 的事件，會移轉到 s3; 收到 op2() 的事件，會移轉到 s1。
 - s3 時收到 op1() 的事件，會移轉到 s1; 收到 op2() 的事件，會移轉到 s2。 
 
+**狀態轉移圖：**
+
+```mermaid
+stateDiagram-v2
+    [*] --> s1
+    s1 --> s2 : op1()
+    s1 --> s3 : op2()
+    s2 --> s3 : op1()
+    s2 --> s1 : op2()
+    s3 --> s1 : op1()
+    s3 --> s2 : op2()
+```
+
 過去我們的寫法會這樣：
 ```java
 class C {
@@ -143,6 +156,17 @@ FIG: TCP with State design pattern
 
 
 在TCP的連接控制的部分有許多的狀態處理動作，為了描述容易，我們只提出主要的四個狀態做為例子以描述State設計樣式的作用。這四個狀態分別是 Closed, Listen, Sync-Received, Establish，這些狀態會隨著方法的運作而作狀態的切換。對於 server 有三個事件會造成狀態轉移：open、sync, ack，如圖 \ref{fig_state_tcp} 所示，當 TCP 在 Closed 狀態接收到 open 的訊息後會轉移到Listen 的狀態，等待客端的連接；在 Listen 時接收到 sync 訊息後會到 sync-received 的狀態，如果再收到 sync 就會到 Established。我們可以用State設計樣式將每一個狀態判斷獨立成一個個的類別以增加設計的彈性。首先建立建立一個抽象的 TCPState 類別，描述會影響狀態改變的方法，接下來再讓每一個狀態擴充TCPState 以描述各自的轉態轉移。
+
+**狀態轉移圖：**
+
+```mermaid
+stateDiagram-v2
+    [*] --> Closed
+    Closed --> Listen : open()
+    Listen --> SyncReceived : sync()
+    SyncReceived --> Established : ack()
+```
+
 
 ```java
 abstract public class TCPState{

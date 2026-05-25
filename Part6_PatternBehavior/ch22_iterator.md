@@ -148,3 +148,13 @@ double getAverage(Iterator<Student> iterator) {
 請完成以下程式：
 
 [src/CourseIteratorExample.java](src/CourseIteratorExample.java)
+
+<details>
+<summary>練習引導提示</summary>
+
+請開啟學生練習樣板 [src/CourseIteratorExample.java](src/CourseIteratorExample.java) 檔，並引導學生完成以下關鍵步驟：
+1. 在 `Course` 類別中，實作 `getGradeIterator()` 方法，回傳學生成績的 `Iterator<Integer>`。
+2. 在 `GradeComputer` 類別的 `computeAverage(Course c)` 方法中，透過呼叫 `c.getGradeIterator()` 取得 `Iterator`。
+3. 使用 `hasNext()` 與 `next()` 的 `while` 迴圈結構走訪所有成績，統計並印出學生的平均成績。
+
+</details>

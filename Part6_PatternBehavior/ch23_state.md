@@ -204,6 +204,21 @@ public class TCPEstablished extends TCPState {
 | SuperMario | meetEnemy        | SmallMario | 被打一次變小       |
 | FireMario  | meetEnemy        | SmallMario | 被打失去火焰再變小 |
 
+**狀態轉移圖：**
+
+```mermaid
+stateDiagram-v2
+    [*] --> SmallMario
+    
+    SmallMario --> SuperMario : obtainMushroom<br/>(吃香菇變大)
+    SmallMario --> FireMario : obtainFireFlower<br/>(獲得火焰)
+    
+    SuperMario --> SmallMario : meetEnemy<br/>(受傷變小)
+    SuperMario --> FireMario : obtainFireFlower<br/>(獲得火焰)
+    
+    FireMario --> SmallMario : meetEnemy<br/>(受傷失去所有能力變小)
+```
+
 這樣設計的好處是：
 
 * 將每種狀態的行為封裝在各自的類別中。

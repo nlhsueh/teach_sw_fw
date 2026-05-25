@@ -543,8 +543,6 @@ public class OrderProcessingChainClient {
 }
 ```
 
-## 練習
-
 ## 隨堂測驗
 
 1. Chain of responsibility 的目的為何？
@@ -582,7 +580,11 @@ public class OrderProcessingChainClient {
 
 ## 練習
 
-- 公司內有若干不同的角色，當遇到技術問題時解決的順序是：programmer, designer, architect。遇到管理問題的解決順序是：programmer, analyzer, manager, CEO。請利用 chain of responsibility 的方式來解決此問題。
+### EX01 結構繪製
+在不看講義的情況下，應用 UML 的工具畫出該設計樣式的結構。
+
+### EX02 角色審核鏈
+公司內有若干不同的角色，當遇到技術問題時解決的順序是：programmer, designer, architect。遇到管理問題的解決順序是：programmer, analyzer, manager, CEO。請利用 chain of responsibility 的方式來解決此問題。
 
 ```java
 interface handle {

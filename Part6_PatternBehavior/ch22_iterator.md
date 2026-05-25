@@ -144,7 +144,10 @@ double getAverage(Iterator<Student> iterator) {
 
 ## 練習
 
-### EX01
-請完成以下程式
+### EX01 結構繪製
+在不看講義的情況下，應用 UML 的工具畫出該設計樣式的結構。
+
+### EX02 課程瀏覽
+請完成以下程式：
 
 [src/CourseIteratorExample.java](src/CourseIteratorExample.java)

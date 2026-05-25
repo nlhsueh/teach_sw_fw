@@ -360,10 +360,13 @@ class A {
 
 ## 練習
 
-### EX01 sort
+### EX01 結構繪製
+在不看講義的情況下，應用 UML 的工具畫出該設計樣式的結構。
+
+### EX02 sort
 應用 `Arrays.sort(Object[], Comparator)`  把一群學生（Student）依據他們的身高做排序。討論：`Arrays.sort` 有應用到 Template 樣式嗎？有什麼好處？
 
-### EX02 playGame
+### EX03 playGame
 某一類遊戲的演法算法大概的邏輯如下。其中第 a, c, f 步驟在每個遊戲略有不同，由遊戲本身定義。請用 `Template Method` 定義 `playGame()` 方法。
     a. 初始化遊戲
     b. 等待玩家加入
@@ -378,5 +381,5 @@ public ?1 void playGame() {
 }
 ```
 
-### EX03 Coffee
+### EX04 Coffee
 煮咖啡囉！咖啡沖泡法：1. 把水煮沸（boilWater）; 2. 用沸水沖泡咖啡（brewCoffeeGrinds）; 3. 把咖啡倒到杯子（pourInCup）; 4. 加糖和奶精（addSugarAndMilk）。茶沖泡法：1. 把水煮沸（）; 2. 用沸水浸泡茶葉（steerTeaBag）; 3. 把茶倒到杯子（pourInCup）; 4. 加檸檬（addLemon）。請利用 `Template Method` 達到重用性的設計。

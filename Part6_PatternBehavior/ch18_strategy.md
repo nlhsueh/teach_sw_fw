@@ -135,10 +135,13 @@ myTextField.setInputVerifier(new MyInputVerifier());
 
 ## 練習
 
-### EX01 QuizApp
+### EX01 結構繪製
+在不看講義的情況下，應用 UML 的工具畫出該設計樣式的結構。
+
+### EX02 QuizApp
 線上考試系統，選擇題的出題方式可以分為 (1) 按照原來項目順序出題 (2) 隨機把項目打亂出題 (3) 依據困難度排序。請問是否適合用 `Strategy` 設計？為什麼？該如何設計？
 
-### EX02 GradeBook
+### EX03 GradeBook
 class GradeBook 需要排序，如何應用 `Strategy` 讓排序演算法靈活變更？
 
 ```java
@@ -151,7 +154,7 @@ interface ?
 class ?
 ```
 
-### EX03 SSNVerifier
+### EX04 SSNVerifier
 擴充 Java `InputVerifier` 設計一個台灣身分證的 `SSNVerifier`。並應用這個 `Verifier` 在一個簡單應用程式。
 
 <!-- 

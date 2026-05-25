@@ -49,17 +49,17 @@ class Stock {
 ```mermaid
 classDiagram
     class Observer {
-        <<interface>>
         +update(subj: Subject)
     }
+    <<interface>> Observer
 
     class Subject {
-        <<abstract>>
         -obs: List~Observer~
         #addObserver(ob: Observer)
         #removeObserver(ob: Observer)
         +notifyObservers()
     }
+    <<abstract>> Subject
 
     class ConcreteSubject {
         -state: int
@@ -74,9 +74,9 @@ classDiagram
     Observer <|.. ConcreteObserver
     Subject --> Observer
 
-    note for Subject "notifyObservers()<br/>for all obs in Observer<br/>obs.update()"
-    note for ConcreteSubject "setState() 會改變狀態;<br/>呼叫 notifyObservers()"
-    note for ConcreteObserver "update():<br/>實作改變呈現的方法"
+    note for Subject "notifyObservers()\nfor all obs in Observer\nobs.update()"
+    note for ConcreteSubject "setState() 會改變狀態\n呼叫 notifyObservers()"
+    note for ConcreteObserver "update():\n實作改變呈現的方法"
 ```
 
 FIG: `Observer` Structure
@@ -222,9 +222,9 @@ classDiagram
     }
     
     class Observer {
-        <<interface>>
         +update(o: Observable, arg: Object)
     }
+    <<interface>> Observer
     
     Plant <|-- Fruit
     Fruit *-- Observable : delegates to
@@ -297,6 +297,92 @@ public interface Consumer<T> {
 步驟 2：加入觀察者（Observers）
 
 (見 [src/WeatherStationConsumer.java](src/WeatherStationConsumer.java))
+
+### 20.4.1 多執行緒非同步設計與效能比較
+
+在實際的系統開發中，觀察者（Observer）在收到通知後，往往需要執行較重的任務，例如：
+1. 將資料寫入資料庫
+2. 呼叫外部的第三方 API
+3. 進行複雜的數據運算與分析
+
+如果採用傳統單執行緒的 `Observer` 模式，一旦某個觀察者執行緩慢，將會造成嚴重的**阻塞（Blocking）**，使得後續所有的觀察者都必須排隊等待，甚至拖慢發送通知的主執行緒（例如使用者介面 UI 執行緒）。
+
+使用 Java 8 的 `Consumer` 結合高併發資料結構與執行緒池，可以非常優雅且高效地解決這個問題。
+
+#### 1. 多執行緒非同步範例
+
+我們可以將 `WeatherStation` 修改為 `WeatherStationAsync`，將內部的資料結構換成執行緒安全的 `CopyOnWriteArrayList`，並在通知時使用 `CompletableFuture.runAsync()` 將通知任務交由非同步的執行緒池（預設為 `ForkJoinPool.commonPool()`）來執行。
+
+在主程式中，我們模擬一個快速的觀察者 A 與一個需要耗時 1 秒處理的慢速觀察者 B：
+
+[src/WeatherStationConsumerAsync.java](src/WeatherStationConsumerAsync.java)
+
+
+**執行結果分析：**
+```text
+[Thread: main] Temperature changed to: 28.5
+[Thread: main] Temperature changed to: 35.0
+[Thread: main] Main thread continues immediately without waiting for observers!
+[Thread: ForkJoinPool.commonPool-worker-1] Observer A (Quick): Temperature is 28.5
+[Thread: ForkJoinPool.commonPool-worker-3] Observer A (Quick): Temperature is 35.0
+[Thread: ForkJoinPool.commonPool-worker-2] Observer B (Slow) started processing for 28.5°C...
+[Thread: ForkJoinPool.commonPool-worker-4] Observer B (Slow) started processing for 35.0°C...
+[Thread: ForkJoinPool.commonPool-worker-2] Observer B (Slow) finished processing for 28.5°C.
+[Thread: ForkJoinPool.commonPool-worker-4] Observer B (Slow): It's too hot! (35.0°C)
+[Thread: ForkJoinPool.commonPool-worker-4] Observer B (Slow) finished processing for 35.0°C.
+```
+從輸出結果可以清楚看到：
+- 主執行緒 `main` 在觸發溫度變更後，**沒有被 Observer B 的 1 秒延遲卡住**，而是立刻印出 `Main thread continues immediately...` 並繼續執行。
+- 各個觀察者都是在 `ForkJoinPool` 的非同步工作執行緒（如 `worker-1`, `worker-2`）中**並行（Parallel）執行**，大幅提昇了整體的輸送量（Throughput）。
+
+#### 2. 為什麼這個非同步 Consumer 設計比傳統 `Observable` 效能更好？
+
+主要有以下四大核心原因：
+
+| 比較維度 | 傳統 `java.util.Observable` | 現代非同步 `Consumer` (搭配 `CompletableFuture`) |
+| :--- | :--- | :--- |
+| **執行緒模型** | **同步單執行緒 (Synchronous)**<br>所有 Observer 的 `update` 都在發送端的執行緒中依序（Sequential）執行。 | **非同步多執行緒 (Asynchronous)**<br>利用執行緒池，將通知與具體任務分派至不同工作執行緒並行處理。 |
+| **阻塞特性** | **阻塞式 (Blocking)**<br>若其中一個 Observer 發生延遲（如慢速 I/O），會卡死後續所有 Observer 的通知以及發送端主執行緒。 | **非阻塞式 (Non-blocking)**<br>發送端只負責分派任務，任務由執行緒池非同步消化，各 Observer 互不干涉。 |
+| **鎖的競爭<br>(Lock Contention)** | **高鎖開銷**<br>內部使用 `Vector`，且 `notifyObservers()` 方法在複製陣列時對整個物件使用 `synchronized (this)` 進行強鎖定，高併發下會造成嚴重執行緒阻塞。 | **低鎖/無鎖讀取**<br>使用 `CopyOnWriteArrayList`。其採「寫時複製」機制，在通知（讀取）時完全不加鎖，極適合「註冊少、通知頻繁」的觀察者場景。 |
+| **可擴展性與<br>資源控制** | **極低**<br>無法限制執行緒資源，也沒有線程池重複利用機制，難以適應現代高併發系統。 | **極高**<br>可透過 `CompletableFuture` 靈活指定自訂執行緒池（`Executor`），防止資源耗盡，具備極佳的資源控制力。 |
+
+#### 3. 同步 vs. 非同步通知示意圖
+
+下圖直觀地呈現了同步阻塞與非同步非阻塞在執行緒模型與執行流程上的核心差異：
+
+```mermaid
+sequenceDiagram
+    autonumber
+    
+    participant Main as Main Thread
+    participant Subject as Subject
+    participant ObserverA as Observer A
+    participant ObserverB as Observer B
+    participant ThreadPool as Thread Pool
+
+    Note over Main, ObserverB: 【同步阻塞 (Synchronous Blocking) - 傳統模式】
+    Main->>Subject: setTemperature(35.0)
+    Subject->>ObserverA: accept(35.0)
+    ObserverA-->>Subject: 執行完畢 (快速)
+    Subject->>ObserverB: accept(35.0)
+    Note over ObserverB: 🐢 執行耗時工作 / 慢速 I/O (1000ms)
+    ObserverB-->>Subject: 執行完畢 (慢速)
+    Subject-->>Main: 返回呼叫端
+    Note over Main: ❌ 主執行緒被阻塞 1 秒以上！
+
+    Note over Main, ThreadPool: 【非同步非阻塞 (Asynchronous Non-blocking) - 現代模式】
+    Main->>Subject: setTemperature(35.0)
+    Subject->>ThreadPool: 提交 Observer A 任務
+    Subject->>ThreadPool: 提交 Observer B 任務
+    Subject-->>Main: 立即返回呼叫端
+    Note over Main: 🚀 主執行緒完全無阻塞，立刻繼續執行！
+    
+    par 並行執行 (Parallel)
+        ThreadPool->>ObserverA: 在 worker-1 執行 accept(35.0)
+        ThreadPool->>ObserverB: 在 worker-2 執行 accept(35.0) (慢速工作在背景進行)
+    end
+```
+
 
 ## 隨堂測驗
 
@@ -420,23 +506,26 @@ class Stock extends Observable {
 
 ## 練習
 
-### EX01a Stock
+### EX01 結構繪製
+在不看講義的情況下，應用 UML 的工具畫出該設計樣式的結構。
+
+### EX02a Stock
 股票（`Stock`）物件內包含上次價格、現價與成交量三個屬性，現價與成交量每個2秒變動一次（請隨機產生在 7%, 10% 內的價格與成交量），請應用 `Observer` 設計樣式設計以下三個呈現：
    - `CurrentPriceBoard`: 呈現昨日價格 (`Y`)、目前價格 (`C`)、及波動百分比 (`(C-Y)/C`)。
    - `AmountBoard`: 呈現現價、成交量。
    - `GreenRedBoard`: 最近三次的價格，如果連三漲，背景設為綠色，如果連三跌，背景設為紅色。否則維持原色（白色）。
 	
-### 20.ex01b Stock    
+### EX02b Stock    
 延續上一題，
    1. 不要透過繼承 `Observable` 的方式來實踐 `Observer` 設計樣式。透過委託的方式交給 `Observable` 來間接實踐 `Observable` 
    2. 不用 `java.util.Observable`, 將 `Observable` 的功能直接寫在 `Stock` 中，並自己建立一個 `Observer` 的介面。
 
-### 20.ex02 `ChessGame`
+### EX03 `ChessGame`
 假設你設計一個象棋遊戲，遊戲狀態有 `waiting`, `started`, `end` 三個狀態。當狀態改變時會傳給多個介面，如 `PlayerView`, `CustomerView`, `AllGameStatusView` 等三個介面做呈現。
    - 請透過 java 的 `Observable` 來設計此問題。
    - 若 `ChessGame` 本身已經繼承 `Game`, 無法在繼承 `Observable`, 該怎麼辦?
 
-### 20.ex03 Fruit
+### EX04 Fruit
 將 Fruit 的例子，用 `Consumer` 實踐。
 
 <!-- #### 簡答

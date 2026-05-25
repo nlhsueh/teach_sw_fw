@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 class WeatherStation {
+    // 簡單的 List 儲存觀察者
     private List<Consumer<Double>> observers = new ArrayList<>();
 
     public void addObserver(Consumer<Double> observer) {
@@ -29,10 +30,12 @@ public class WeatherStationConsumer {
     public static void main(String[] args) {
         WeatherStation station = new WeatherStation();
 
-        // 加入觀察者 1：印出溫度
-        station.addObserver(temp -> System.out.println("Observer A: Temperature is " + temp));
+        // 觀察者 A：簡單印出溫度
+        station.addObserver(temp -> {
+            System.out.println("Observer A: Temperature is " + temp);
+        });
 
-        // 加入觀察者 2：根據溫度做反應
+        // 觀察者 B：溫度過高時發出警報
         station.addObserver(temp -> {
             if (temp > 30) {
                 System.out.println("Observer B: It's too hot!");

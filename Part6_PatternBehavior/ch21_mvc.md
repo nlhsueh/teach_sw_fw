@@ -177,4 +177,15 @@ Model 2 中通常根據 URL樣式（urlPatterns）決定哪個 Controller 要接
 在不看講義的情況下，應用 UML 的工具畫出該設計樣式的結構。
 
 ### EX02 象棋系統
-應用 MVC 架構改寫象棋系統
+應用 MVC 架構改寫象棋系統。
+
+執行畫面如下：
+
+![](img/ch21_chess_mvc_demo.png)
+
+<details>
+<summary>參考解答</summary>
+
+可執行的完整 Java Swing GUI 程式碼請參閱：[src/MVCChessGameDemo.java](src/MVCChessGameDemo.java)
+
+</details>

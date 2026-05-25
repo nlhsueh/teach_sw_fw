@@ -298,7 +298,7 @@ public interface Consumer<T> {
 
 (見 [src/WeatherStationConsumer.java](src/WeatherStationConsumer.java))
 
-### 20.4.1 多執行緒非同步設計與效能比較
+### 多執行緒非同步設計與效能比較
 
 在實際的系統開發中，觀察者（Observer）在收到通知後，往往需要執行較重的任務，例如：
 1. 將資料寫入資料庫
@@ -309,7 +309,7 @@ public interface Consumer<T> {
 
 使用 Java 8 的 `Consumer` 結合高併發資料結構與執行緒池，可以非常優雅且高效地解決這個問題。
 
-#### 1. 多執行緒非同步範例
+**多執行緒非同步範例**
 
 我們可以將 `WeatherStation` 修改為 `WeatherStationAsync`，將內部的資料結構換成執行緒安全的 `CopyOnWriteArrayList`，並在通知時使用 `CompletableFuture.runAsync()` 將通知任務交由非同步的執行緒池（預設為 `ForkJoinPool.commonPool()`）來執行。
 
@@ -335,7 +335,7 @@ public interface Consumer<T> {
 - 主執行緒 `main` 在觸發溫度變更後，**沒有被 Observer B 的 1 秒延遲卡住**，而是立刻印出 `Main thread continues immediately...` 並繼續執行。
 - 各個觀察者都是在 `ForkJoinPool` 的非同步工作執行緒（如 `worker-1`, `worker-2`）中**並行（Parallel）執行**，大幅提昇了整體的輸送量（Throughput）。
 
-#### 2. 為什麼這個非同步 Consumer 設計比傳統 `Observable` 效能更好？
+> 為什麼這個非同步 Consumer 設計比傳統 `Observable` 效能更好？
 
 主要有以下四大核心原因：
 
@@ -346,7 +346,7 @@ public interface Consumer<T> {
 | **鎖的競爭<br>(Lock Contention)** | **高鎖開銷**<br>內部使用 `Vector`，且 `notifyObservers()` 方法在複製陣列時對整個物件使用 `synchronized (this)` 進行強鎖定，高併發下會造成嚴重執行緒阻塞。 | **低鎖/無鎖讀取**<br>使用 `CopyOnWriteArrayList`。其採「寫時複製」機制，在通知（讀取）時完全不加鎖，極適合「註冊少、通知頻繁」的觀察者場景。 |
 | **可擴展性與<br>資源控制** | **極低**<br>無法限制執行緒資源，也沒有線程池重複利用機制，難以適應現代高併發系統。 | **極高**<br>可透過 `CompletableFuture` 靈活指定自訂執行緒池（`Executor`），防止資源耗盡，具備極佳的資源控制力。 |
 
-#### 3. 同步 vs. 非同步通知示意圖
+> 同步 vs. 非同步通知示意圖
 
 下圖直觀地呈現了同步阻塞與非同步非阻塞在執行緒模型與執行流程上的核心差異：
 
@@ -514,6 +514,96 @@ class Stock extends Observable {
    - `CurrentPriceBoard`: 呈現昨日價格 (`Y`)、目前價格 (`C`)、及波動百分比 (`(C-Y)/C`)。
    - `AmountBoard`: 呈現現價、成交量。
    - `GreenRedBoard`: 最近三次的價格，如果連三漲，背景設為綠色，如果連三跌，背景設為紅色。否則維持原色（白色）。
+
+<details>
+<summary>參考解答</summary>
+
+可執行的完整 Java Swing GUI 程式碼請參閱：[src/ObserverStockDemo.java](src/ObserverStockDemo.java)
+
+**核心程式碼結構與 Observer 實作示範：**
+
+```java
+// Subject (Model)
+class Stock extends Observable {
+    private double yesterdayPrice;
+    private double currentPrice;
+    private int currentAmount;
+
+    public void updateStock() {
+        this.yesterdayPrice = this.currentPrice; 
+        
+        Random r = new Random();
+        double changePercent = 0.07 + (r.nextDouble() * 0.03); 
+        boolean up = r.nextBoolean();
+        this.currentPrice = up ? this.currentPrice * (1.0 + changePercent) : this.currentPrice * (1.0 - changePercent);
+        this.currentAmount = (int)(this.currentAmount * (0.9 + r.nextDouble() * 0.2));
+        
+        setChanged();
+        notifyObservers();
+    }
+}
+
+// 呈現 1：價格看板 (CurrentPriceBoard)
+class CurrentPriceBoard extends JPanel implements Observer {
+    private JLabel lblYesterday = new JLabel("昨日價格: ");
+    private JLabel lblCurrent = new JLabel("目前價格: ");
+    private JLabel lblPercent = new JLabel("波動比率: ");
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if (o instanceof Stock) {
+            Stock s = (Stock) o;
+            double y = s.getYesterdayPrice();
+            double c = s.getCurrentPrice();
+            double percent = (c - y) / y * 100;
+            lblYesterday.setText(String.format("昨日價格 (Y): %.2f", y));
+            lblCurrent.setText(String.format("目前價格 (C): %.2f", c));
+            lblPercent.setText(String.format("波動百分比: %.2f%%", percent));
+        }
+    }
+}
+
+// 呈現 2：量能看板 (AmountBoard)
+class AmountBoard extends JPanel implements Observer {
+    private JLabel lblPrice = new JLabel("目前價格: ");
+    private JLabel lblAmount = new JLabel("成交量: ");
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if (o instanceof Stock) {
+            Stock s = (Stock) o;
+            lblPrice.setText(String.format("目前價格: %.2f", s.getCurrentPrice()));
+            lblAmount.setText("成交數量: " + s.getCurrentAmount());
+        }
+    }
+}
+
+// 呈現 3：紅綠燈看板 (GreenRedBoard)
+class GreenRedBoard extends JPanel implements Observer {
+    private List<Double> priceHistory = new ArrayList<>();
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if (o instanceof Stock) {
+            Stock s = (Stock) o;
+            double c = s.getCurrentPrice();
+            priceHistory.add(c);
+            if (priceHistory.size() > 3) priceHistory.remove(0);
+            
+            if (priceHistory.size() == 3) {
+                double p1 = priceHistory.get(0);
+                double p2 = priceHistory.get(1);
+                double p3 = priceHistory.get(2);
+                
+                if (p3 > p2 && p2 > p1) setBackground(Color.GREEN); // 連三漲
+                else if (p3 < p2 && p2 < p1) setBackground(Color.RED); // 連三跌
+                else setBackground(Color.WHITE);
+            }
+        }
+    }
+}
+```
+</details>
 	
 ### EX02b Stock    
 延續上一題，

@@ -522,8 +522,7 @@ class Stock extends Observable {
 <details>
 <summary>參考解答</summary>
 
-可執行的完整 Java Swing GUI 程式碼請參閱：[src/ObserverStockDemo.java](src/ObserverStockDemo.java)
-
+[src/ObserverStockDemo.java](src/ObserverStockDemo.java)
 </details>
 	
 ### EX02b Stock    

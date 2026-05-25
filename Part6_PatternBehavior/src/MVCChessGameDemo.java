@@ -4,8 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,33 +15,51 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
-/* --- MODEL --- */
-class ChessGameModel extends Observable {
+/* --- MODEL (被觀察者 / Subject) --- */
+class ChessGameModel {
     private String gameState = "WAITING"; // WAITING, STARTED, FINISHED
     private String currentTurn = "RED";    // RED, BLACK
     private String lastMove = "None";
 
+    // 💡 課堂練習提示 1：使用 Java 8 的 Consumer 介面儲存所有觀察者
+    // TODO: 請宣告一個儲存觀察者 (Consumer<ChessGameModel>) 的 List
+    private List<Consumer<ChessGameModel>> observers = new ArrayList<>();
+
     public String getGameState() { return gameState; }
     public String getCurrentTurn() { return currentTurn; }
     public String getLastMove() { return lastMove; }
+
+    // 💡 課堂練習提示 2：請實作註冊觀察者的方法
+    public void addObserver(Consumer<ChessGameModel> observer) {
+        // [TODO: 請將傳入的 observer 加入至 observers 列表中]
+        
+    }
+
+    // 💡 課堂練習提示 3：請實作通知所有觀察者的方法
+    private void notifyObservers() {
+        // [TODO: 請逐一呼叫每個觀察者的 accept 方法，並將自己 (this) 傳入以發送通知]
+        
+    }
 
     public void startGame() {
         if (gameState.equals("WAITING")) {
             gameState = "STARTED";
             currentTurn = "RED";
             lastMove = "Game started! Red's turn.";
-            setChanged();
-            notifyObservers();
+            
+            // 💡 課堂練習提示 4：狀態改變時需通知觀察者更新
+            // [TODO: 請呼叫您的通知方法]
+            
         }
     }
 
     public void makeMove(String moveDetails) {
         if (gameState.equals("STARTED")) {
             lastMove = currentTurn + " moved: " + moveDetails;
-            // 交換回合
             currentTurn = currentTurn.equals("RED") ? "BLACK" : "RED";
-            setChanged();
-            notifyObservers();
+            
+            // [TODO: 請呼叫您的通知方法]
+            
         }
     }
 
@@ -48,8 +67,9 @@ class ChessGameModel extends Observable {
         if (gameState.equals("STARTED")) {
             gameState = "FINISHED";
             lastMove = "Game Over! Winner: " + winner;
-            setChanged();
-            notifyObservers();
+            
+            // [TODO: 請呼叫您的通知方法]
+            
         }
     }
 
@@ -57,14 +77,15 @@ class ChessGameModel extends Observable {
         gameState = "WAITING";
         currentTurn = "RED";
         lastMove = "Game reset to waiting state.";
-        setChanged();
-        notifyObservers();
+        
+        // [TODO: 請呼叫您的通知方法]
+        
     }
 }
 
-/* --- VIEW --- */
+/* --- VIEW (觀察者 / Observer) --- */
 // 棋局狀態與日誌看板
-class ChessBoardView extends JPanel implements Observer {
+class ChessBoardView extends JPanel {
     private JLabel lblState = new JLabel("遊戲狀態: WAITING");
     private JLabel lblTurn = new JLabel("目前回合: RED");
     private JTextArea txtLogs = new JTextArea(5, 20);
@@ -86,18 +107,14 @@ class ChessBoardView extends JPanel implements Observer {
         add(txtLogs, BorderLayout.CENTER);
     }
 
-    @Override
-    public void update(Observable o, Object arg) {
-        if (o instanceof ChessGameModel) {
-            ChessGameModel model = (ChessGameModel) o;
-            lblState.setText("遊戲狀態: " + model.getGameState());
-            lblTurn.setText("目前回合: " + (model.getGameState().equals("STARTED") ? model.getCurrentTurn() : "N/A"));
-            txtLogs.append(model.getLastMove() + "\n");
-        }
+    // 💡 課堂練習提示 5：實作符合 Consumer 介面規格的畫面更新方法 (以接收 Model 作為參數)
+    public void updateView(ChessGameModel model) {
+        // [TODO: 請讀取 model 的最新狀態，並更新至 lblState, lblTurn 和 txtLogs 的文字元件中]
+        
     }
 }
 
-/* --- CONTROLLER --- */
+/* --- CONTROLLER (控制器 / Controller) --- */
 class ChessGameController extends JPanel {
     private ChessGameModel model;
     
@@ -140,17 +157,20 @@ class ChessGameController extends JPanel {
 /* --- MAIN ENTRY --- */
 public class MVCChessGameDemo extends JFrame {
     public MVCChessGameDemo() {
-        setTitle("Chinese Chess MVC Demo");
-        setSize(400, 300);
+        setTitle("Chinese Chess MVC Demo (Student Template)");
+        setSize(450, 320);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         // 1. 初始化 Model
         ChessGameModel model = new ChessGameModel();
 
-        // 2. 初始化 View 並且將其註冊（觀察）到 Model 上
+        // 2. 初始化 View
         ChessBoardView view = new ChessBoardView();
-        model.addObserver(view);
+
+        // 💡 課堂練習提示 6：將 View 註冊到 Model 中
+        // [TODO: 請將 view 的 updateView 方法作為 Consumer 註冊到 model 中，可使用方法參照 (Method Reference) 或 Lambda]
+        
 
         // 3. 初始化 Controller 並且注入 Model
         ChessGameController controller = new ChessGameController(model);

@@ -19,10 +19,10 @@
 
 ### 25.1.2 傳統設計的痛點：龐雜的條件分支與強耦合
 我們以一個企業的「費用報支審核系統（Expense Approval System）」為例。不同金額的報支單需要不同級別的主管審核：
-* 組長（Manager）：可審核 $\le \$1,000$ 的報支。
-* 處長（Director）：可審核 $\le \$5,000$ 的報支。
-* 副總（Vice President）：可審核 $\le \$20,000$ 的報支。
-* 總經理（CEO）：可審核 $>\$20,000$ 的報支。
+* **組長 (Manager)**：可審核 `≤ $1,000` 元的報支。
+* **處長 (Director)**：可審核 `≤ $5,000` 元的報支。
+* **副總 (Vice President)**：可審核 `≤ $20,000` 元的報支。
+* **總經理 (CEO)**：可審核 `> $20,000` 元的報支。
 
 如果不使用責任鏈模式，傳統的結構化設計通常會在一處寫滿大量的條件判斷式：
 
@@ -723,122 +723,227 @@ public class OrderProcessingChainClient {
 ### EX01 結構繪製
 在不看講義的情況下，應用 UML 的工具畫出該設計樣式的結構。
 
-### EX02 角色審核鏈
-公司內有若干不同的角色，當遇到技術問題時解決的順序是：programmer, designer, architect。遇到管理問題的解決順序是：programmer, analyzer, manager, CEO。請利用 chain of responsibility 的方式來解決此問題。
+### EX02 軟體專案綜合問題派工與處理系統 (Project Issue Dispatching System)
+
+在一家軟體研發公司中，所有的事件（Issue）都統一提交給系統，並依據事件的性質（**技術類別 Tech** 或 **管理類別 Management**）與其**嚴重程度/難度層級 (Difficulty Level / Severity)**，由不同的角色組成責任鏈來進行處理與派工。
+
+#### 派工與審核鏈規則：
+
+* **技術問題鏈 (Technical Chain)**：技術問題的層層解決順序是：`Programmer` ➔ `Designer` ➔ `Architect`。
+* **管理問題鏈 (Management Chain)**：管理問題的層層解決順序是：`Programmer` ➔ `Analyzer` ➔ `Manager` ➔ `CEO`。
+
+#### 職責指派表：
+
+| 角色 (Handler) | 可處理之技術問題 (Tech) | 可處理之管理問題 (Mgmt) |
+| :--- | :--- | :--- |
+| **Programmer** | `EASY` (簡易技術問題) | `EASY` (簡易管理問題) |
+| **Designer** | `MEDIUM` (中等設計/介面問題) | 不處理管理問題，直接轉交後繼者 |
+| **Architect** | `HARD` & `CRITICAL` (困難/重大技術架構問題) | 不處理管理問題，技術鏈之終點 |
+| **Analyzer** | 不處理技術問題，直接轉交後繼者 | `MEDIUM` (中等分析問題) |
+| **Manager** | 不處理技術問題，直接轉交後繼者 | `HARD` (困難部門管理問題) |
+| **CEO** | 不處理技術問題 | `CRITICAL` (重大公司經營決策問題，管理鏈終點) |
+
+#### 實作引導與程式框架
+
+請閱讀、分析並補完以下 Java 程式碼。請遵循責任鏈樣式（CoR）原則，確保當處理者無法處理解決某個問題時，能自動將問題交由對應的後繼者（Successor）處理，並注意在責任鏈的末端（沒有後繼者時）需給出妥善的無法處理提示。
 
 ```java
-interface handle {
-   public void handleTech();
-   public void handleMgmt();
+// 1. 問題類型與難度列舉
+enum IssueType {
+    TECHNICAL, MANAGEMENT
+}
+
+enum Severity {
+    EASY, MEDIUM, HARD, CRITICAL
+}
+
+// 2. 問題 Request 類別
+class Issue {
+    private int id;
+    private IssueType type;
+    private Severity severity;
+    private String description;
+
+    public Issue(int id, IssueType type, Severity severity, String description) {
+        this.id = id;
+        this.type = type;
+        this.severity = severity;
+        this.description = description;
+    }
+
+    public int getId() { return id; }
+    public IssueType getType() { return type; }
+    public Severity getSeverity() { return severity; }
+    public String getDescription() { return description; }
+}
+
+// 3. 抽象問題處理者 (Handler 介面)
+interface IssueHandler {
+    void handleTechnical(Issue issue);
+    void handleManagement(Issue issue);
+}
+
+// 4. Programmer 同事類別提示框架
+class Programmer implements IssueHandler {
+    private IssueHandler techSuccessor; // 技術後繼者 (應指向 Designer)
+    private IssueHandler mgmtSuccessor; // 管理後繼者 (應指向 Analyzer)
+
+    public Programmer(IssueHandler techSuccessor, IssueHandler mgmtSuccessor) {
+        this.techSuccessor = techSuccessor;
+        this.mgmtSuccessor = mgmtSuccessor;
+    }
+
+    @Override
+    public void handleTechnical(Issue issue) {
+        // [TODO: 1. 實作技術問題處理邏輯]
+        // 提示：若 issue 的 Severity 為 EASY，由 Programmer 自己處理解決。
+        // 否則，若 techSuccessor 不為 null，轉交給 techSuccessor 處理。
+        // 若皆無法處理，則輸出無法處理解決提示。
+    }
+
+    @Override
+    public void handleManagement(Issue issue) {
+        // [TODO: 2. 實作管理問題處理邏輯]
+        // 提示：若 issue 的 Severity 為 EASY，由 Programmer 自己處理解決。
+        // 否則，若 mgmtSuccessor 不為 null，轉交給 mgmtSuccessor 處理。
+    }
+}
+
+// [TODO: 補完其他角色：Designer, Architect, Analyzer, Manager, CEO 類別]
+```
+
+<details>
+<summary>練習參考答案與實作提示</summary>
+
+完整且經過編譯測試的參考解答已整理至 [src/IssueSupportDemo.java](src/IssueSupportDemo.java) 中，您可以直接點擊連結閱讀。
+
+以下為在 `IssueSupportDemo.java` 中各個角色對應的責任鏈處理實作參考：
+
+```java
+class Designer implements IssueHandler {
+    private IssueHandler techSuccessor;
+    private IssueHandler mgmtSuccessor;
+
+    public Designer(IssueHandler techSuccessor, IssueHandler mgmtSuccessor) {
+        this.techSuccessor = techSuccessor;
+        this.mgmtSuccessor = mgmtSuccessor;
+    }
+
+    @Override
+    public void handleTechnical(Issue issue) {
+        if (issue.getSeverity() == Severity.MEDIUM) {
+            System.out.println("🔧 [技術鏈] 問題 #" + issue.getId() + " (" + issue.getDescription() + ") 已由 Designer 解決。");
+        } else if (techSuccessor != null) {
+            techSuccessor.handleTechnical(issue);
+        } else {
+            System.out.println("❌ [技術鏈] 無法解決問題 #" + issue.getId() + "。已達技術鏈末端。");
+        }
+    }
+
+    @Override
+    public void handleManagement(Issue issue) {
+        if (mgmtSuccessor != null) {
+            mgmtSuccessor.handleManagement(issue);
+        } else {
+            System.out.println("❌ [管理鏈] 無法解決問題 #" + issue.getId() + "。已達管理鏈末端。");
+        }
+    }
+}
+
+class Architect implements IssueHandler {
+    @Override
+    public void handleTechnical(Issue issue) {
+        if (issue.getSeverity() == Severity.HARD || issue.getSeverity() == Severity.CRITICAL) {
+            System.out.println("🔧 [技術鏈] 問題 #" + issue.getId() + " (" + issue.getDescription() + ") 已由 Architect 解決。");
+        } else {
+            System.out.println("❌ [技術鏈] 無法解決問題 #" + issue.getId() + "。已達技術鏈末端。");
+        }
+    }
+
+    @Override
+    public void handleManagement(Issue issue) {
+        System.out.println("❌ [管理鏈] Architect 不處理管理類別問題。");
+    }
+}
+
+class Analyzer implements IssueHandler {
+    private IssueHandler techSuccessor;
+    private IssueHandler mgmtSuccessor;
+
+    public Analyzer(IssueHandler techSuccessor, IssueHandler mgmtSuccessor) {
+        this.techSuccessor = techSuccessor;
+        this.mgmtSuccessor = mgmtSuccessor;
+    }
+
+    @Override
+    public void handleTechnical(Issue issue) {
+        if (techSuccessor != null) {
+            techSuccessor.handleTechnical(issue);
+        } else {
+            System.out.println("❌ [技術鏈] 無法解決問題 #" + issue.getId() + "。已達技術鏈末端。");
+        }
+    }
+
+    @Override
+    public void handleManagement(Issue issue) {
+        if (issue.getSeverity() == Severity.MEDIUM) {
+            System.out.println("💼 [管理鏈] 問題 #" + issue.getId() + " (" + issue.getDescription() + ") 已由 Analyzer 解決。");
+        } else if (mgmtSuccessor != null) {
+            mgmtSuccessor.handleManagement(issue);
+        } else {
+            System.out.println("❌ [管理鏈] 無法解決問題 #" + issue.getId() + "。已達管理鏈末端。");
+        }
+    }
+}
+
+class Manager implements IssueHandler {
+    private IssueHandler techSuccessor;
+    private IssueHandler mgmtSuccessor;
+
+    public Manager(IssueHandler techSuccessor, IssueHandler mgmtSuccessor) {
+        this.techSuccessor = techSuccessor;
+        this.mgmtSuccessor = mgmtSuccessor;
+    }
+
+    @Override
+    public void handleTechnical(Issue issue) {
+        if (techSuccessor != null) {
+            techSuccessor.handleTechnical(issue);
+        } else {
+            System.out.println("❌ [技術鏈] 無法解決問題 #" + issue.getId() + "。已達技術鏈末端。");
+        }
+    }
+
+    @Override
+    public void handleManagement(Issue issue) {
+        if (issue.getSeverity() == Severity.HARD) {
+            System.out.println("💼 [管理鏈] 問題 #" + issue.getId() + " (" + issue.getDescription() + ") 已由 Manager 解決。");
+        } else if (mgmtSuccessor != null) {
+            mgmtSuccessor.handleManagement(issue);
+        } else {
+            System.out.println("❌ [管理鏈] 無法解決問題 #" + issue.getId() + "。已達管理鏈末端。");
+        }
+    }
+}
+
+class CEO implements IssueHandler {
+    @Override
+    public void handleTechnical(Issue issue) {
+        System.out.println("❌ [技術鏈] CEO 不處理技術類別問題。");
+    }
+
+    @Override
+    public void handleManagement(Issue issue) {
+        if (issue.getSeverity() == Severity.CRITICAL) {
+            System.out.println("💼 [管理鏈] 問題 #" + issue.getId() + " (" + issue.getDescription() + ") 已由 CEO 解決。");
+        } else {
+            System.out.println("❌ [管理鏈] 無法解決問題 #" + issue.getId() + "。已達管理鏈末端。");
+        }
+    }
 }
 ```
 
-Sample Answer:
-```java
-public class DemoCoR {
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		Request r = new Request(1, "! 404 !");
-		Handler p = new Programmer(new Designer(null, null), new Analyzer(null, null));
-		p.handleTech(r);
-		
-		p.handleTech(new Request(2, "! DB error "));
-		
-	}
-}
-
-class Request {
-	int type;
-	String desc;
-	public Request (int t, String desc) {
-		this.type = t;
-		this.desc = desc;
-	}
-}
-
-interface Handler { 
-	public void handleTech(Request r); 
-	public void handleMgmt(Request r); 
-}
-
-class Programmer implements Handler {
-  private Handler techSuccessor;
-  private Handler mgmtSuccessor;
-  
-  public Programmer(Handler techSuccessor, Handler mgmtSuccessor) {
-    this.techSuccessor = techSuccessor;
-    this.mgmtSuccessor = mgmtSuccessor;    
-  }
-  
-  public void handleTech(Request r) {
-	  if (r.type==1) {
-		  System.out.println(r.desc+ ", is handled by PG");		  
-	  }
-	  else techSuccessor.handleTech(r);
-  }
-  
-  public void handleMgmt(Request r) {
-	  if (r.type==1) {
-		  System.out.println(r.desc+ ", is handled");		  
-	  }
-	  else mgmtSuccessor.handleTech(r);
-  }  
-}
-
-class Analyzer implements Handler {
-	  private Handler techSuccessor;
-	  private Handler mgmtSuccessor;
-	  
-	  public Analyzer(Handler techSuccessor, Handler mgmtSuccessor) {
-		    this.techSuccessor = techSuccessor;
-		    this.mgmtSuccessor = mgmtSuccessor;    
-	  }
-	  
-	  public void handleTech(Request r) {
-		  if (r.type==2) {
-			  System.out.println(r.desc+ ", is handled by AN");		  
-		  }
-		  else techSuccessor.handleTech(r);
-	  }
-	  
-	  public void handleMgmt(Request r) {
-		  if (r.type==2) {
-			  System.out.println(r.desc+ ", is handled");		  
-		  }
-		  else mgmtSuccessor.handleTech(r);
-	  }
-	  
-	}
-
-class Designer implements Handler {
-	  private Handler techSuccessor;
-	  private Handler mgmtSuccessor;
-	  
-	  public Designer(Handler techSuccessor, Handler mgmtSuccessor) {
-		    this.techSuccessor = techSuccessor;
-		    this.mgmtSuccessor = mgmtSuccessor;    
-	  }
-	  
-	  public void handleTech(Request r) {
-		  if (r.type==1) {
-			  System.out.println(r.desc+ ", is handled by DE");		  
-		  }
-		  else if (techSuccessor != null) 
-			  techSuccessor.handleTech(r);
-		  else 
-			  System.out.println(r.desc+ " ==> no one can Handle");		  			  
-	  }
-	  
-	  public void handleMgmt(Request r) {
-		  if (r.type==1) {
-			  System.out.println(r.desc+ ", is handled");		  
-		  }
-		  else mgmtSuccessor.handleTech(r);
-	  }
-	  
-	}
-```
+</details>
 
 
 

@@ -125,7 +125,7 @@ class Button {
 
 ```mermaid
 graph TD
-    subgraph 網狀多對多 (無 Mediator)
+    subgraph "網狀多對多 (無 Mediator)"
         A((飛機 A)) <--> B((飛機 B))
         A <--> C((飛機 C))
         A <--> D((飛機 D))
@@ -134,8 +134,8 @@ graph TD
         C <--> D
     end
 
-    subgraph 星狀結構 (有 Mediator)
-        F((飛機 A)) <--> T[(( 塔台 Mediator ))]
+    subgraph "星狀結構 (有 Mediator)"
+        F((飛機 A)) <--> T(("塔台 Mediator"))
         G((飛機 B)) <--> T
         H((飛機 C)) <--> T
         I((飛機 D)) <--> T
@@ -440,174 +440,7 @@ classDiagram
 
 #### 2. Java Swing 完整程式實作
 
-[src/LayoutDemo.java](src/LayoutDemo.java) (此為 GUI 類似設計，以下為書店具體程式實作範例)
-
-```java
-package mediator;
-
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-// 1. 同事共同介面：Command 樣式
-interface Command {
-	void execute();
-}
-
-// 2. 抽象中介者介面
-interface IMediator {
-	void book();
-	void view();
-	void search();
-	
-	void registerView(BtnView v);
-	void registerSearch(BtnSearch s);
-	void registerBook(BtnBook b);
-	void registerDisplay(LblDisplay d);
-}
-
-// 3. 具體中介者：集中控制所有按鈕狀態與標籤更新
-class BookStoreMediator implements IMediator {
-	private BtnView btnView;
-	private BtnSearch btnSearch;
-	private BtnBook btnBook;
-	private LblDisplay show;
-
-	@Override
-	public void registerView(BtnView v) { btnView = v; }
-	@Override
-	public void registerSearch(BtnSearch s) { btnSearch = s; }
-	@Override
-	public void registerBook(BtnBook b) { btnBook = b; }
-	@Override
-	public void registerDisplay(LblDisplay d) { show = d; }
-
-	@Override
-	public void book() {
-		btnBook.setEnabled(false);
-		btnView.setEnabled(true);
-		btnSearch.setEnabled(true);
-		show.setText("Booking...");
-	}
-
-	@Override
-	public void view() {
-		btnView.setEnabled(false);
-		btnSearch.setEnabled(true);
-		btnBook.setEnabled(true);
-		show.setText("Viewing...");
-	}
-
-	@Override
-	public void search() {
-		btnSearch.setEnabled(false);
-		btnView.setEnabled(true);
-		btnBook.setEnabled(true);
-		show.setText("Searching...");
-	}
-}
-
-// 4. 各個具體 Colleagues 元件 (只與 Mediator 對話)
-class BtnView extends JButton implements Command {
-	private IMediator med;
-
-	BtnView(ActionListener al, IMediator m) {
-		super("View");
-		addActionListener(al);
-		med = m;
-		med.registerView(this); // 向中介者註冊
-	}
-
-	@Override
-	public void execute() {
-		med.view(); // 委託中介者決定後續動作
-	}
-}
-
-class BtnSearch extends JButton implements Command {
-	private IMediator med;
-
-	BtnSearch(ActionListener al, IMediator m) {
-		super("Search");
-		addActionListener(al);
-		med = m;
-		med.registerSearch(this);
-	}
-
-	@Override
-	public void execute() {
-		med.search();
-	}
-}
-
-class BtnBook extends JButton implements Command {
-	private IMediator med;
-
-	BtnBook(ActionListener al, IMediator m) {
-		super("Book");
-		addActionListener(al);
-		med = m;
-		med.registerBook(this);
-	}
-
-	@Override
-	public void execute() {
-		med.book();
-	}
-}
-
-class LblDisplay extends JLabel {
-	private IMediator med;
-
-	LblDisplay(IMediator m) {
-		super("Just start...");
-		med = m;
-		med.registerDisplay(this);
-		setFont(new Font("Arial", Font.BOLD, 24));
-		setHorizontalAlignment(JLabel.CENTER);
-	}
-}
-
-// 5. Client 視窗主類別
-public class BookStoreDemo extends JFrame implements ActionListener {
-	private IMediator med = new BookStoreMediator();
-
-	public BookStoreDemo() {
-		super("BookStore GUI Mediator");
-		JPanel p = new JPanel();
-		
-		// 建立同事元件並傳入共同的中介者
-		p.add(new BtnView(this, med));
-		p.add(new BtnBook(this, med));
-		p.add(new BtnSearch(this, med));
-		
-		getContentPane().add(new LblDisplay(med), "North");
-		getContentPane().add(p, "South");
-		
-		setSize(350, 150);
-		setLocationRelativeTo(null);
-		setVisible(true);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-
-	// 💡 所有按鈕統一在此被攔截，並調用對應 Command 介面
-	@Override
-	public void actionPerformed(ActionEvent ae) {
-		if (ae.getSource() instanceof Command) {
-			Command comd = (Command) ae.getSource();
-			comd.execute();
-		}
-	}
-
-	public static void main(String[] args) {
-		new BookStoreDemo();
-	}
-}
-```
+完整範例程式碼已整理至 [src/BookStoreDemo.java](src/BookStoreDemo.java) 中，您可以直接點擊連結閱讀與編譯執行。
 
 ### 24.5.2 實務範例二：智慧家居自動化控制系統 (Smart Home Automation)
 
@@ -682,164 +515,7 @@ classDiagram
 
 #### 完整 Java 程式碼實作
 
-```java
-package mediator.smarthome;
-
-// 1. 抽象中介者介面
-interface ISmartHomeMediator {
-    // 💡 裝置狀態改變或偵測到事件時，呼叫此方法向中介者回報
-    void coordinate(SmartDevice device, String event);
-}
-
-// 2. 抽象同儕裝置類別
-abstract class SmartDevice {
-    protected ISmartHomeMediator mediator;
-
-    public SmartDevice(ISmartHomeMediator mediator) {
-        this.mediator = mediator;
-    }
-}
-
-// 3. 具體同儕類別：溫度感測器
-class TemperatureSensor extends SmartDevice {
-    private float lastTemp;
-
-    public TemperatureSensor(ISmartHomeMediator mediator) {
-        super(mediator);
-    }
-
-    public void checkTemperature(float temp) {
-        this.lastTemp = temp;
-        System.out.println("🌡️ 溫度計感測到當前溫度為: " + temp + "°C");
-        if (temp >= 30.0f) {
-            mediator.coordinate(this, "HIGH_TEMP");
-        } else if (temp <= 22.0f) {
-            mediator.coordinate(this, "LOW_TEMP");
-        }
-    }
-}
-
-// 4. 具體同儕類別：冷氣機
-class AirConditioner extends SmartDevice {
-    public AirConditioner(ISmartHomeMediator mediator) {
-        super(mediator);
-    }
-
-    public void turnOn() {
-        System.out.println("❄️ 冷氣機：自動開啟，並設定為 [強風降溫模式]");
-    }
-
-    public void turnOff() {
-        System.out.println("🔌 冷氣機：溫度適宜，自動關閉節能");
-    }
-}
-
-// 5. 智慧窗簾
-class SmartCurtain extends SmartDevice {
-    public SmartCurtain(ISmartHomeMediator mediator) {
-        super(mediator);
-    }
-
-    public void close() {
-        System.out.println("🪟 智慧窗簾：自動拉上 [遮擋強烈陽光]");
-        mediator.coordinate(this, "CURTAIN_CLOSED");
-    }
-
-    public void open() {
-        System.out.println("🪟 智慧窗簾：自動拉開 [引入自然光線]");
-        mediator.coordinate(this, "CURTAIN_OPENED");
-    }
-}
-
-// 6. 具體同儕類別：智慧燈泡
-class Light extends SmartDevice {
-    public Light(ISmartHomeMediator mediator) {
-        super(mediator);
-    }
-
-    public void turnOn() {
-        System.out.println("💡 智慧燈泡：偵測到光線變暗，自動開啟照明");
-    }
-
-    public void turnOff() {
-        System.out.println("💡 智慧燈泡：自然光充足，自動關閉以省電");
-    }
-}
-
-// 7. 具體中介者實作：集中調度所有智慧裝置的自動化聯動邏輯
-class SmartHomeMediatorImpl implements ISmartHomeMediator {
-    private TemperatureSensor sensor;
-    private AirConditioner ac;
-    private SmartCurtain curtain;
-    private Light light;
-
-    // 設定所管理的所有智慧裝置
-    public void setDevices(TemperatureSensor sensor, AirConditioner ac, SmartCurtain curtain, Light light) {
-        this.sensor = sensor;
-        this.ac = ac;
-        this.curtain = curtain;
-        this.light = light;
-    }
-
-    @Override
-    public void coordinate(SmartDevice device, String event) {
-        System.out.println("»» [中介者收到事件] 來自 " + device.getClass().getSimpleName() + " 觸發了 \"" + event + "\"");
-        
-        switch (event) {
-            case "HIGH_TEMP":
-                // 1. 開啟冷氣
-                ac.turnOn();
-                // 2. 自動關閉窗簾遮陽
-                curtain.close();
-                break;
-                
-            case "LOW_TEMP":
-                // 1. 關閉冷氣
-                ac.turnOff();
-                break;
-                
-            case "CURTAIN_CLOSED":
-                // 窗簾拉上了，自動開啟電燈補光
-                light.turnOn();
-                break;
-                
-            case "CURTAIN_OPENED":
-                // 窗簾拉開了，自動關閉電燈節能
-                light.turnOff();
-                break;
-                
-            default:
-                System.out.println("未定義的聯動事件。");
-        }
-    }
-}
-
-// 8. 測試主程式
-public class SmartHomeDemo {
-    public static void main(String[] args) {
-        // 建立中介者
-        SmartHomeMediatorImpl mediator = new SmartHomeMediatorImpl();
-
-        // 建立同儕裝置並傳入中介者
-        TemperatureSensor sensor = new TemperatureSensor(mediator);
-        AirConditioner ac = new AirConditioner(mediator);
-        SmartCurtain curtain = new SmartCurtain(mediator);
-        Light light = new Light(mediator);
-
-        // 向中介者註冊這些裝置
-        mediator.setDevices(sensor, ac, curtain, light);
-
-        System.out.println("=== 模擬情境一：夏日午後，室溫飆高至 33°C ===");
-        sensor.checkTemperature(33.0f);
-
-        System.out.println("\n=== 模擬情境二：傍晚天氣變涼，室溫降至 21°C ===");
-        sensor.checkTemperature(21.0f);
-        
-        System.out.println("\n=== 模擬情境三：手動開啟窗簾引入午後自然光 ===");
-        curtain.open();
-    }
-}
-```
+完整範例程式碼已整理至 [src/SmartHomeDemo.java](src/SmartHomeDemo.java) 中，您可以直接點擊連結閱讀與編譯執行。
 
 ---
 
@@ -945,32 +621,45 @@ public class SmartHomeDemo {
 
 ---
 
-### EX02 象棋操作介面狀態協調器 (Chess UI System)
-請利用 **Java Swing** 與 **Mediator 設計樣式** 實作一個簡易的象棋操作面板。介面包含以下四個元件：
-1. `BtnSelect` 按鈕：用來點選棋子（文字顯示 `"Select Piece"`）。
-2. `BtnMove` 按鈕：用來移動棋子（文字顯示 `"Move Piece"`）。
-3. `BtnCancel` 按鈕：用來取消當前操作（文字顯示 `"Cancel"`）。
-4. `StatusLabel` 標籤：用來展示當前操作狀態。
+### EX02 大學課程成績與狀態協調器 (University Course Grading System)
+
+請利用 **Java Swing** 與 **Mediator 設計樣式** 實作一個大學課程成績登錄與狀態驗證控制介面。
+
+#### 系統元件與職責說明：
+1. `TxtGrade`（成績輸入框）：讓教授輸入學生成績。
+2. `BtnCheck`（檢查按鈕）：點擊後向中介者報告，對輸入的成績文字進行合法性檢查。
+3. `BtnSubmit`（送出按鈕）：點擊後向中介者報告，正式提交成績並換算最終學術等第。
+4. `LblStatus`（狀態提示標籤）：用來展示當前驗證狀態與提交結果。
 
 #### 協調聯動邏輯：
-* **初始狀態 / 按下 Cancel 時**：
-  * `BtnSelect` 啟用（`Enabled = true`）。
-  * `BtnMove` 與 `BtnCancel` 停用（`Enabled = false`）。
-  * `StatusLabel` 顯示：`"Please select a piece..."`。
-* **按下 Select Piece 時**：
-  * `BtnSelect` 停用。
-  * `BtnMove` 與 `BtnCancel` 啟用。
-  * `StatusLabel` 顯示：`"Piece selected. Ready to move."`。
-* **按下 Move Piece 時**：
-  * `BtnSelect` 啟用。
-  * `BtnMove` 與 `BtnCancel` 停用。
-  * `StatusLabel` 顯示：`"Move done successfully!"`。
+* **初始狀態**：
+  * `BtnSubmit` 設為停用（`Enabled = false`）。
+  * `LblStatus` 顯示：`"請輸入 0-100 的成績，並點擊 Check 進行檢查。"`。
+* **點擊 Check 時**：
+  * 中介者會取得 `TxtGrade` 輸入的文字並進行整數轉換與範圍驗證。
+  * **若格式合法（在 0 到 100 之間）**：
+    * 啟用 `BtnSubmit`（`Enabled = true`）。
+    * `LblStatus` 更新為：`"檢查通過！可以提交成績。"`。
+  * **若格式不合法（包含非整數文字、小於 0 或大於 100）**：
+    * 停用 `BtnSubmit`（`Enabled = false`）。
+    * `LblStatus` 更新為錯誤提示，例如：`"錯誤！請輸入 0 到 100 之間的整數。"`。
+* **點擊 Submit 時**：
+  * 中介者讀取該分數，並將其轉換成學術等第（Grade Letter）：
+    * 分數 $\ge 90$：A 等第
+    * 分數 $\ge 80$ 且 $< 90$：B 等第
+    * 分數 $\ge 70$ 且 $< 80$：C 等第
+    * 分數 $\ge 60$ 且 $< 70$：D 等第
+    * 分數 $< 60$：F 等第
+  * 中介者停用 `BtnSubmit` 與 `BtnCheck`。
+  * 中介者將 `TxtGrade` 輸入框設為不可編輯（`setEditable(false)`），防止二度更改。
+  * `LblStatus` 顯示最終提交結果，例如：`"成績已成功送出！最終評定為: B"`。
 
 #### 實作引導與程式框架
 
-請實作並補完以下 Java 程式碼，確保按鈕之間沒有直接呼叫，全部行為與 UI 狀態變更統一委託給中介者協調：
+請閱讀、分析並補完以下 Java 程式碼。請遵循中介者樣式原則，確保所有的同事 UI 元件（Colleagues）不直接呼叫彼此的 API，所有的互動控制邏輯皆集中在中介者（`CourseMediator`）類別中實作。
 
 ```java
+import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -978,141 +667,142 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
-// 💡 共同的同事行為介面
-interface GameCommand {
+// 💡 共同的同事行為介面（Command 樣式）
+interface CourseCommand {
     void execute();
 }
 
 // 💡 抽象中介者介面
-interface IGameMediator {
-    void select();
-    void move();
-    void cancel();
+interface ICourseMediator {
+    void check();
+    void submit();
     
-    void registerSelect(BtnSelect s);
-    void registerMove(BtnMove m);
-    void registerCancel(BtnCancel c);
-    void registerStatus(StatusLabel l);
+    void registerGradeField(TxtGrade g);
+    void registerCheckButton(BtnCheck c);
+    void registerSubmitButton(BtnSubmit s);
+    void registerStatusLabel(LblStatus l);
 }
 
-// 💡 具體中介者：在此實作所有的 UI 按鈕邏輯與狀態通知
-class ChessMediator implements IGameMediator {
-    private BtnSelect btnSelect;
-    private BtnMove btnMove;
-    private BtnCancel btnCancel;
-    private StatusLabel statusLabel;
+// 💡 具體中介者：集中控制所有 UI 元件的啟用狀態、輸入檢查與成績評定
+class CourseMediator implements ICourseMediator {
+    private TxtGrade txtGrade;
+    private BtnCheck btnCheck;
+    private BtnSubmit btnSubmit;
+    private LblStatus lblStatus;
 
     @Override
-    public void registerSelect(BtnSelect s) { this.btnSelect = s; }
+    public void registerGradeField(TxtGrade g) { this.txtGrade = g; }
     @Override
-    public void registerMove(BtnMove m) { this.btnMove = m; }
+    public void registerCheckButton(BtnCheck c) { this.btnCheck = c; }
     @Override
-    public void registerCancel(BtnCancel c) { this.btnCancel = c; }
+    public void registerSubmitButton(BtnSubmit s) { this.btnSubmit = s; }
     @Override
-    public void registerStatus(StatusLabel l) { this.statusLabel = l; }
+    public void registerStatusLabel(LblStatus l) { this.lblStatus = l; }
 
     @Override
-    public void select() {
-        // [TODO: 1. 控制按鈕的啟用/停用狀態]
-        
-        // [TODO: 2. 更新狀態標籤文字]
+    public void check() {
+        // [TODO: 1. 實作成績檢查邏輯]
+        // 提示：取得 txtGrade 的文字內容，去除空白後嘗試解析為整數
+        // 判斷該整數是否落在 0 至 100 的合理範圍內。
+        // 若合格：啟用 btnSubmit 按鈕，更新 lblStatus 為 "檢查通過！可以提交成績。"
+        // 若不合格或解析失敗：停用 btnSubmit 按鈕，更新 lblStatus 為對應錯誤提示。
     }
 
     @Override
-    public void move() {
-        // [TODO: 1. 控制按鈕的啟用/停用狀態]
-        
-        // [TODO: 2. 更新狀態標籤文字]
-    }
-
-    @Override
-    public void cancel() {
-        // [TODO: 1. 控制按鈕的啟用/停用狀態]
-        
-        // [TODO: 2. 更新狀態標籤文字]
+    public void submit() {
+        // [TODO: 2. 實作成績提交與等第評定邏輯]
+        // 提示：解析分數後，依據以下評估規則換算成學術等第 (Grade Letter)
+        // >=90 為 A, >=80 為 B, >=70 為 C, >=60 為 D, 60 以下為 F。
+        // 換算完成後，將 btnSubmit、btnCheck 按鈕皆停用 (setEnabled(false))，
+        // 並將 txtGrade 文字欄位設為不可編輯 (setEditable(false))，避免之後再次更改成績。
+        // 最後更新 lblStatus 為 "成績已成功送出！最終評定為: [等第]"
     }
 }
 
-// ==================== 具體同事元件實作 ====================
+// ==================== 具體同事元件 (Colleagues) 實作 ====================
 
-class BtnSelect extends JButton implements GameCommand {
-    private IGameMediator med;
-    
-    public BtnSelect(ActionListener al, IGameMediator m) {
-        super("Select Piece");
+class TxtGrade extends JTextField {
+    private ICourseMediator med;
+
+    public TxtGrade(ICourseMediator m) {
+        super(10);
+        this.med = m;
+        med.registerGradeField(this); // 向中介者註冊自己
+    }
+}
+
+class BtnCheck extends JButton implements CourseCommand {
+    private ICourseMediator med;
+
+    public BtnCheck(ActionListener al, ICourseMediator m) {
+        super("Check");
         addActionListener(al);
         this.med = m;
-        med.registerSelect(this);
+        med.registerCheckButton(this);
     }
+
     @Override
     public void execute() {
-        med.select();
+        med.check(); // 委託中介者執行檢查行為
     }
 }
 
-class BtnMove extends JButton implements GameCommand {
-    private IGameMediator med;
-    
-    public BtnMove(ActionListener al, IGameMediator m) {
-        super("Move Piece");
+class BtnSubmit extends JButton implements CourseCommand {
+    private ICourseMediator med;
+
+    public BtnSubmit(ActionListener al, ICourseMediator m) {
+        super("Submit");
         addActionListener(al);
         this.med = m;
-        med.registerMove(this);
+        med.registerSubmitButton(this);
     }
+
     @Override
     public void execute() {
-        med.move();
+        med.submit(); // 委託中介者執行提交行為
     }
 }
 
-class BtnCancel extends JButton implements GameCommand {
-    private IGameMediator med;
-    
-    public BtnCancel(ActionListener al, IGameMediator m) {
-        super("Cancel");
-        addActionListener(al);
-        this.med = m;
-        med.registerCancel(this);
-    }
-    @Override
-    public void execute() {
-        med.cancel();
-    }
-}
+class LblStatus extends JLabel {
+    private ICourseMediator med;
 
-class StatusLabel extends JLabel {
-    private IGameMediator med;
-    
-    public StatusLabel(IGameMediator m) {
-        super("Welcome! Please select a piece...");
+    public LblStatus(ICourseMediator m) {
+        super("請輸入 0-100 的成績，並點擊 Check 進行檢查。");
         this.med = m;
-        med.registerStatus(this);
-        setFont(new Font("Arial", Font.BOLD, 18));
+        med.registerStatusLabel(this);
+        setFont(new Font("Microsoft JhengHei", Font.BOLD, 14));
         setHorizontalAlignment(JLabel.CENTER);
     }
 }
 
 // ==================== 測試視窗主程式 ====================
 
-public class ChessGameUI extends JFrame implements ActionListener {
-    private IGameMediator med = new ChessMediator();
+public class CourseGradingUI extends JFrame implements ActionListener {
+    private ICourseMediator med = new CourseMediator();
 
-    public ChessGameUI() {
-        super("Chess Mediator System");
-        JPanel panel = new JPanel();
+    public CourseGradingUI() {
+        super("University Course Grading System");
         
-        panel.add(new BtnSelect(this, med));
-        panel.add(new BtnMove(this, med));
-        panel.add(new BtnCancel(this, med));
+        TxtGrade txtGrade = new TxtGrade(med);
+        BtnCheck btnCheck = new BtnCheck(this, med);
+        BtnSubmit btnSubmit = new BtnSubmit(this, med);
+        LblStatus lblStatus = new LblStatus(med);
         
-        getContentPane().add(new StatusLabel(med), "North");
-        getContentPane().add(panel, "South");
+        JPanel inputPanel = new JPanel();
+        inputPanel.add(new JLabel("輸入成績: "));
+        inputPanel.add(txtGrade);
+        inputPanel.add(btnCheck);
+        inputPanel.add(btnSubmit);
         
-        // 初始設定狀態為 cancel / 預設狀態
-        med.cancel();
-
-        setSize(400, 150);
+        // 初始狀態
+        btnSubmit.setEnabled(false);
+        
+        getContentPane().add(lblStatus, BorderLayout.NORTH);
+        getContentPane().add(inputPanel, BorderLayout.CENTER);
+        
+        setSize(480, 150);
         setLocationRelativeTo(null);
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -1120,14 +810,14 @@ public class ChessGameUI extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-        if (ae.getSource() instanceof GameCommand) {
-            GameCommand cmd = (GameCommand) ae.getSource();
+        if (ae.getSource() instanceof CourseCommand) {
+            CourseCommand cmd = (CourseCommand) ae.getSource();
             cmd.execute();
         }
     }
 
     public static void main(String[] args) {
-        new ChessGameUI();
+        new CourseGradingUI();
     }
 }
 ```
@@ -1135,31 +825,46 @@ public class ChessGameUI extends JFrame implements ActionListener {
 <details>
 <summary>練習參考答案與實作提示</summary>
 
-在 `ChessMediator` 類別中，補完以下三個協調方法：
+在 `CourseMediator` 類別中，補完以下兩個協調控制方法的實作程式碼：
 
 ```java
     @Override
-    public void select() {
-        btnSelect.setEnabled(false);
-        btnMove.setEnabled(true);
-        btnCancel.setEnabled(true);
-        statusLabel.setText("Piece selected. Ready to move.");
+    public void check() {
+        String text = txtGrade.getText().trim();
+        try {
+            int score = Integer.parseInt(text);
+            if (score >= 0 && score <= 100) {
+                btnSubmit.setEnabled(true);
+                lblStatus.setText("檢查通過！可以提交成績。");
+            } else {
+                btnSubmit.setEnabled(false);
+                lblStatus.setText("錯誤！成績必須在 0 到 100 之間。");
+            }
+        } catch (NumberFormatException e) {
+            btnSubmit.setEnabled(false);
+            lblStatus.setText("錯誤！請輸入有效的整數成績。");
+        }
     }
 
     @Override
-    public void move() {
-        btnSelect.setEnabled(true);
-        btnMove.setEnabled(false);
-        btnCancel.setEnabled(false);
-        statusLabel.setText("Move done successfully!");
-    }
+    public void submit() {
+        String text = txtGrade.getText().trim();
+        try {
+            int score = Integer.parseInt(text);
+            String gradeLetter;
+            if (score >= 90) gradeLetter = "A";
+            else if (score >= 80) gradeLetter = "B";
+            else if (score >= 70) gradeLetter = "C";
+            else if (score >= 60) gradeLetter = "D";
+            else gradeLetter = "F";
 
-    @Override
-    public void cancel() {
-        btnSelect.setEnabled(true);
-        btnMove.setEnabled(false);
-        btnCancel.setEnabled(false);
-        statusLabel.setText("Please select a piece...");
+            btnSubmit.setEnabled(false);
+            btnCheck.setEnabled(false);
+            txtGrade.setEditable(false);
+            lblStatus.setText("成績已成功送出！最終評定為: " + gradeLetter);
+        } catch (NumberFormatException e) {
+            lblStatus.setText("提交失敗：無效的輸入分數。");
+        }
     }
 ```
 

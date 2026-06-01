@@ -91,6 +91,8 @@ class C {
 > 💡 **課堂思考：**
 > 在一個象棋系統中，`ChessGame` 會有不同的狀態：`Initial` (初始)、`Waiting` (等待玩家加入)、`Started` (對局開始)、`GameOver` (勝負已分) 等。這些狀態決定了系統如何回應使用者的點擊棋子事件。如果不用 State 樣式，點擊事件的方法內會堆疊多少層 `if` 判斷？該如何應用 State 樣式優化它？
 
+[gugu- `State`](https://refactoring.guru/design-patterns/state)
+
 ---
 
 ## 23.3 結構與方法

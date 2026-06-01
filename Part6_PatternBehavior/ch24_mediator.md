@@ -20,6 +20,98 @@
 2. **星狀集中調度**：引入一個中介者（Mediator）。所有 Colleagues 只與 Mediator 溝通（變成一對多的星狀拓撲，Star Network，關聯線路降為 $O(N)$）。
 3. **委託協調行為**：Colleagues 在自身狀態改變或觸發事件時，統一通知 Mediator；再由 Mediator 根據業務邏輯，去改變其他對應 Colleagues 的狀態。
 
+### 24.1.2 傳統設計的痛點：緊密耦合的網狀結構
+我們來看一個真實的軟體設計場景。假設我們在設計一個簡單的登入註冊對話框，包含三個元件：`TextBox`（輸入框）、`Button`（送出按鈕）、`Checkbox`（服務條款勾選框）。
+
+它們的互動邏輯如下：
+1. 當使用者在 `TextBox` 輸入文字時，如果輸入框為空，`Button` 必須停用；若有字則根據 `Checkbox` 狀態決定是否啟用。
+2. 當使用者勾選/取消勾選 `Checkbox` 時，`Button` 的啟用狀態必須隨之更新（只有勾選且 `TextBox` 有文字時，按鈕才能啟用）。
+3. 當使用者按下 `Button` 執行登入後，`TextBox` 的文字要清空，且 `Checkbox` 必須取消勾選。
+
+如果使用傳統的直覺式設計，我們會讓這三個元件在內部直接持有並相互呼叫對方：
+
+```java
+// 傳統無中介者設計：元件間緊密耦合
+class TextBox {
+    private Button button;
+    private Checkbox checkbox;
+
+    public void setReferences(Button b, Checkbox c) {
+        this.button = b;
+        this.checkbox = c;
+    }
+
+    public void onTextChanged(String text) {
+        if (text.isEmpty()) {
+            button.setEnabled(false);
+        } else if (checkbox.isChecked()) {
+            button.setEnabled(true);
+        }
+    }
+
+    public void clear() {
+        System.out.println("TextBox: 清空文字內容");
+    }
+}
+
+class Checkbox {
+    private Button button;
+    private TextBox textBox;
+
+    public void setReferences(Button b, TextBox t) {
+        this.button = b;
+        this.textBox = t;
+    }
+
+    public void onCheckedChanged(boolean checked) {
+        // 直接存取並操作 Button 的狀態
+        if (checked && !button.isTextBoxEmpty()) {
+            button.setEnabled(true);
+        } else {
+            button.setEnabled(false);
+        }
+    }
+
+    public boolean isChecked() {
+        return true; // 簡化模擬
+    }
+
+    public void setChecked(boolean checked) {
+        System.out.println("Checkbox: 設定勾選狀態為 " + checked);
+    }
+}
+
+class Button {
+    private TextBox textBox;
+    private Checkbox checkbox;
+
+    public void setReferences(TextBox t, Checkbox c) {
+        this.textBox = t;
+        this.checkbox = c;
+    }
+
+    public void setEnabled(boolean enabled) {
+        System.out.println("Button: 啟用狀態設定為 -> " + enabled);
+    }
+
+    public boolean isTextBoxEmpty() {
+        return false; // 簡化模擬
+    }
+
+    public void onClick() {
+        System.out.println("Button: 執行登入程序...");
+        // 直接呼叫其他元件進行聯動狀態清除
+        textBox.clear();
+        checkbox.setChecked(false);
+    }
+}
+```
+
+#### 這樣設計的缺點：
+1. **強耦合與高依賴性（違反迪米特法則 / LoD）**：每個元件都必須持有其他所有協作元件的直接參考。`TextBox` 知道 `Button` 與 `Checkbox`；`Checkbox` 知道 `Button` 與 `TextBox`；`Button` 也知道 `TextBox` 與 `Checkbox`。這形成了一個網狀依賴，違反了「只與直接的朋友對話」的設計原則。
+2. **重用性極差**：因為 `TextBox` 類別中硬性綁定了 `Button` 與 `Checkbox` 的型態，如果我們想在另一個沒有勾選框的視窗中重用這個 `TextBox`，我們將完全無法抽離它，除非去修改它的原始碼。
+3. **擴展與維護的災難（違反 OCP）**：如果未來對話框需要新增一個元件，例如一個提示錯誤的 `Label`，那麼我們必須修改 `TextBox`、`Checkbox` 與 `Button` 的內部程式碼，將 `Label` 的參考傳進去並加上控制邏輯。隨著元件增多，這段程式碼將迅速退化成極難維護的「義大利麵條（Spaghetti Code）」網狀結構。
+
 ---
 
 ## 24.2 動機與生活實喻
@@ -58,6 +150,8 @@ graph TD
 * **物件間存在複雜且混亂的交互關係**，導致系統依賴結構混亂、程式可讀性與可維護性低下。
 * **想重用一些物件，但因為它們與其他物件強烈依賴而難以抽離**。
 * **想要在不修改個別物件內部細節的前提下，靈活調整物件間的協同行為與狀態切換邏輯**（例如 GUI 介面上，點擊某按鈕會同時改變多個輸入框與標籤的啟用狀態）。
+
+[gugu- `Mediator`](https://refactoring.guru/design-patterns/mediator)
 
 ---
 
@@ -239,6 +333,18 @@ public class MediatorTemplate {
     }
 }
 ```
+
+### 24.4.1 設計效益分析
+
+#### 🟢 優點
+* **降低耦合度（促進鬆散耦合）**：將多個同儕物件（Colleague）之間的複雜多對多網狀關係，轉化為一對多的星狀關係。同儕物件之間不再需要直接互相引用，只需與中介者交互，實現了元件間的低耦合。
+* **提高元件重用性**：每個同儕物件只專注於自己本身的核心職責（例如按鈕只管按鈕點擊，輸入框只管輸入文字），不需要理會其他同儕物件的變化。這使得同儕物件更容易被抽離並在不同的中介者或視窗系統之下被重複使用。
+* **簡化物件協作控制**：將複雜的交互與聯動邏輯集中在中介者內，使得系統的協作行為更容易理解、修改與維護，不再散落在各個分散的類別中。
+* **符合開閉原則 (OCP)**：如果需要改變多個物件之間的協調方式，或者要調整事件的聯動規則，我們只需要新增或修改具體中介者即可，同儕物件的原始碼完全不需要變動。
+
+#### 🔴 缺點
+* **中介者過於龐大（「神之物件」危機）**：如果同儕物件非常多，且交互聯動邏輯極為複雜，中介者類別（`ConcreteMediator`）會塞滿大量的元件參考與複雜的條件分支，漸漸膨脹成一個異常臃腫且難以維護的「超級物件（God Object / Monster Object）」。
+* **單元測試較為困難**：由於中介者集中了所有的交互控制，測試中介者時必須同時模擬或配置大量的同儕物件，增加了單元測試的撰寫難度。
 
 ---
 
@@ -500,6 +606,238 @@ public class BookStoreDemo extends JFrame implements ActionListener {
 	public static void main(String[] args) {
 		new BookStoreDemo();
 	}
+}
+```
+
+### 24.5.2 實務範例二：智慧家居自動化控制系統 (Smart Home Automation)
+
+在現代智慧家居系統中，有多個智慧家電元件（Colleagues）：`TemperatureSensor`（溫度感測器）、`AirConditioner`（冷氣機）、`SmartCurtain`（智慧窗簾）、`Light`（智慧燈泡）。
+
+這些裝置在自動化情境下，交互作用十分密切。例如：當溫度計感測到室溫過高時，應該自動將冷氣調強，並把拉開的窗簾拉上以遮擋陽光。如果由各個智慧裝置直接去尋找並呼叫其他智慧裝置，則會讓智慧家居的軟體架裝充斥著大量難以維護的網狀耦合。
+
+我們使用 **Mediator 設計樣式**，讓所有裝置只向中央協調器（`SmartHomeMediator`）報告狀態，由協調器統一對其他裝置發號施令。
+
+#### 智慧家居自動化聯動邏輯表
+
+| 觸發元件 (Colleague) | 偵測事件 (Event) | 聯動行為 (Coordinated Actions) |
+| :--- | :--- | :--- |
+| **TemperatureSensor** (溫度感測器) | 溫度高於 $30^\circ\text{C}$ | 1. 開啟冷氣機（`AirConditioner`）並設為強風模式。<br/>2. 自動拉上窗簾（`SmartCurtain`）遮蔽陽光，以利快速降溫。 |
+| **TemperatureSensor** (溫度感測器) | 溫度低於 $22^\circ\text{C}$ | 1. 自動關閉冷氣機，避免過冷與節能。 |
+| **SmartCurtain** (智慧窗簾) | 窗簾被拉上 (Closed) | 1. 若室內光線因而不足，自動開啟智慧燈泡（`Light`）。 |
+| **SmartCurtain** (智慧窗簾) | 窗簾被拉開 (Opened) | 1. 自動關閉智慧燈泡，充分利用戶外自然光，節約能源。 |
+
+#### 系統類別關係圖 (Mermaid)
+
+```mermaid
+classDiagram
+    class ISmartHomeMediator {
+        <<interface>>
+        +coordinate(device: SmartDevice, event: String)
+    }
+
+    class SmartHomeMediatorImpl {
+        -sensor: TemperatureSensor
+        -ac: AirConditioner
+        -curtain: SmartCurtain
+        -light: Light
+        +coordinate(device: SmartDevice, event: String)
+        +setDevices(sensor, ac, curtain, light)
+    }
+
+    class SmartDevice {
+        -mediator: ISmartHomeMediator
+        +SmartDevice(mediator)
+    }
+
+    class TemperatureSensor {
+        +checkTemperature(temp: float)
+    }
+
+    class AirConditioner {
+        +turnOn()
+        +turnOff()
+    }
+
+    class SmartCurtain {
+        +close()
+        +open()
+    }
+
+    class Light {
+        +turnOn()
+        +turnOff()
+    }
+
+    ISmartHomeMediator <|.. SmartHomeMediatorImpl
+    SmartDevice <|-- TemperatureSensor
+    SmartDevice <|-- AirConditioner
+    SmartDevice <|-- SmartCurtain
+    SmartDevice <|-- Light
+    SmartDevice --> ISmartHomeMediator
+    SmartHomeMediatorImpl --> TemperatureSensor
+    SmartHomeMediatorImpl --> AirConditioner
+    SmartHomeMediatorImpl --> SmartCurtain
+    SmartHomeMediatorImpl --> Light
+```
+
+#### 完整 Java 程式碼實作
+
+```java
+package mediator.smarthome;
+
+// 1. 抽象中介者介面
+interface ISmartHomeMediator {
+    // 💡 裝置狀態改變或偵測到事件時，呼叫此方法向中介者回報
+    void coordinate(SmartDevice device, String event);
+}
+
+// 2. 抽象同儕裝置類別
+abstract class SmartDevice {
+    protected ISmartHomeMediator mediator;
+
+    public SmartDevice(ISmartHomeMediator mediator) {
+        this.mediator = mediator;
+    }
+}
+
+// 3. 具體同儕類別：溫度感測器
+class TemperatureSensor extends SmartDevice {
+    private float lastTemp;
+
+    public TemperatureSensor(ISmartHomeMediator mediator) {
+        super(mediator);
+    }
+
+    public void checkTemperature(float temp) {
+        this.lastTemp = temp;
+        System.out.println("🌡️ 溫度計感測到當前溫度為: " + temp + "°C");
+        if (temp >= 30.0f) {
+            mediator.coordinate(this, "HIGH_TEMP");
+        } else if (temp <= 22.0f) {
+            mediator.coordinate(this, "LOW_TEMP");
+        }
+    }
+}
+
+// 4. 具體同儕類別：冷氣機
+class AirConditioner extends SmartDevice {
+    public AirConditioner(ISmartHomeMediator mediator) {
+        super(mediator);
+    }
+
+    public void turnOn() {
+        System.out.println("❄️ 冷氣機：自動開啟，並設定為 [強風降溫模式]");
+    }
+
+    public void turnOff() {
+        System.out.println("🔌 冷氣機：溫度適宜，自動關閉節能");
+    }
+}
+
+// 5. 智慧窗簾
+class SmartCurtain extends SmartDevice {
+    public SmartCurtain(ISmartHomeMediator mediator) {
+        super(mediator);
+    }
+
+    public void close() {
+        System.out.println("🪟 智慧窗簾：自動拉上 [遮擋強烈陽光]");
+        mediator.coordinate(this, "CURTAIN_CLOSED");
+    }
+
+    public void open() {
+        System.out.println("🪟 智慧窗簾：自動拉開 [引入自然光線]");
+        mediator.coordinate(this, "CURTAIN_OPENED");
+    }
+}
+
+// 6. 具體同儕類別：智慧燈泡
+class Light extends SmartDevice {
+    public Light(ISmartHomeMediator mediator) {
+        super(mediator);
+    }
+
+    public void turnOn() {
+        System.out.println("💡 智慧燈泡：偵測到光線變暗，自動開啟照明");
+    }
+
+    public void turnOff() {
+        System.out.println("💡 智慧燈泡：自然光充足，自動關閉以省電");
+    }
+}
+
+// 7. 具體中介者實作：集中調度所有智慧裝置的自動化聯動邏輯
+class SmartHomeMediatorImpl implements ISmartHomeMediator {
+    private TemperatureSensor sensor;
+    private AirConditioner ac;
+    private SmartCurtain curtain;
+    private Light light;
+
+    // 設定所管理的所有智慧裝置
+    public void setDevices(TemperatureSensor sensor, AirConditioner ac, SmartCurtain curtain, Light light) {
+        this.sensor = sensor;
+        this.ac = ac;
+        this.curtain = curtain;
+        this.light = light;
+    }
+
+    @Override
+    public void coordinate(SmartDevice device, String event) {
+        System.out.println("»» [中介者收到事件] 來自 " + device.getClass().getSimpleName() + " 觸發了 \"" + event + "\"");
+        
+        switch (event) {
+            case "HIGH_TEMP":
+                // 1. 開啟冷氣
+                ac.turnOn();
+                // 2. 自動關閉窗簾遮陽
+                curtain.close();
+                break;
+                
+            case "LOW_TEMP":
+                // 1. 關閉冷氣
+                ac.turnOff();
+                break;
+                
+            case "CURTAIN_CLOSED":
+                // 窗簾拉上了，自動開啟電燈補光
+                light.turnOn();
+                break;
+                
+            case "CURTAIN_OPENED":
+                // 窗簾拉開了，自動關閉電燈節能
+                light.turnOff();
+                break;
+                
+            default:
+                System.out.println("未定義的聯動事件。");
+        }
+    }
+}
+
+// 8. 測試主程式
+public class SmartHomeDemo {
+    public static void main(String[] args) {
+        // 建立中介者
+        SmartHomeMediatorImpl mediator = new SmartHomeMediatorImpl();
+
+        // 建立同儕裝置並傳入中介者
+        TemperatureSensor sensor = new TemperatureSensor(mediator);
+        AirConditioner ac = new AirConditioner(mediator);
+        SmartCurtain curtain = new SmartCurtain(mediator);
+        Light light = new Light(mediator);
+
+        // 向中介者註冊這些裝置
+        mediator.setDevices(sensor, ac, curtain, light);
+
+        System.out.println("=== 模擬情境一：夏日午後，室溫飆高至 33°C ===");
+        sensor.checkTemperature(33.0f);
+
+        System.out.println("\n=== 模擬情境二：傍晚天氣變涼，室溫降至 21°C ===");
+        sensor.checkTemperature(21.0f);
+        
+        System.out.println("\n=== 模擬情境三：手動開啟窗簾引入午後自然光 ===");
+        curtain.open();
+    }
 }
 ```
 

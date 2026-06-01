@@ -224,6 +224,7 @@ TCP（傳輸控制協定）通訊過程中，連接的建立與斷開包含複�
 
 ```mermaid
 stateDiagram-v2
+    direction LR
     [*] --> Closed
     Closed --> Listen : open()
     Listen --> SyncReceived : sync()
@@ -235,84 +236,7 @@ stateDiagram-v2
 ![](img/ch23_state_tcp.png)
 *FIG: TCP 連接狀態之 State 模式設計*
 
-#### 1. 抽象 TCPState
-```java
-public abstract class TCPState {
-    public abstract void open(TCPConnection c);
-    public abstract void sync(TCPConnection c);
-    public abstract void ack(TCPConnection c);
-}
-```
-
-#### 2. 具體狀態實作
-```java
-// Closed 狀態
-public class TCPClosed extends TCPState {
-    @Override
-    public void open(TCPConnection c) {
-        System.out.println("Opening connection -> Entering Listen State.");
-        c.setState(new TCPListen());
-    }
-    @Override
-    public void sync(TCPConnection c) {
-        System.out.println("Error: Cannot sync in Closed state.");
-    }
-    @Override
-    public void ack(TCPConnection c) {
-        System.out.println("Error: Cannot ack in Closed state.");
-    }
-}
-
-// Listen 狀態
-public class TCPListen extends TCPState {
-    @Override
-    public void open(TCPConnection c) {
-        System.out.println("Already open and listening.");
-    }
-    @Override
-    public void sync(TCPConnection c) {
-        System.out.println("Received SYN packet -> Entering Sync-Received State.");
-        c.setState(new TCPSyncReceived());
-    }
-    @Override
-    public void ack(TCPConnection c) {
-        System.out.println("Error: Awaiting SYN before ACK.");
-    }
-}
-
-// SyncReceived 狀態
-public class TCPSyncReceived extends TCPState {
-    @Override
-    public void open(TCPConnection c) {
-        System.out.println("Connection already open.");
-    }
-    @Override
-    public void sync(TCPConnection c) {
-        System.out.println("Already received SYN. Waiting for ACK.");
-    }
-    @Override
-    public void ack(TCPConnection c) {
-        System.out.println("ACK received -> Connection Established!");
-        c.setState(new TCPEstablished());
-    }
-}
-
-// Established 狀態
-public class TCPEstablished extends TCPState {
-    @Override
-    public void open(TCPConnection c) {
-        System.out.println("Connection already established.");
-    }
-    @Override
-    public void sync(TCPConnection c) {
-        System.out.println("Re-sync ignored. Connection is active.");
-    }
-    @Override
-    public void ack(TCPConnection c) {
-        System.out.println("ACK processed in active session.");
-    }
-}
-```
+[src/TCPConnectionDemo.java](src/TCPConnectionDemo.java)
 
 透過將這些狀態的轉移封裝在各狀態類別中，`TCPConnection`（主類別）的設計變得極為乾淨，只需要負責委託即可，大幅降低了維護難度。
 
@@ -474,6 +398,7 @@ public class MarioStateExample {
         System.out.println("當前狀態：" + mario.getStateName()); // Small Mario
     }
 }
+```
 
 ```mermaid
 classDiagram

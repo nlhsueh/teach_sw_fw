@@ -583,24 +583,24 @@ public class MarioContext {
     - C) Context 
     - D) Strategy	
 
-	<details>
-	<summary>解答</summary>
-	
-	**C) Context**
-	說明：Context 類別負責維護代表當前狀態的 `State` 物件欄位，並在需要時提供 `setState()` 供外部或內部動態變更狀態。
-	</details>
+<details>
+<summary>解答</summary>
+
+**C) Context**
+說明：Context 類別負責維護代表當前狀態的 `State` 物件欄位，並在需要時提供 `setState()` 供外部或內部動態變更狀態。
+</details>
 
 2. 為何具體狀態的事件處理方法（例如 `State.op1(Context c)`）通常需要將 Context 物件作為參數傳入？
     - A) State 需要直接讀寫 Context 內所有的私有成員變數
     - B) State 需要在執行完畢後呼叫 Context 的 `setState()` 來設定新的狀態
     - C) State 必須維持對 Client 端的參考以回報進度
 
-	<details>
-	<summary>解答</summary>
-	
-	**B) State 需要在執行完畢後呼叫 Context 的 `setState()` 來設定新的狀態**
-	說明：若狀態轉換決策交給 State 物件，State 必須持有 Context 的參考，才能呼叫 `c.setState(newNextState)` 完成狀態移轉。
-	</details>
+<details>
+<summary>解答</summary>
+
+**B) State 需要在執行完畢後呼叫 Context 的 `setState()` 來設定新的狀態**
+說明：若狀態轉換決策交給 State 物件，State 必須持有 Context 的參考，才能呼叫 `c.setState(newNextState)` 完成狀態移轉。
+</details>
 
 3. 關於 State 設計樣式，下列何者描述**錯誤**？
     - A) Context 把改變物件狀態的具體動作延遲並委託給 State 物件處理
@@ -608,12 +608,12 @@ public class MarioContext {
     - C) 為了保護資料，Context 絕不能暴露自己的 setState() 方法給狀態物件呼叫
     - D) 若有 $n$ 種可能狀態，系統中通常會建立 $n$ 個具體的 ConcreteState 類別
 
-	<details>
-	<summary>解答</summary>
-	
-	**C) 為了保護資料，Context 絕不能暴露自己的 setState() 方法給狀態物件呼叫**
-	說明：C 是錯誤的。在由 State 決定轉移的方案中，Context 必須提供 `setState()` 方法（通常具有 package 或 public 權限），好讓具體狀態類別能執行狀態切換。
-	</details>
+<details>
+<summary>解答</summary>
+
+**C) 為了保護資料，Context 絕不能暴露自己的 setState() 方法給狀態物件呼叫**
+說明：C 是錯誤的。在由 State 決定轉移的方案中，Context 必須提供 `setState()` 方法（通常具有 package 或 public 權限），好讓具體狀態類別能執行狀態切換。
+</details>
 
 ---
 

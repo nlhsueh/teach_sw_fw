@@ -691,24 +691,24 @@ public class OrderProcessingChainClient {
     - C) 把事件處理的責任順序是先定義好，以便後續的層層處理。
     - D) 設定一個事件的代理者，先由代理者處理，無法處理時在由真正的物件處理。
 
-    <details>
-    <summary>解答</summary>
-    
-    **B) 把事件的請求者與處理者抽離開來，降低彼此的耦合度。**
-    說明：請求者不需要知道具體是哪個處理者處理了請求，只需將請求發送到鏈上即可。
-    </details>
+<details>
+<summary>解答</summary>
+
+**B) 把事件的請求者與處理者抽離開來，降低彼此的耦合度。**
+說明：請求者不需要知道具體是哪個處理者處理了請求，只需將請求發送到鏈上即可。
+</details>
 
 2. 關於 CoR 以下何者錯誤？
     - A) 每一個 Handler 生成時都需要指定一個後繼者。
     - B) 所有的 Hanlder 會實作同一個介面。
     - C) 不同型態的 Handler 不可相互成為後繼者。
 
-    <details>
-    <summary>解答</summary>
-    
-    **C) 不同型態的 Handler 不可相互成為後繼者。**
-    說明：只要它們實作相同的 Handler 介面，不同型態（具體類別）的 Handler 就可以互相設定為後繼者。
-    </details>
+<details>
+<summary>解答</summary>
+
+**C) 不同型態的 Handler 不可相互成為後繼者。**
+說明：只要它們實作相同的 Handler 介面，不同型態（具體類別）的 Handler 就可以互相設定為後繼者。
+</details>
 
 3. CoR 和 Composite 看起來都一樣，都是有一個繼承、一個包含，兩者有何差異？
 

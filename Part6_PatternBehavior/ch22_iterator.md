@@ -289,12 +289,12 @@ list.forEach(item -> System.out.println(item));
     - C) 可以避免暴露集合物件內部結構，降低耦合，並保護集合內容
     - D) 避免傳遞過多的資料，速度較快
 
-	<details>
-	<summary>解答</summary>
-	
-	**C) 可以避免暴露集合物件內部結構，降低耦合，並保護集合內容**
-	說明：透過 Iterator 可以依序取得集合內的元素，而不必暴露集合物件的內部結構，這樣可以保護集合內的資料不被外部直接存取或損壞，實現了高內聚、低耦合。
-	</details>
+<details>
+<summary>解答</summary>
+
+**C) 可以避免暴露集合物件內部結構，降低耦合，並保護集合內容**
+說明：透過 Iterator 可以依序取得集合內的元素，而不必暴露集合物件的內部結構，這樣可以保護集合內的資料不被外部直接存取或損壞，實現了高內聚、低耦合。
+</details>
 	
 2. Polymorphic Iterator (多型瀏覽器) 是結合哪兩個設計樣式？(選兩個)
     - A) Iterator 樣式
@@ -302,12 +302,12 @@ list.forEach(item -> System.out.println(item));
     - C) Decorator (裝飾者) 樣式
     - D) Factory Method (工廠方法) 樣式
 
-	<details>
-	<summary>解答</summary>
-	
-	**A) Iterator 樣式 與 D) Factory Method 樣式**
-	說明：Polymorphic Iterator 通常會用 Factory Method 模式，讓不同的 ConcreteAggregate (具體複合物件) 動態決定並產生其專屬的 ConcreteIterator。
-	</details>
+<details>
+<summary>解答</summary>
+
+**A) Iterator 樣式 與 D) Factory Method 樣式**
+說明：Polymorphic Iterator 通常會用 Factory Method 模式，讓不同的 ConcreteAggregate (具體複合物件) 動態決定並產生其專屬的 ConcreteIterator。
+</details>
 
 3. 下列的程式會計算一群學生的平均成績，你覺得有什麼設計問題？可以怎麼改善？
 ```java
@@ -323,13 +323,13 @@ class GradeComputer {
 }
 ```
 
-	<details>
-	<summary>解答</summary>
-	
-	**設計缺點**：`computeAverage` 參數直接要求傳入 `ArrayList<Student>`，這讓 `GradeComputer` 與具體的資料儲存結構 `ArrayList` 強烈耦合。若未來因為效能或功能需求，學校資料庫將學生的儲存方式改為陣列（`Student[]`）或鏈結串列（`LinkedList`），這段程式就必須強迫修改。
-	
-	**改善方案**：將參數型態改為 `Iterator<Student>`。這樣一來，`GradeComputer` 只需要知道「如何從 Iterator 一個個拿到學生」，而完全不需要知道這些學生底層是被存在哪種容器中，從而達成解耦。
-	</details>
+<details>
+<summary>解答</summary>
+
+**設計缺點**：`computeAverage` 參數直接要求傳入 `ArrayList<Student>`，這讓 `GradeComputer` 與具體的資料儲存結構 `ArrayList` 強烈耦合。若未來因為效能或功能需求，學校資料庫將學生的儲存方式改為陣列（`Student[]`）或鏈結串列（`LinkedList`），這段程式就必須強迫修改。
+
+**改善方案**：將參數型態改為 `Iterator<Student>`。這樣一來，`GradeComputer` 只需要知道「如何從 Iterator 一個個拿到學生」，而完全不需要知道這些學生底層是被存在哪種容器中，從而達成解耦。
+</details>
 
 4. 同上，如果我們改用泛型的 `Iterator<Student>` 來實作，以下方法的 `?` 區塊應該如何編寫？
 ```java
@@ -338,9 +338,9 @@ double getAverage(Iterator<Student> iterator) {
 }   
 ```
 
-	<details>
-	<summary>解答</summary>
-	
+<details>
+<summary>解答</summary>
+
 ```java
     int sum = 0;
     int count = 0;
@@ -350,7 +350,7 @@ double getAverage(Iterator<Student> iterator) {
     }
     return count == 0 ? 0.0 : (double) sum / count;
 ```
-	</details>
+</details>
 
 [src/IteratorQuestion.java](src/IteratorQuestion.java)
 

@@ -466,9 +466,6 @@ public class MarioContext {
 ```java
 public class MarioStateExample {
     public static void main(String[] args) {
-        MarioContext mario = new MarioContext();
-        System.out.println("當前狀態：" + mario.getStateName()); // Small Mario
-        
         mario.obtainMushroom();   // 吃香菇
         mario.obtainFireFlower(); // 吃火焰花
         System.out.println("當前狀態：" + mario.getStateName()); // Fire Mario
@@ -477,7 +474,6 @@ public class MarioStateExample {
         System.out.println("當前狀態：" + mario.getStateName()); // Small Mario
     }
 }
-```
 
 ```mermaid
 classDiagram
@@ -629,7 +625,13 @@ public class MarioContext {
 ### EX02 三狀態動態切換系統
 有一主類別物件 `A` (即 Context)，它的行為取決於目前擁有的三個狀態：`s1`, `s2`, `s3`。這三個狀態遇到事件行為時的轉移規則如下圖所示：
 
-![](img/ch23_state_ex.png)
+```mermaid
+stateDiagram-v2
+    [*] --> s1
+    s1 --> s2 : change()
+    s2 --> s3 : change()
+    s3 --> s1 : change()
+```
 *FIG: 狀態變更轉移圖*
 
 #### 實作要求
@@ -643,9 +645,239 @@ public class MarioContext {
 1. 定義一個 `AState` 介面，宣告變更行為 `void change(StateContext ctx)`。
 2. 實作三個狀態類別：
    - `S1State`：在 `change` 方法中呼叫 `ctx.setState(new S2State())`。
-   - `S2State`：在 `change` 方法中呼叫 `ctx.setState(new S3State())`。
+   - `S2State`：在 `change` 方法中呼叫 `ctx.setState(new S3State())`.
    - `S3State`：在 `change` 方法中呼叫 `ctx.setState(new S1State())`。
 3. 實作 `StateContext` 類別，維護一個指向當前狀態的參考，並提供一個執行變更的 `request()` 方法（委託給 `state.change(this)`）。
 4. 在主測試類別中連續呼叫三次 `request()`，印出每次狀態變更的歷程，確認狀態能正確認著 $s_1 \rightarrow s_2 \rightarrow s_3 \rightarrow s_1$ 循環移轉。
+
+</details>
+
+---
+
+### EX03 智慧型自動販賣機系統 (Smart Vending Machine)
+
+我們想要設計一個自動販賣機控制系統，販賣機的行為與狀態有密切的關聯。販賣機具備四種狀態與四個事件：
+
+#### 狀態定義：
+1. `NoMoneyState`（無硬幣）：等待顧客投幣。
+2. `HasMoneyState`（有硬幣）：顧客已投幣，等待顧客轉動把手或選擇退幣。
+3. `SoldState`（售出商品）：顧客轉動把手後，販賣機正在發放商品。
+4. `SoldOutState`（商品售罄）：販賣機內所有商品已售完。
+
+#### 動作事件轉移規則：
+* **投幣（`insertMoney`）**：
+  * 在 `NoMoneyState` 下：接受投幣，狀態移轉至 `HasMoneyState`。
+  * 在其他狀態下：退回硬幣，並提示目前無法投幣。
+* **退幣（`rejectMoney`）**：
+  * 在 `HasMoneyState` 下：退回硬幣，狀態移轉至 `NoMoneyState`。
+  * 在其他狀態下：提示無法退幣。
+* **轉動把手（`turnCrank`）**：
+  * 在 `HasMoneyState` 下：準備出貨，狀態移轉至 `SoldState`。
+  * 在其他狀態下：提示請先投幣或商品已售罄。
+* **發放商品（`dispense`）**：
+  * 在 `SoldState` 下：發放一件商品，商品數量減一。若庫存仍大於 0，狀態回到 `NoMoneyState`；若庫存變為 0，則狀態移轉至 `SoldOutState`。
+
+#### 實作引導與程式框架
+
+請補完以下 Java 程式碼中的 `TODO` 區塊，完成自動販賣機的狀態模式設計：
+
+```java
+// 1. 抽象狀態介面
+interface VendingState {
+    void insertMoney(VendingMachine machine);
+    void rejectMoney(VendingMachine machine);
+    void turnCrank(VendingMachine machine);
+    void dispense(VendingMachine machine);
+}
+
+// 2. 具體狀態：無硬幣狀態 (NoMoneyState)
+class NoMoneyState implements VendingState {
+    @Override
+    public void insertMoney(VendingMachine machine) {
+        System.out.println("🪙 您投入了一枚硬幣。");
+        // [TODO: 1. 將販賣機狀態切換至 HasMoneyState]
+    }
+
+    @Override
+    public void rejectMoney(VendingMachine machine) {
+        System.out.println("❌ 您尚未投幣，無法退款。");
+    }
+
+    @Override
+    public void turnCrank(VendingMachine machine) {
+        System.out.println("❌ 請先投幣再轉動把手。");
+    }
+
+    @Override
+    public void dispense(VendingMachine machine) {
+        System.out.println("❌ 請先投幣。");
+    }
+}
+
+// 3. 具體狀態：有硬幣狀態 (HasMoneyState)
+class HasMoneyState implements VendingState {
+    @Override
+    public void insertMoney(VendingMachine machine) {
+        System.out.println("❌ 您已經投過幣了，請勿重複投幣。");
+    }
+
+    @Override
+    public void rejectMoney(VendingMachine machine) {
+        System.out.println("🪙 退回硬幣。");
+        // [TODO: 2. 退幣後將狀態切換回 NoMoneyState]
+    }
+
+    @Override
+    public void turnCrank(VendingMachine machine) {
+        System.out.println("🌀 您轉動了把手...");
+        // [TODO: 3. 轉動把手後將狀態切換至 SoldState]
+    }
+
+    @Override
+    public void dispense(VendingMachine machine) {
+        System.out.println("❌ 必須先轉動把手才能發放商品。");
+    }
+}
+
+// 4. 具體狀態：售出商品狀態 (SoldState)
+class SoldState implements VendingState {
+    @Override
+    public void insertMoney(VendingMachine machine) {
+        System.out.println("❌ 正在出貨中，請稍後再投幣。");
+    }
+
+    @Override
+    public void rejectMoney(VendingMachine machine) {
+        System.out.println("❌ 已經轉動把手，無法退款。");
+    }
+
+    @Override
+    public void turnCrank(VendingMachine machine) {
+        System.out.println("❌ 正在出貨中，重複轉動把手無效。");
+    }
+
+    @Override
+    public void dispense(VendingMachine machine) {
+        machine.releaseBall();
+        if (machine.getCount() > 0) {
+            // [TODO: 4. 若仍有存貨，將狀態切換回 NoMoneyState]
+        } else {
+            System.out.println("⚠️ 喔不！商品售罄了！");
+            // [TODO: 5. 若無存貨，將狀態切換至 SoldOutState]
+        }
+    }
+}
+
+// 5. 具體狀態：商品售罄狀態 (SoldOutState)
+class SoldOutState implements VendingState {
+    @Override
+    public void insertMoney(VendingMachine machine) {
+        System.out.println("❌ 商品已售罄，退回您的硬幣。");
+    }
+
+    @Override
+    public void rejectMoney(VendingMachine machine) {
+        System.out.println("❌ 您並未投幣。");
+    }
+
+    @Override
+    public void turnCrank(VendingMachine machine) {
+        System.out.println("❌ 商品已售罄，轉動把手無效。");
+    }
+
+    @Override
+    public void dispense(VendingMachine machine) {
+        System.out.println("❌ 商品已售罄。");
+    }
+}
+
+// 6. VendingMachine (環境情境類別)
+class VendingMachine {
+    private VendingState noMoneyState;
+    private VendingState hasMoneyState;
+    private VendingState soldState;
+    private VendingState soldOutState;
+
+    private VendingState currentState;
+    private int count = 0; // 販賣機內商品庫存
+
+    public VendingMachine(int numberOfProducts) {
+        noMoneyState = new NoMoneyState();
+        hasMoneyState = new HasMoneyState();
+        soldState = new SoldState();
+        soldOutState = new SoldOutState();
+
+        this.count = numberOfProducts;
+        if (numberOfProducts > 0) {
+            currentState = noMoneyState;
+        } else {
+            currentState = soldOutState;
+        }
+    }
+
+    public void insertMoney() {
+        currentState.insertMoney(this);
+    }
+
+    public void rejectMoney() {
+        currentState.rejectMoney(this);
+    }
+
+    public void turnCrank() {
+        currentState.turnCrank(this);
+        // 轉動把手成功後，自動發放商品
+        currentState.dispense(this);
+    }
+
+    public void setState(VendingState state) {
+        this.currentState = state;
+    }
+
+    public void releaseBall() {
+        System.out.println("🥤 一罐飲料滾落出貨口...");
+        if (count != 0) {
+            count--;
+        }
+    }
+
+    public int getCount() { return count; }
+    
+    // Getters for States
+    public VendingState getNoMoneyState() { return noMoneyState; }
+    public VendingState getHasMoneyState() { return hasMoneyState; }
+    public VendingState getSoldState() { return soldState; }
+    public VendingState getSoldOutState() { return soldOutState; }
+}
+```
+
+<details>
+<summary>練習參考答案與實作提示</summary>
+
+在各個具體狀態中，完成以下對應的狀態移轉：
+
+1. 在 `NoMoneyState.insertMoney` 中：
+```java
+machine.setState(machine.getHasMoneyState());
+```
+
+2. 在 `HasMoneyState.rejectMoney` 中：
+```java
+machine.setState(machine.getNoMoneyState());
+```
+
+3. 在 `HasMoneyState.turnCrank` 中：
+```java
+machine.setState(machine.getSoldState());
+```
+
+4. 在 `SoldState.dispense` 中：
+```java
+machine.setState(machine.getNoMoneyState());
+```
+
+5. 在 `SoldState.dispense` 的 `else` 分支中：
+```java
+machine.setState(machine.getSoldOutState());
+```
 
 </details>

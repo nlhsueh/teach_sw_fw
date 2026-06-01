@@ -284,10 +284,10 @@ list.forEach(item -> System.out.println(item));
 ## 22.6 隨堂測驗
 
 1. 要取得一個集合物件內所有物件，為何不直接從此集合物件取值？還需要先取得其瀏覽物件 (Iterator)？
-	A) 瀏覽物件的功能較為強大
-	B) 瀏覽物件是 View，透過如此可以將 Model 與 View 分離
-	C) 可以避免暴露集合物件內部結構，降低耦合，並保護集合內容
-	D) 避免傳遞過多的資料，速度較快
+    - A) 瀏覽物件的功能較為強大
+    - B) 瀏覽物件是 View，透過如此可以將 Model 與 View 分離
+    - C) 可以避免暴露集合物件內部結構，降低耦合，並保護集合內容
+    - D) 避免傳遞過多的資料，速度較快
 
 	<details>
 	<summary>解答</summary>
@@ -297,10 +297,10 @@ list.forEach(item -> System.out.println(item));
 	</details>
 	
 2. Polymorphic Iterator (多型瀏覽器) 是結合哪兩個設計樣式？(選兩個)
-	A) Iterator 樣式
-	B) Mediator (中介者) 樣式
-	C) Decorator (裝飾者) 樣式
-	D) Factory Method (工廠方法) 樣式
+    - A) Iterator 樣式
+    - B) Mediator (中介者) 樣式
+    - C) Decorator (裝飾者) 樣式
+    - D) Factory Method (工廠方法) 樣式
 
 	<details>
 	<summary>解答</summary>

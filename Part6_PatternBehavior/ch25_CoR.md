@@ -686,10 +686,10 @@ public class OrderProcessingChainClient {
 ## 隨堂測驗
 
 1. Chain of responsibility 的目的為何？
-    A) 把物件串連起來，生成時一起生成。
-    B) 把事件的請求者與處理者抽離開來，降低彼此的耦合度。
-    C) 把事件處理的責任順序是先定義好，以便後續的層層處理。
-    D) 設定一個事件的代理者，先由代理者處理，無法處理時在由真正的物件處理。
+    - A) 把物件串連起來，生成時一起生成。
+    - B) 把事件的請求者與處理者抽離開來，降低彼此的耦合度。
+    - C) 把事件處理的責任順序是先定義好，以便後續的層層處理。
+    - D) 設定一個事件的代理者，先由代理者處理，無法處理時在由真正的物件處理。
 
     <details>
     <summary>解答</summary>
@@ -699,9 +699,9 @@ public class OrderProcessingChainClient {
     </details>
 
 2. 關於 CoR 以下何者錯誤？
-	A) 每一個 Handler 生成時都需要指定一個後繼者。
-	B) 所有的 Hanlder 會實作同一個介面。
-	C) 不同型態的 Handler 不可相互成為後繼者。
+    - A) 每一個 Handler 生成時都需要指定一個後繼者。
+    - B) 所有的 Hanlder 會實作同一個介面。
+    - C) 不同型態的 Handler 不可相互成為後繼者。
 
     <details>
     <summary>解答</summary>

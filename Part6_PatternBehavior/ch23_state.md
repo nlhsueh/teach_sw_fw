@@ -578,10 +578,10 @@ public class MarioContext {
 ## 23.7 隨堂測驗
 
 1. 在 State 設計樣式中，主要負責保存當前物件狀態的類別角色是：
-	A) ConcreteState 
-	B) Observer 
-	C) Context 
-	D) Strategy	
+    - A) ConcreteState 
+    - B) Observer 
+    - C) Context 
+    - D) Strategy	
 
 	<details>
 	<summary>解答</summary>
@@ -591,9 +591,9 @@ public class MarioContext {
 	</details>
 
 2. 為何具體狀態的事件處理方法（例如 `State.op1(Context c)`）通常需要將 Context 物件作為參數傳入？
-	A) State 需要直接讀寫 Context 內所有的私有成員變數
-	B) State 需要在執行完畢後呼叫 Context 的 `setState()` 來設定新的狀態
-	C) State 必須維持對 Client 端的參考以回報進度
+    - A) State 需要直接讀寫 Context 內所有的私有成員變數
+    - B) State 需要在執行完畢後呼叫 Context 的 `setState()` 來設定新的狀態
+    - C) State 必須維持對 Client 端的參考以回報進度
 
 	<details>
 	<summary>解答</summary>
@@ -603,10 +603,10 @@ public class MarioContext {
 	</details>
 
 3. 關於 State 設計樣式，下列何者描述**錯誤**？
-	A) Context 把改變物件狀態的具體動作延遲並委託給 State 物件處理
-	B) State 介面中宣告的方法通常為那些「隨狀態不同而有不同表現行為」的方法 
-	C) 為了保護資料，Context 絕不能暴露自己的 setState() 方法給狀態物件呼叫
-	D) 若有 $n$ 種可能狀態，系統中通常會建立 $n$ 個具體的 ConcreteState 類別
+    - A) Context 把改變物件狀態的具體動作延遲並委託給 State 物件處理
+    - B) State 介面中宣告的方法通常為那些「隨狀態不同而有不同表現行為」的方法 
+    - C) 為了保護資料，Context 絕不能暴露自己的 setState() 方法給狀態物件呼叫
+    - D) 若有 $n$ 種可能狀態，系統中通常會建立 $n$ 個具體的 ConcreteState 類別
 
 	<details>
 	<summary>解答</summary>

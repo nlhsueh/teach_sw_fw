@@ -887,10 +887,10 @@ public class SmartHomeDemo {
 ## 24.7 隨堂測驗
 
 1. 下列關於 Mediator 設計樣式核心目的之描述，何者最為正確？
-	A) 作為一群物件溝通的集中橋樑，藉此降低彼此直接依賴的耦合度
-	B) 作為代理（Proxy）物件，藉此降低網路負擔，提昇快取效能
-	C) 透過單向訂閱機制，當主體狀態改變時，自動發出廣播通知
-	D) 統整相關物件的介面為唯一，藉此隱藏底層物件的複雜度		
+    - A) 作為一群物件溝通的集中橋樑，藉此降低彼此直接依賴的耦合度
+    - B) 作為代理（Proxy）物件，藉此降低網路負擔，提昇快取效能
+    - C) 透過單向訂閱機制，當主體狀態改變時，自動發出廣播通知
+    - D) 統整相關物件的介面為唯一，藉此隱藏底層物件的複雜度		
 
 	<details>
 	<summary>解答</summary>
@@ -900,9 +900,9 @@ public class SmartHomeDemo {
 	</details>
 
 2. 在 Mediator 設計樣式中，Colleague（同事物件）與 Mediator 之間的導向導航關係通常是？
-	A) 單向導航：只有 Mediator 知道 Colleague 們，Colleague 們不知道 Mediator 的存在
-	B) 雙向導航：Mediator 維護所有 Colleagues 的參考；Colleagues 也持有 Mediator 參考以便在事件發生時通知它
-	C) 互不導航：兩者只透過靜態常數通訊
+    - A) 單向導航：只有 Mediator 知道 Colleague 們，Colleague 們不知道 Mediator 的存在
+    - B) 雙向導航：Mediator 維護所有 Colleagues 的參考；Colleagues 也持有 Mediator 參考以便在事件發生時通知它
+    - C) 互不導航：兩者只透過靜態常數通訊
 
 	<details>
 	<summary>解答</summary>
@@ -912,10 +912,10 @@ public class SmartHomeDemo {
 	</details>
 
 3. 機場的「航管塔台」指揮多架飛機安全起降，這與哪一個設計樣式的架構與思維最為契合？
-	A) Observer (觀察者樣式)
-	B) Facade (門面樣式)
-	C) Mediator (中介者樣式)
-	D) Chain of Responsibility (責任鏈樣式)
+    - A) Observer (觀察者樣式)
+    - B) Facade (門面樣式)
+    - C) Mediator (中介者樣式)
+    - D) Chain of Responsibility (責任鏈樣式)
 
 	<details>
 	<summary>解答</summary>
@@ -925,9 +925,9 @@ public class SmartHomeDemo {
 	</details>
 
 4. 有關 Mediator（中介者）與 Facade（門面）設計樣式的比較，下列描述何者**錯誤**？
-	A) Facade 主要是由外而內提供單向簡化介面；Mediator 則是多個內部同儕元件進行雙向通訊
-	B) 子系統內的類別一般不知道 Facade 的存在；但 Colleagues 必須明確知道 Mediator 的存在
-	C) 兩者雖然結構不同，但當 Mediator 太過龐大臃腫時，可將其重構為一個簡單的 Facade 樣式
+    - A) Facade 主要是由外而內提供單向簡化介面；Mediator 則是多個內部同儕元件進行雙向通訊
+    - B) 子系統內的類別一般不知道 Facade 的存在；但 Colleagues 必須明確知道 Mediator 的存在
+    - C) 兩者雖然結構不同，但當 Mediator 太過龐大臃腫時，可將其重構為一個簡單的 Facade 樣式
 
 	<details>
 	<summary>解答</summary>

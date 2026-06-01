@@ -320,6 +320,8 @@ public class TCPEstablished extends TCPState {
 
 ### 23.5.2 經典遊戲實例：瑪利歐 (Mario) 變身系統
 
+[src/MarioStateExample.java](src/MarioStateExample.java)
+
 經典遊戲《超級瑪利歐》中，瑪利歐的狀態會隨著吃到的寶物或受到的傷害而發生變身轉換，且不同狀態下的行為（如受到攻擊）有很大不同。
 
 #### 瑪利歐變身狀態移轉表
@@ -462,7 +464,7 @@ public class MarioContext {
 
 #### 4. 遊戲主程式與類別關係圖
 ```java
-public class Game {
+public class MarioStateExample {
     public static void main(String[] args) {
         MarioContext mario = new MarioContext();
         System.out.println("當前狀態：" + mario.getStateName()); // Small Mario

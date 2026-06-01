@@ -1,10 +1,75 @@
 # Ch25 綿綿不絕：Chain of Responsibility
 
-## 動機與目的
+## 25.1 目的與動機
 
 > 為了降低訊息傳送者與接收者之間的耦合力，讓超過一個以上的物件來處理訊息。訊息鏈會把請求訊息一直傳遞下去直到有物件處理它。
 
-*Avoid coupling the sender of a request to its receiver by giving more than one object a chance to handle the request. Chain the receiving objects and pass the request along the chain until an object handles it*
+> **設計樣式定義**
+> *Avoid coupling the sender of a request to its receiver by giving more than one object a chance to handle the request. Chain the receiving objects and pass the request along the chain until an object handles it.*
+> （透過給予多個物件處理請求的機會，以避免請求的發送者與接收者之間的緊密耦合。將接收物件連結成一條鏈，並沿著鏈傳遞該請求，直到有物件處理它為止。）
+
+### 25.1.1 核心思維：請求與處理的雙向解耦
+在許多應用系統中，客戶端（Client）發送的請求（或事件）可能需要多種不同層級或職責的角色來進行審查或處理。
+
+**責任鏈樣式 (Chain of Responsibility, CoR)** 的核心思想是：
+1. **單一入口與鏈式傳遞**：將所有潛在的處理者（Handlers）像「接力棒」一樣串聯成一條鏈。客戶端只需將請求提交給鏈的首端，無須關心後續是哪一個具體處理器執行了該業務。
+2. **動態表態與轉發**：鏈上的每一個處理器都包含對「下一個處理器（Successor）」的參考。當請求傳遞到某個處理器時，它會根據自身規則判斷是否能夠處理：
+   - 若能處理，則進行處理並決定是否終止傳遞。
+   - 若不能處理，則自動將請求傳交給下一個處理器（後繼者）。
+
+### 25.1.2 傳統設計的痛點：龐雜的條件分支與強耦合
+我們以一個企業的「費用報支審核系統（Expense Approval System）」為例。不同金額的報支單需要不同級別的主管審核：
+* 組長（Manager）：可審核 $\le \$1,000$ 的報支。
+* 處長（Director）：可審核 $\le \$5,000$ 的報支。
+* 副總（Vice President）：可審核 $\le \$20,000$ 的報支。
+* 總經理（CEO）：可審核 $>\$20,000$ 的報支。
+
+如果不使用責任鏈模式，傳統的結構化設計通常會在一處寫滿大量的條件判斷式：
+
+```java
+// 傳統無責任鏈設計：發送者與所有接收者強耦合
+class ExpenseReport {
+    private double amount;
+    private String purpose;
+
+    public ExpenseReport(double amount, String purpose) {
+        this.amount = amount;
+        this.purpose = purpose;
+    }
+
+    public double getAmount() { return amount; }
+    public String getPurpose() { return purpose; }
+}
+
+class ApprovalSystem {
+    private Manager manager = new Manager();
+    private Director director = new Director();
+    private VicePresident vp = new VicePresident();
+    private CEO ceo = new CEO();
+
+    public void processReport(ExpenseReport report) {
+        double amount = report.getAmount();
+        
+        // 龐大且難以維護的條件判斷分支
+        if (amount <= 1000) {
+            manager.approve(report);
+        } else if (amount <= 5000) {
+            director.approve(report);
+        } else if (amount <= 20000) {
+            vp.approve(report);
+        } else {
+            ceo.approve(report);
+        }
+    }
+}
+```
+
+#### 這樣設計的缺點：
+1. **違反開閉原則 (OCP)**：如果未來公司組織調整，要新增一個審核角色（例如「協理」），或者要調整審核額度限制，我們必須直接修改 `ApprovalSystem` 類別內的 `processReport` 核心判斷邏輯。這極易引入新的錯誤。
+2. **高度緊密耦合**：發送者（`ApprovalSystem`）必須明確知道、建立並參考所有的具體接收者類別（`Manager`、`Director` 等）。每個角色的變動都會直接影響到控制中心。
+3. **低重用性與職責不清**：審核邏輯與角色派送邏輯混雜在一起，各個主管類別無法被獨立重用，且違反了**單一職責原則 (SRP)**。
+
+---
 
 電腦機房常常會遇到很多異常現象：網路斷線了、Server 掛了、應用系統起不來、資料庫出現問題、被攻擊了等等事件。平時還好，同仁們都在，假日誰應該誰來處理呢？我們於是定下一個規則：通通給值班人員。於是所有的訊息都會到值班人員身上，但他並不是真正處理的人員，很多問題無法處理。當他無法處理時就往上回報給上面的上司，例如說是技術人員，技術人員無法處理時就往上報，可能是組長、然後是技術長、總經理等。
 
@@ -23,17 +88,68 @@ public boolean action(Event event, Object obj) {
 ```
 其中 super 就成為一個事件處理者的後繼者。
 
-## 結構與方法
+[gugu- `Chain of Responsibility`](https://refactoring.guru/design-patterns/chain-of-responsibility)
+
+## 25.2 結構與方法
 
 ![](https://hackmd.io/_uploads/HJ5s_yHEh.png)
+*FIG: CoR 設計樣式結構圖*
 
-FIG: CoR
+### 25.2.1 類別關係圖 (Mermaid)
 
-#### 參與者
+為了確保在沒有外部圖片加載時文件依然完備，以下是責任鏈設計樣式的通用類別圖與運作序列圖：
 
-- Client: 事件的請求者
-- Handler: 事件請求的統一介面。注意它會「包含」一個後繼者。
-- ConcreteHanlder: 具體的事件處理者，他會真的可以處理的事件進行處理，無法處理的轉移給後繼者處理。
+```mermaid
+classDiagram
+    class Client {
+    }
+    
+    class Handler {
+        <<abstract>>
+        -successor: Handler
+        +Handler(successor)
+        +handleRequest(request)
+    }
+    
+    class ConcreteHandlerA {
+        +handleRequest(request)
+    }
+    
+    class ConcreteHandlerB {
+        +handleRequest(request)
+    }
+    
+    Client --> Handler : sends request to
+    Handler --> Handler : successor (後繼者)
+    Handler <|-- ConcreteHandlerA
+    Handler <|-- ConcreteHandlerB
+```
+
+### 25.2.2 運作序列圖 (Sequence Diagram)
+
+當 `Client` 發送一個請求，而 `ConcreteHandlerA` 無法處理時，請求是如何沿著鏈遞移給 `ConcreteHandlerB` 的：
+
+```mermaid
+sequenceDiagram
+    actor Client
+    participant HA as ConcreteHandlerA
+    participant HB as ConcreteHandlerB
+    
+    Client->>HA: handleRequest(request)
+    Note over HA: 執行內部判斷：<br/>無法處理此請求
+    HA->>HB: handleRequest(request) (轉發給後繼者)
+    Note over HB: 執行內部判斷：<br/>可以處理此請求！
+    HB-->>HA: done
+    HA-->>Client: done
+```
+
+### 25.2.3 參與者角色與職責
+
+| 角色 | 英文名稱 | 職責與說明 |
+| :--- | :--- | :--- |
+| **客戶端** | `Client` | 建立請求，並將請求發送給鏈上的第一個具體處理器（`ConcreteHandler`），啟動處理流程。 |
+| **抽象處理器** | `Handler` | 定義處理請求的抽象介面。通常在此類別中維護一個指向後繼者（`successor`）的參考，並提供設定與取得後繼者的方法。 |
+| **具體處理器** | `ConcreteHandler` | 實作處理器介面。決定自己是否能夠處理該請求：<br/>1. 若可以處理，則進行處理。<br/>2. 若不能處理，則將請求轉發給它的後繼者（`successor`）。 |
 
 基本結構，針對一個問題來處理。
 
@@ -101,6 +217,18 @@ class Handler2 extends Handler {
 			super.handleRequest(x);
 	}
 }
+
+### 25.2.4 設計效益分析
+
+#### 🟢 優點
+* **降低耦合度**：請求的發送者無須知道是哪一個具體的接收者處理了請求，發送者與多個接收者之間實現了完全解耦。客戶端只需與鏈的首端交互即可。
+* **符合開閉原則 (OCP)**：可以在不修改客戶端或既有處理器的情況下，在執行期動態地新增、刪除或重新編排鏈中的處理順序與職責，具備極高的擴充彈性。
+* **簡化物件職責（符合 SRP）**：每個具體處理器只需關注自己本身所負責的處理邏輯與邊界，無法處理的直接委託 `super.handleRequest(x)` 轉交給後繼者，維持高度內聚。
+
+#### 🔴 缺點
+* **請求不保證被接收**：因為請求是沿著鏈遞移的，如果鏈的末端沒有妥善設定預設處理器（例如 fallback），請求可能會在走完鏈後被直接遺棄（Drop Out），無人處理。
+* **效能開銷與資源浪費**：如果鏈非常長，請求在鏈上層層傳遞會帶來一定的方法呼叫開銷。特別是當請求在鏈的最末端才被處理時，前面的節點判斷就形成了無謂的資源開銷。
+* **除錯難度較高**：由於控制流分散在各個處理器物件之間，在長鏈中追蹤與除錯請求的流轉路徑相對繁瑣。
 ```
 	
 但如果我們要處理的問題型態有很多種呢？該怎麼辦？
@@ -395,6 +523,18 @@ public class LoggerChainExample {
 **範例：訂單處理鏈**
 
 想像一個電子商務系統，其中訂單需要經過幾個處理步驟：庫存檢查、支付處理、發貨通知。
+
+#### 訂單處理流水線示意圖
+
+```mermaid
+graph LR
+    Start([Client 建立訂單]) --> IC[InventoryChecker<br/>庫存檢查]
+    IC -- 充足 --> PP[PaymentProcessor<br/>支付處理]
+    IC -- 不足 (終止) --> End1([訂單失敗])
+    PP -- 成功 --> SN[ShippingNotifier<br/>發貨通知]
+    PP -- 失敗 (終止) --> End2([訂單失敗])
+    SN --> End([完成訂單流程])
+```
 
 ```java
 // 1. 請求/上下文對象

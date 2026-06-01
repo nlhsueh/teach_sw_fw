@@ -622,39 +622,7 @@ public class MarioContext {
 
 ---
 
-### EX02 三狀態動態切換系統
-有一主類別物件 `A` (即 Context)，它的行為取決於目前擁有的三個狀態：`s1`, `s2`, `s3`。這三個狀態遇到事件行為時的轉移規則如下圖所示：
-
-```mermaid
-stateDiagram-v2
-    [*] --> s1
-    s1 --> s2 : change()
-    s2 --> s3 : change()
-    s3 --> s1 : change()
-```
-*FIG: 狀態變更轉移圖*
-
-#### 實作要求
-1. **條件式寫法 (非 State 模式)**：請在不使用 State 樣式的情況下，僅用 `if-else` 或 `switch` 在 `A` 類別內實作對應的狀態切換。
-2. **State 樣式實作 (可擴充設計)**：考慮到未來狀態個數可能動態增加或改變，請使用 **State 設計樣式**重構此系統。請實作 `State` 介面、`S1State`、`S2State`、`S3State` 類別以及 `Context` 類別，並撰寫一個主程式驗證連續呼叫狀態變更後的轉移結果。
-
-<details>
-<summary>練習引導與提示</summary>
-
-#### 步驟指引
-1. 定義一個 `AState` 介面，宣告變更行為 `void change(StateContext ctx)`。
-2. 實作三個狀態類別：
-   - `S1State`：在 `change` 方法中呼叫 `ctx.setState(new S2State())`。
-   - `S2State`：在 `change` 方法中呼叫 `ctx.setState(new S3State())`.
-   - `S3State`：在 `change` 方法中呼叫 `ctx.setState(new S1State())`。
-3. 實作 `StateContext` 類別，維護一個指向當前狀態的參考，並提供一個執行變更的 `request()` 方法（委託給 `state.change(this)`）。
-4. 在主測試類別中連續呼叫三次 `request()`，印出每次狀態變更的歷程，確認狀態能正確認著 $s_1 \rightarrow s_2 \rightarrow s_3 \rightarrow s_1$ 循環移轉。
-
-</details>
-
----
-
-### EX03 智慧型自動販賣機系統 (Smart Vending Machine)
+### EX02 智慧型自動販賣機系統 (Smart Vending Machine)
 
 我們想要設計一個自動販賣機控制系統，販賣機的行為與狀態有密切的關聯。販賣機具備四種狀態與四個事件：
 

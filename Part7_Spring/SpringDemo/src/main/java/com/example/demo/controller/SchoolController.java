@@ -12,15 +12,6 @@ import java.util.Map;
 @RequestMapping("/api/school")
 public class SchoolController {
 
-    /**
-     * [Design Pattern / Principle 應用說明]
-     * 1. 相依反轉原則 (DIP): 這裡透過 @Autowired 實現相依注入 (DI)。
-     *    - 角色: 高階模組 (此 Controller) 相依於低階模組 (SchoolService)。
-     *    - 教學提示: 目前是直接相依於具體類別，若能改為相依於介面（如 SchoolOperations），則能更完美地符合 DIP。
-     * 2. 工廠方法模式 (Factory Method): 當 Spring 看到 @Autowired 時，底層會透過 BeanFactory 
-     *    這個「工廠」來負責尋找、實例化並返回對應的物件。
-     *    - 角色: 客戶端 (此 Controller) 透過工廠 (Spring 容器) 取得產品 (SchoolService)。
-     */
     @Autowired
     private SchoolService schoolService;
 

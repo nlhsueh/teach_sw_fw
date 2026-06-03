@@ -9,16 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-/**
- * [Design Pattern / Principle 應用說明]
- * 1. 單一職責原則 (SRP): 此類別目前同時處理了學生、教師、課程的管理，以及成績計算和 DTO 轉換。
- * - 教學提示: 這違反了 SRP（一個類別有太多改變的理由）。在實際專案重構時，應將其拆分為
- * StudentService、CourseService 等專職類別。
- * 2. 單例模式 (Singleton): 類別上的 @Service 註解告訴 Spring 將其管理為單例。
- * - 角色: Concrete Component (在 Spring 容器中作為唯一實例存在)。
- * - 提示: 由於此類別內部持有了記憶體內的資料（如 students, courses 等 Map），全系統必須共用同一份資料來源，因此這裡作為
- * Singleton 是完全正確且必要的設計。
- */
 @Service
 public class SchoolService {
     private final School school = new School("Spring University");
@@ -40,7 +30,7 @@ public class SchoolService {
         Teacher bob = new Teacher("T001", "Dr. Bob", "CS");
         Teacher alice = new Teacher("T002", "Prof. Alice", "EE");
         Teacher charlie = new Teacher("T003", "Dr. Charlie", "Business");
-
+        
         for (Teacher t : List.of(bob, alice, charlie)) {
             teachers.put(t.getMemberId(), t);
         }
@@ -53,11 +43,11 @@ public class SchoolService {
         Course db = new Course("CS102", "Databases", 3);
         Course circuit = new Course("EE201", "Circuit Analysis", 4);
         Course econ = new Course("BIZ301", "Microeconomics", 3);
-
+        
         for (Course c : List.of(oop, db, circuit, econ)) {
             courses.put(c.getCourseId(), c);
         }
-
+        
         cs.addCourse(oop);
         cs.addCourse(db);
         ee.addCourse(circuit);
@@ -74,7 +64,7 @@ public class SchoolService {
         Student jane = new Student("S002", "Jane Smith", 2);
         Student mike = new Student("S003", "Mike Ross", 1);
         Student sarah = new Student("S004", "Sarah Connor", 3);
-
+        
         for (Student s : List.of(john, jane, mike, sarah)) {
             students.put(s.getMemberId(), s);
         }
@@ -83,14 +73,14 @@ public class SchoolService {
         john.enrollCourse(oop);
         john.enrollCourse(db);
         bob.assignGrade(john, oop, 88);
-
+        
         jane.enrollCourse(oop);
         jane.enrollCourse(circuit);
         bob.assignGrade(jane, oop, 95);
-
+        
         mike.enrollCourse(econ);
         charlie.assignGrade(mike, econ, 78);
-
+        
         sarah.enrollCourse(db);
         sarah.enrollCourse(circuit);
         sarah.enrollCourse(econ);
@@ -174,13 +164,6 @@ public class SchoolService {
         return getStudent(studentId).map(this::toPerformanceDTO);
     }
 
-    /**
-     * [Design Pattern / Principle 應用說明]
-     * 開放封閉原則 (OCP) & 策略模式 (Strategy):
-     * - 現況: 這裡計算 GPA 與判斷學術站位（Distinction, Pass, Probation）的邏輯是寫死的。
-     * - 教學提示: 若未來需要新增不同的及格標準（例如交換生或碩士生），勢必得修改此方法，違反了 OCP。
-     * 若改用 **Strategy 模式** 將計算邏輯抽離成獨立的策略類別，即可在不修改此方法的情況下擴充新規則。
-     */
     private StudentPerformanceDTO toPerformanceDTO(Student student) {
         StudentPerformanceDTO dto = new StudentPerformanceDTO();
         dto.setStudentId(student.getMemberId());
@@ -201,7 +184,7 @@ public class SchoolService {
         for (Grade g : student.getGrades()) {
             int cr = g.getCourse().getCredits();
             double sc = g.getScore();
-
+            
             totalWeightedScore += (sc * cr);
             totalCredits += cr;
 
@@ -209,8 +192,7 @@ public class SchoolService {
                 earnedCredits += cr;
             } else {
                 failedOnes.add(g.getCourse().getName());
-                if (cr >= 4)
-                    hasCriticalFailure = true;
+                if (cr >= 4) hasCriticalFailure = true;
             }
         }
 
@@ -219,14 +201,11 @@ public class SchoolService {
         dto.setTotalEarnedCredits(earnedCredits);
         dto.setFailedCourseNames(failedOnes);
 
-        if (gpa >= 85)
-            dto.setAcademicStanding("Distinction");
-        else if (gpa >= 60)
-            dto.setAcademicStanding("Pass");
-        else
-            dto.setAcademicStanding("Probation");
+        if (gpa >= 85) dto.setAcademicStanding("Distinction");
+        else if (gpa >= 60) dto.setAcademicStanding("Pass");
+        else dto.setAcademicStanding("Probation");
 
-        dto.setGraduationProgress(Math.min(1.0, (double) earnedCredits / 120.0));
+        dto.setGraduationProgress(Math.min(1.0, (double)earnedCredits / 120.0));
         dto.setAtRisk(hasCriticalFailure || gpa < 60);
 
         return dto;

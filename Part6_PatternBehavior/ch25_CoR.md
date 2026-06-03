@@ -4,9 +4,9 @@
 
 > 為了降低訊息傳送者與接收者之間的耦合力，讓超過一個以上的物件來處理訊息。訊息鏈會把請求訊息一直傳遞下去直到有物件處理它。
 
-> **設計樣式定義**
 > *Avoid coupling the sender of a request to its receiver by giving more than one object a chance to handle the request. Chain the receiving objects and pass the request along the chain until an object handles it.*
-> （透過給予多個物件處理請求的機會，以避免請求的發送者與接收者之間的緊密耦合。將接收物件連結成一條鏈，並沿著鏈傳遞該請求，直到有物件處理它為止。）
+
+> 透過給予多個物件處理請求的機會，以避免請求的發送者與接收者之間的緊密耦合。將接收物件連結成一條鏈，並沿著鏈傳遞該請求，直到有物件處理它為止。
 
 ### 25.1.1 核心思維：請求與處理的雙向解耦
 在許多應用系統中，客戶端（Client）發送的請求（或事件）可能需要多種不同層級或職責的角色來進行審查或處理。
@@ -16,6 +16,10 @@
 2. **動態表態與轉發**：鏈上的每一個處理器都包含對「下一個處理器（Successor）」的參考。當請求傳遞到某個處理器時，它會根據自身規則判斷是否能夠處理：
    - 若能處理，則進行處理並決定是否終止傳遞。
    - 若不能處理，則自動將請求傳交給下一個處理器（後繼者）。
+
+![](img/ch25_cor_relay.png)
+*FIG: 責任鏈模式 (CoR) 接力棒傳遞請求示意圖*
+
 
 ### 25.1.2 傳統設計的痛點：龐雜的條件分支與強耦合
 我們以一個企業的「費用報支審核系統（Expense Approval System）」為例。不同金額的報支單需要不同級別的主管審核：
@@ -64,7 +68,7 @@ class ApprovalSystem {
 }
 ```
 
-#### 這樣設計的缺點：
+#### 這樣設計的缺點
 1. **違反開閉原則 (OCP)**：如果未來公司組織調整，要新增一個審核角色（例如「協理」），或者要調整審核額度限制，我們必須直接修改 `ApprovalSystem` 類別內的 `processReport` 核心判斷邏輯。這極易引入新的錯誤。
 2. **高度緊密耦合**：發送者（`ApprovalSystem`）必須明確知道、建立並參考所有的具體接收者類別（`Manager`、`Director` 等）。每個角色的變動都會直接影響到控制中心。
 3. **低重用性與職責不清**：審核邏輯與角色派送邏輯混雜在一起，各個主管類別無法被獨立重用，且違反了**單一職責原則 (SRP)**。
@@ -217,6 +221,7 @@ class Handler2 extends Handler {
 			super.handleRequest(x);
 	}
 }
+```
 
 ### 25.2.4 設計效益分析
 
@@ -229,9 +234,10 @@ class Handler2 extends Handler {
 * **請求不保證被接收**：因為請求是沿著鏈遞移的，如果鏈的末端沒有妥善設定預設處理器（例如 fallback），請求可能會在走完鏈後被直接遺棄（Drop Out），無人處理。
 * **效能開銷與資源浪費**：如果鏈非常長，請求在鏈上層層傳遞會帶來一定的方法呼叫開銷。特別是當請求在鏈的最末端才被處理時，前面的節點判斷就形成了無謂的資源開銷。
 * **除錯難度較高**：由於控制流分散在各個處理器物件之間，在長鏈中追蹤與除錯請求的流轉路徑相對繁瑣。
-```
 	
 但如果我們要處理的問題型態有很多種呢？該怎麼辦？
+
+###  2.5.5 多問題型態之處理
 
 #### 方案一：單一介面
 
@@ -365,9 +371,9 @@ public class ConcreteHandler  implements Handler {
 }
 ```
 
-## 範例
+## 25.3 範例
 
-### 1. Servlet 過濾器 (Servlet Filters) 
+### 25.3.1 Servlet 過濾器 (Servlet Filters) 
 
 在一個網路應用程式中，**Servlet 過濾器**（Servlet Filters）形成一條鏈。每個過濾器都可以在 HTTP 請求到達 Servlet 之前或 Servlet 處理完請求之後，執行預處理或後處理。
 
@@ -439,7 +445,7 @@ class RequestHandlerChain {
 
 ---
 
-### 2. 自定義日誌級別 (概念性應用)
+### 25.3.2 自定義日誌級別 (概念性應用)
 
 儘管 Java 的 `java.util.logging` 或 Log4j/Logback 在其公共 API 名稱中沒有**明確**使用責任鏈模式，但日誌級別和附加器（appenders）的概念可以從類似的角度來思考。一條日誌消息可能會遍歷一系列附加器，每個附加器根據其配置的級別和過濾器決定是否處理（例如，寫入控制台、文件、資料庫）該消息。
 
@@ -510,7 +516,7 @@ public class LoggerChainExample {
 
 ---
 
-### 3. 自定義請求/事件處理 (通用目的)
+### 25.3.3 自定義請求/事件處理 (通用目的)
 
 您可以為任何類型的請求或事件處理構建自己的責任鏈。這在處理事件或消息的框架中是非常常見的模式。
 
@@ -524,7 +530,7 @@ public class LoggerChainExample {
 
 想像一個電子商務系統，其中訂單需要經過幾個處理步驟：庫存檢查、支付處理、發貨通知。
 
-#### 訂單處理流水線示意圖
+訂單處理流水線示意圖
 
 ```mermaid
 graph LR
@@ -683,7 +689,7 @@ public class OrderProcessingChainClient {
 }
 ```
 
-## 隨堂測驗
+## 25.4 隨堂測驗
 
 1. Chain of responsibility 的目的為何？
     - A) 把物件串連起來，生成時一起生成。
@@ -718,7 +724,7 @@ public class OrderProcessingChainClient {
     Composite 有分為 composite 和 leaf 之差別，後者是不能加元素的，CoR 並沒有這樣的差異。Composite 通常包含多個元素，CoR 包含的只有一個後繼者。Composite 只是把動作轉交給所包含的元素去做，包含者本身不做什麼，CoR 則需要做一些判斷後才會決定自己處理或交給後繼者來做。
     </details>
 
-## 練習
+## 25.5 練習
 
 ### EX01 結構繪製
 在不看講義的情況下，應用 UML 的工具畫出該設計樣式的結構。
@@ -727,12 +733,12 @@ public class OrderProcessingChainClient {
 
 在一家軟體研發公司中，所有的事件（Issue）都統一提交給系統，並依據事件的性質（**技術類別 Tech** 或 **管理類別 Management**）與其**嚴重程度/難度層級 (Difficulty Level / Severity)**，由不同的角色組成責任鏈來進行處理與派工。
 
-#### 派工與審核鏈規則：
+#### 派工與審核鏈規則
 
 * **技術問題鏈 (Technical Chain)**：技術問題的層層解決順序是：`Programmer` ➔ `Designer` ➔ `Architect`。
 * **管理問題鏈 (Management Chain)**：管理問題的層層解決順序是：`Programmer` ➔ `Analyzer` ➔ `Manager` ➔ `CEO`。
 
-#### 職責指派表：
+#### 職責指派表
 
 | 角色 (Handler) | 可處理之技術問題 (Tech) | 可處理之管理問題 (Mgmt) |
 | :--- | :--- | :--- |

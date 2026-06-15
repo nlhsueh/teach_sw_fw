@@ -31,80 +31,26 @@
 如果使用傳統的直覺式設計，我們會讓這三個元件在內部直接持有並相互呼叫對方：
 
 ```java
-// 傳統無中介者設計：元件間緊密耦合
+完整程式碼請參閱 [src/NoMediatorDemo.java](src/NoMediatorDemo.java)。
+
+在此設計中，三個元件（`TextBox`、`Checkbox`、`Button`）彼此持有對方的參考，在內部直接進行呼叫與狀態控制。例如，在 `TextBox` 中：
+
+```java
 class TextBox {
     private Button button;
     private Checkbox checkbox;
 
-    public void setReferences(Button b, Checkbox c) {
-        this.button = b;
-        this.checkbox = c;
-    }
-
     public void onTextChanged(String text) {
         if (text.isEmpty()) {
-            button.setEnabled(false);
+            button.setEnabled(false); // 直接修改 Button
         } else if (checkbox.isChecked()) {
             button.setEnabled(true);
         }
     }
-
-    public void clear() {
-        System.out.println("TextBox: 清空文字內容");
-    }
 }
+```
 
-class Checkbox {
-    private Button button;
-    private TextBox textBox;
-
-    public void setReferences(Button b, TextBox t) {
-        this.button = b;
-        this.textBox = t;
-    }
-
-    public void onCheckedChanged(boolean checked) {
-        // 直接存取並操作 Button 的狀態
-        if (checked && !button.isTextBoxEmpty()) {
-            button.setEnabled(true);
-        } else {
-            button.setEnabled(false);
-        }
-    }
-
-    public boolean isChecked() {
-        return true; // 簡化模擬
-    }
-
-    public void setChecked(boolean checked) {
-        System.out.println("Checkbox: 設定勾選狀態為 " + checked);
-    }
-}
-
-class Button {
-    private TextBox textBox;
-    private Checkbox checkbox;
-
-    public void setReferences(TextBox t, Checkbox c) {
-        this.textBox = t;
-        this.checkbox = c;
-    }
-
-    public void setEnabled(boolean enabled) {
-        System.out.println("Button: 啟用狀態設定為 -> " + enabled);
-    }
-
-    public boolean isTextBoxEmpty() {
-        return false; // 簡化模擬
-    }
-
-    public void onClick() {
-        System.out.println("Button: 執行登入程序...");
-        // 直接呼叫其他元件進行聯動狀態清除
-        textBox.clear();
-        checkbox.setChecked(false);
-    }
-}
+這種相互參照的設計會造成元件間緊密且複雜的雙向耦合。
 ```
 
 #### 這樣設計的缺點：
@@ -233,47 +179,12 @@ sequenceDiagram
 
 以下呈現最簡潔、結構嚴密且附有注釋的 Java 中介者程式樣板，協助讀者快速掌握物件間的雙向登記註冊與通訊機制。
 
+完整樣板程式碼已整理至 [src/MediatorTemplate.java](src/MediatorTemplate.java) 中。
+
+#### 核心局部代碼說明：
+在中介者模式中，所有的 `Colleague` 物件都持有中介者的介面參考，並在自身事件觸發時通知中介者：
+
 ```java
-package mediator.template;
-
-// 1. 抽象中介者介面
-interface IMediator {
-    void registerColleague1(Colleague1 c);
-    void registerColleague2(Colleague2 c);
-    
-    // 💡 Colleagues 發生事件時呼叫此方法通知中介者
-    void changed(Colleague colleague);
-}
-
-// 2. 具體中介者實作
-class ConcreteMediator implements IMediator {
-    private Colleague1 c1;
-    private Colleague2 c2;
-
-    @Override
-    public void registerColleague1(Colleague1 c) {
-        this.c1 = c;
-    }
-
-    @Override
-    public void registerColleague2(Colleague2 c) {
-        this.c2 = c;
-    }
-
-    // 💡 集中控制邏輯：在此決定物件間如何影響
-    @Override
-    public void changed(Colleague colleague) {
-        if (colleague == c1) {
-            System.out.println("★ 中介者收到 Colleague1 的狀態變更 -> 通知 Colleague2 執行對應動作");
-            c2.receiveAction();
-        } else if (colleague == c2) {
-            System.out.println("★ 中介者收到 Colleague2 的狀態變更 -> 通知 Colleague1 執行對應動作");
-            c1.receiveAction();
-        }
-    }
-}
-
-// 3. 抽象同儕基類
 abstract class Colleague {
     protected IMediator mediator; // 持有中介者參考
 
@@ -282,54 +193,29 @@ abstract class Colleague {
     }
 }
 
-// 4. 具體同儕 1
 class Colleague1 extends Colleague {
-    public Colleague1(IMediator mediator) {
-        super(mediator);
-        mediator.registerColleague1(this); // 主動向中介者註冊
-    }
-
-    // 自身發生的業務行為
     public void triggerEvent() {
         System.out.println("Colleague1: 我被觸發了！通知中介者。");
-        mediator.changed(this);
-    }
-
-    // 由中介者代為調用的聯動行為
-    public void receiveAction() {
-        System.out.println("Colleague1: 收到中介者通知，更新狀態。");
+        mediator.changed(this); // 統一通知中介者
     }
 }
+```
 
-// 5. 具體同儕 2
-class Colleague2 extends Colleague {
-    public Colleague2(IMediator mediator) {
-        super(mediator);
-        mediator.registerColleague2(this);
-    }
+而具體中介者 `ConcreteMediator` 則實作控制與聯動邏輯：
 
-    public void triggerEvent() {
-        System.out.println("Colleague2: 我被觸發了！通知中介者。");
-        mediator.changed(this);
-    }
+```java
+class ConcreteMediator implements IMediator {
+    private Colleague1 c1;
+    private Colleague2 c2;
 
-    public void receiveAction() {
-        System.out.println("Colleague2: 收到中介者通知，更新狀態。");
-    }
-}
-
-// 6. 測試主程式
-public class MediatorTemplate {
-    public static void main(String[] args) {
-        IMediator med = new ConcreteMediator();
-
-        Colleague1 c1 = new Colleague1(med);
-        Colleague2 c2 = new Colleague2(med);
-
-        // c1 與 c2 互不知道對方，但動作依然產生了聯動
-        c1.triggerEvent();
-        System.out.println("-------------------------------------");
-        c2.triggerEvent();
+    @Override
+    public void changed(Colleague colleague) {
+        if (colleague == c1) {
+            // 協調 Colleague1 的事件影響 Colleague2
+            c2.receiveAction();
+        } else if (colleague == c2) {
+            c1.receiveAction();
+        }
     }
 }
 ```
@@ -658,23 +544,12 @@ classDiagram
 
 請閱讀、分析並補完以下 Java 程式碼。請遵循中介者樣式原則，確保所有的同事 UI 元件（Colleagues）不直接呼叫彼此的 API，所有的互動控制邏輯皆集中在中介者（`CourseMediator`）類別中實作。
 
+完整練習框架已整理至 [src/CourseGradingUI.java](src/CourseGradingUI.java) 中，您可以直接點擊連結閱讀。
+
+#### 關鍵結構說明：
+我們宣告了 `ICourseMediator` 介面，讓中介者與具體 UI 元件解耦：
+
 ```java
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
-// 💡 共同的同事行為介面（Command 樣式）
-interface CourseCommand {
-    void execute();
-}
-
-// 💡 抽象中介者介面
 interface ICourseMediator {
     void check();
     void submit();
@@ -684,140 +559,17 @@ interface ICourseMediator {
     void registerSubmitButton(BtnSubmit s);
     void registerStatusLabel(LblStatus l);
 }
+```
 
-// 💡 具體中介者：集中控制所有 UI 元件的啟用狀態、輸入檢查與成績評定
-class CourseMediator implements ICourseMediator {
-    private TxtGrade txtGrade;
-    private BtnCheck btnCheck;
-    private BtnSubmit btnSubmit;
-    private LblStatus lblStatus;
+具體的同事元件（如 `BtnCheck` 和 `BtnSubmit`）實作 `CourseCommand`，並在點擊時委託給中介者：
 
-    @Override
-    public void registerGradeField(TxtGrade g) { this.txtGrade = g; }
-    @Override
-    public void registerCheckButton(BtnCheck c) { this.btnCheck = c; }
-    @Override
-    public void registerSubmitButton(BtnSubmit s) { this.btnSubmit = s; }
-    @Override
-    public void registerStatusLabel(LblStatus l) { this.lblStatus = l; }
-
-    @Override
-    public void check() {
-        // [TODO: 1. 實作成績檢查邏輯]
-        // 提示：取得 txtGrade 的文字內容，去除空白後嘗試解析為整數
-        // 判斷該整數是否落在 0 至 100 的合理範圍內。
-        // 若合格：啟用 btnSubmit 按鈕，更新 lblStatus 為 "檢查通過！可以提交成績。"
-        // 若不合格或解析失敗：停用 btnSubmit 按鈕，更新 lblStatus 為對應錯誤提示。
-    }
-
-    @Override
-    public void submit() {
-        // [TODO: 2. 實作成績提交與等第評定邏輯]
-        // 提示：解析分數後，依據以下評估規則換算成學術等第 (Grade Letter)
-        // >=90 為 A, >=80 為 B, >=70 為 C, >=60 為 D, 60 以下為 F。
-        // 換算完成後，將 btnSubmit、btnCheck 按鈕皆停用 (setEnabled(false))，
-        // 並將 txtGrade 文字欄位設為不可編輯 (setEditable(false))，避免之後再次更改成績。
-        // 最後更新 lblStatus 為 "成績已成功送出！最終評定為: [等第]"
-    }
-}
-
-// ==================== 具體同事元件 (Colleagues) 實作 ====================
-
-class TxtGrade extends JTextField {
-    private ICourseMediator med;
-
-    public TxtGrade(ICourseMediator m) {
-        super(10);
-        this.med = m;
-        med.registerGradeField(this); // 向中介者註冊自己
-    }
-}
-
+```java
 class BtnCheck extends JButton implements CourseCommand {
     private ICourseMediator med;
-
-    public BtnCheck(ActionListener al, ICourseMediator m) {
-        super("Check");
-        addActionListener(al);
-        this.med = m;
-        med.registerCheckButton(this);
-    }
-
+    
     @Override
     public void execute() {
         med.check(); // 委託中介者執行檢查行為
-    }
-}
-
-class BtnSubmit extends JButton implements CourseCommand {
-    private ICourseMediator med;
-
-    public BtnSubmit(ActionListener al, ICourseMediator m) {
-        super("Submit");
-        addActionListener(al);
-        this.med = m;
-        med.registerSubmitButton(this);
-    }
-
-    @Override
-    public void execute() {
-        med.submit(); // 委託中介者執行提交行為
-    }
-}
-
-class LblStatus extends JLabel {
-    private ICourseMediator med;
-
-    public LblStatus(ICourseMediator m) {
-        super("請輸入 0-100 的成績，並點擊 Check 進行檢查。");
-        this.med = m;
-        med.registerStatusLabel(this);
-        setFont(new Font("Microsoft JhengHei", Font.BOLD, 14));
-        setHorizontalAlignment(JLabel.CENTER);
-    }
-}
-
-// ==================== 測試視窗主程式 ====================
-
-public class CourseGradingUI extends JFrame implements ActionListener {
-    private ICourseMediator med = new CourseMediator();
-
-    public CourseGradingUI() {
-        super("University Course Grading System");
-        
-        TxtGrade txtGrade = new TxtGrade(med);
-        BtnCheck btnCheck = new BtnCheck(this, med);
-        BtnSubmit btnSubmit = new BtnSubmit(this, med);
-        LblStatus lblStatus = new LblStatus(med);
-        
-        JPanel inputPanel = new JPanel();
-        inputPanel.add(new JLabel("輸入成績: "));
-        inputPanel.add(txtGrade);
-        inputPanel.add(btnCheck);
-        inputPanel.add(btnSubmit);
-        
-        // 初始狀態
-        btnSubmit.setEnabled(false);
-        
-        getContentPane().add(lblStatus, BorderLayout.NORTH);
-        getContentPane().add(inputPanel, BorderLayout.CENTER);
-        
-        setSize(480, 150);
-        setLocationRelativeTo(null);
-        setVisible(true);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent ae) {
-        if (ae.getSource() instanceof CourseCommand) {
-            CourseCommand cmd = (CourseCommand) ae.getSource();
-            cmd.execute();
-        }
-    }
-
-    public static void main(String[] args) {
-        new CourseGradingUI();
     }
 }
 ```
